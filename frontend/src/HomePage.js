@@ -2,18 +2,25 @@ import TextField from '@mui/material/TextField';
 
 import Avatar from '@mui/material/Avatar';
 
+import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import aotPic from './aot.png'
-
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
-
+import Button from '@mui/material/Button';
+import aotPic from './aot.png'
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
+import Rating from '@mui/material/Rating';
+import Paper from '@mui/material/Paper';
+import Modal from '@mui/material/Modal';
+import BuyTicketViews from './BuyTicketViews';
+import { Route, Routes, Link } from "react-router-dom"
+import { useState } from 'react';
+
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
 import './App.css';
 
@@ -32,6 +39,64 @@ function Login() {
     )
 }
 
+/**
+ * Just here temporally just to provide some way to show the promotion view
+ */
+function AdminPanel() {
+return (
+    <div id = "adminCont">
+        <Link to="/promotions">
+            <IconButton>
+            <AdminPanelSettingsIcon></AdminPanelSettingsIcon>
+        </IconButton>
+        </Link>
+    
+
+
+    </div>
+)
+}
+
+
+
+function MovieSelectedView() {
+    return (
+        <Stack direction = "row" id ="movieSelectedView">
+            <div id="moviePosterCont">
+            <img id="moviePoster" src={aotPic}>
+            </img>
+            </div>
+            <Stack className="movieSelectionDetails" >
+        <Typography  variant="h5">
+               Greatness
+            </Typography>
+            <Typography  variant="h7">
+              Sunday, April 11 at 2:45 PM
+            </Typography>
+        </Stack>
+            
+        </Stack>
+    )
+}
+
+export function BookMovieStepperView(props) {
+
+    return (
+       
+        <div id ="bookMovieStepperView">
+            
+  <Paper elevation ={2} sx={{height: "100%",minHeight: 900, maxWidth: 900, width: "100%"}}>
+
+        <MovieSelectedView></MovieSelectedView>
+        <BuyTicketViews></BuyTicketViews>
+        </Paper>
+       
+        </div>
+      
+    
+    )
+}
+
 
 /**
  * Displays the movies that are screening and soon-to-be screening
@@ -42,40 +107,81 @@ function Login() {
  */
 function MoviesView() {
 
-    let array = Array(15).fill(0)
+
+    let array = [1,2,3,4]
     let embedId = "6r8Dooe7f-k"
+
     return (
-        <div id = "moviesViewCont">
-      
+        <div id="moviesViewCont">
+             <Typography  variant="h4" component="div">Now Screening </Typography>
+        <div id = "moviesPlayingCont">
+    
+    {array.map(item => (
+        <Card elevation = {8} className = "movieCard" key = {item} sx={{ maxWidth: 400 }}>
+         <div className ="iframeCont">
+         <iframe className = "trailer" src= {`https://www.youtube.com/embed/${embedId}`}
+   allow='autoplay; encrypted-media'
+   allowfullscreen
+   title='video'
+   >
+  </iframe>
+         </div>
+           
+            <CardContent>
+                <Stack className = "movieTitle" direction = "row">
+
+                <Typography  variant="h10" component="div">Title: </Typography>
+                <Typography  variant="h6" component="div">Greatness</Typography>
+                </Stack>
+                <Stack className = "movieRating" direction = "row">
+                <Typography  variant="h10" component="div">Rating: </Typography>
+                <Typography  variant="h6" component="div">TV-MA</Typography>
+                </Stack>
+<div className = "bottomCardCont">
+<Rating name="half-rating-read" defaultValue={5} precision={0.5} readOnly />
+  
+<Link to="/buytickets" style={{ textDecoration: 'none' }}>
+    <Button variant="contained" >
+        Book
+    </Button>
+</Link>
+
+</div>
+            </CardContent>
+        </Card>
+    ))
+
+    }
+    </div>
+    <Typography  variant="h4" component="div">Screening Soon </Typography>
+        <div id = "moviesPlayingCont">
         {array.map(item => (
-            <Card className = "movieCard" key = {item} sx={{ maxWidth: 350 }}>
-             
-                <iframe className = "trailer" src= {`https://www.youtube.com/embed/${embedId}`}
+            <Card elevation = {8} className = "movieCard" key = {item} sx={{ maxWidth: 400 }}>
+             <div className ="iframeCont">
+             <iframe className = "trailer" src= {`https://www.youtube.com/embed/${embedId}`}
        allow='autoplay; encrypted-media'
        allowfullscreen
        title='video'
        >
-
       </iframe>
+             </div>
+               
                 <CardContent>
-                <Typography gutterBottom variant="h6" component="div">
-         Title: Greatness
-        </Typography>
-        <Typography gutterBottom variant="h6" component="div">
-         Rating: TV-MA
-        </Typography>
-        <Fab variant="extended" size="medium" color="primary"  aria-label="add">
-        <AddIcon />
-        Book
-      </Fab>
-   
-                    
+                    <Stack className = "movieTitle" direction = "row">
+                    <Typography  variant="h10" component="div">Title: </Typography>
+                    <Typography  variant="h6" component="div">Greatness</Typography>
+                    </Stack>
+                    <Stack className = "movieRating" direction = "row">
+                    <Typography  variant="h10" component="div">Rating: </Typography>
+                    <Typography  variant="h6" component="div">TV-MA</Typography>
+                    </Stack>
                 </CardContent>
             </Card>
         ))
 
         }
-
+        </div>
+        
         </div>
     )
 }
@@ -86,9 +192,9 @@ function MoviesView() {
  */
 function SearchField() {
     return (
-        <div>
-            <TextField id="filled-basic" label="Browse movies" variant="filled" />
-        </div>
+ 
+            <TextField  sx={{maxWidth: 500, width: "100%"}} label="Browse movies" variant="filled" />
+        
     )
 }
 
@@ -101,7 +207,8 @@ function HomePage() {
         <div id="homePageCont">
 <div>
 <Login></Login>
-    <Typography variant="h2" >E-Booking Cinema</Typography>
+<AdminPanel></AdminPanel>
+    <Typography variant="h4" >E-Booking Cinema</Typography>
 </div>
 <SearchField></SearchField>
     <MoviesView></MoviesView>
