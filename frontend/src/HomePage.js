@@ -236,7 +236,8 @@ function HomePage() {
 <div>
 <Login></Login>
 <AdminPanel></AdminPanel>
-
+<ManageMovie></ManageMovie>
+<EditProfile></EditProfile>
     <Typography variant="h4" >E-Booking Cinema</Typography>
 </div>
 <SearchField></SearchField>
