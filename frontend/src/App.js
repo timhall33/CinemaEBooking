@@ -10,8 +10,14 @@ import { useMemo } from 'react';
 import { BrowserRouter } from "react-router-dom"
 import { Route, Routes, Link } from "react-router-dom"
 import { BookMovieStepperView } from './HomePage';
-
-
+import LoginView from './LoginView';
+import RegisterView from './RegisterView';
+import RegConfirmation from './RegConfirmation';
+import EditProfile from './EditProfile';
+import CheckoutView from './CheckoutView';
+import AddressForm from './AddressForm';
+import PaymentForm from './PaymentForm';
+import ManageMovies from './ManageMoviesView';
 
 function App() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -35,6 +41,13 @@ function App() {
         <Route path="/buytickets" element={<BookMovieStepperView />} />
         <Route path="/orderConfirmation" element={<OrderConfirmationView />} />
         <Route path="/promotions" element={<PromotionScreen />} />
+        <Route path="/login" element={<LoginView />} />
+        <Route path="/register" element={<RegisterView />} />
+        <Route path="/confirmation" element={<RegConfirmation />} />
+        <Route path="/editProfile" element={<EditProfile />} />
+        <Route path="/checkout" element={<CheckoutView />} />
+        <Route path="/manage" element={<ManageMovies />} />
+        
       </Routes>
     </div>
 

@@ -23,8 +23,12 @@ import StepLabel from '@mui/material/StepLabel';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { Fragment } from 'react';
 import { Show } from '@chakra-ui/react';
-
+import Review from './Review';
+import PaymentForm from './PaymentForm';
+import AddressForm from './AddressForm';
 import OrderConfirmationView from './OrderConfirmationView';
+import PlaceOrder from './PlaceOrder';
+
 
 /*
 To book tickets, users should select the movie, 
@@ -216,7 +220,7 @@ function SeatView() {
 
 function BuyTicketViews() {
 
-    const steps = ['Select a showtime','Select tickets',"Select seats"]
+    const steps = ['Select a showtime','Select tickets',"Select seats",'Review your order', 'Shipping address', 'Payment details', 'Confirm Booking']
 
     const [step,setStep] = useState(0)
 
@@ -259,6 +263,26 @@ function BuyTicketViews() {
 )
 }
 
+{ step === 3 && (
+   <Review></Review>
+)
+}
+
+{ step === 4 && (
+   <AddressForm></AddressForm>
+)
+}
+
+{ step === 5 && (
+   <PaymentForm></PaymentForm>
+)
+}
+
+{ step === 6 && (
+   <PlaceOrder></PlaceOrder>
+)
+}
+
 <Stack direction = "row" sx={{display: "flex",columnGap: 10}}>
 
 { step > 0 && (
@@ -271,11 +295,11 @@ function BuyTicketViews() {
 }
 
 
-{ step < 3 && (
+{ step < 7 && (
 
-<Link to= {step == 2 ? "/orderConfirmation" : ""} style={{ textDecoration: 'none' }}>
+<Link to= {step == 6 ? "/orderConfirmation" : ""} style={{ textDecoration: 'none' }}>
         <Button onClick={() => nextStep()} variant="contained" >
-        NEXT
+        {step=== steps.length - 1 ? 'Confirm Booking' : 'Next'}
       </Button>
       </Link>
   
@@ -283,6 +307,7 @@ function BuyTicketViews() {
 )
 
 }
+
 
 </Stack>
 

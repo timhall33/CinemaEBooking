@@ -19,8 +19,11 @@ import Modal from '@mui/material/Modal';
 import BuyTicketViews from './BuyTicketViews';
 import { Route, Routes, Link } from "react-router-dom"
 import { useState } from 'react';
+import {LoginView} from './LoginView';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 
 import './App.css';
 
@@ -32,9 +35,35 @@ import './App.css';
 function Login() {
     return (
         <div id = "loginCont">
-<IconButton>
-<AccountCircleIcon size="large" ></AccountCircleIcon>
-</IconButton>
+            <Link to="/login">
+                <IconButton>
+                    <AccountCircleIcon size="large" ></AccountCircleIcon>
+                </IconButton>
+            </Link>
+
+        </div>
+    )
+}
+
+function EditProfile() {
+    return(
+        <div id = "editProfileCont">
+            <Link to="/editProfile">
+                <IconButton>
+                    <ManageAccountsIcon></ManageAccountsIcon>
+                </IconButton>
+            </Link>
+        </div>
+    )
+}
+function ManageMovie() {
+    return(
+        <div id = "manageMovieCont">
+            <Link to="/manage">
+                <IconButton>
+                    <SupervisorAccountIcon></SupervisorAccountIcon>
+                </IconButton>
+            </Link>
         </div>
     )
 }
@@ -56,7 +85,6 @@ return (
     </div>
 )
 }
-
 
 
 function MovieSelectedView() {
@@ -208,6 +236,7 @@ function HomePage() {
 <div>
 <Login></Login>
 <AdminPanel></AdminPanel>
+
     <Typography variant="h4" >E-Booking Cinema</Typography>
 </div>
 <SearchField></SearchField>
