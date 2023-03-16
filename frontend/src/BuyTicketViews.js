@@ -128,6 +128,9 @@ function createTicket(ageCat, price, ticketCount) {
 }
 
 /**
+ * // Import the functions you need from the SDKs you need
+ */
+/**
  * Displays view that prompts user to input amount of ticket to purchase 
  * @returns 
  */

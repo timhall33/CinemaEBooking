@@ -18,6 +18,7 @@ import CheckoutView from './CheckoutView';
 import AddressForm from './AddressForm';
 import PaymentForm from './PaymentForm';
 import ManageMovies from './ManageMoviesView';
+import Button from './Testing';
 
 function App() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -36,6 +37,7 @@ function App() {
        <BrowserRouter>
     <CssBaseline />
     <div id = "body">
+      <Button></Button>
     <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/buytickets" element={<BookMovieStepperView />} />
