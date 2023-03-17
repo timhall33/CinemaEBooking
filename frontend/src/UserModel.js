@@ -17,6 +17,7 @@ export class User {
 // Firestore data converter
 export const userConverter = {
     toFirestore: function (user) {
+       
         return {
             firstName: user.firstName,
             lastName: user.lastName,

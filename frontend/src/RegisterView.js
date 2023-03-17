@@ -148,7 +148,7 @@ function RegisterView() {
             color="primary"
             onClick={() => {
               register(firstName,lastName,email,phoneNumber,password);
-              navigate('/confirmation');
+             // navigate('/confirmation');
             }}
           >
             Register
