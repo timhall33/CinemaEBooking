@@ -14,6 +14,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvide, makeStyles } from '@mui/material/styles';
 import RegConfirmation from './RegConfirmation';
 import { Redirect, useNavigate } from "react-router-dom";
+import {useState} from 'react';
 
 const theme = createTheme();
 
@@ -21,9 +22,34 @@ const theme = createTheme();
 
 function RegisterView() {
   const navigate = useNavigate();
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [password, setPassword] = useState('');
   const navigateToConfirmation=()=> {
     navigate('/confirmation');
   };
+
+  // declare a new state variable for modal open
+  const [open, setOpen] = useState(false);
+
+  // function to handle modal open
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  // function to handle modal close
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    console.log(firstName, lastName, email, password, phoneNumber);
+    handleClose();
+  };
+
     return(
         <div id = "RegisterViewCont">
             <Container component="main" maxWidth="xs">
@@ -51,6 +77,8 @@ function RegisterView() {
                 id="firstName"
                 label="First Name"
                 autoFocus
+                value={firstName}
+                onChange={e => setFirstName(e.target.value)}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -62,6 +90,8 @@ function RegisterView() {
                 label="Last Name"
                 name="lastName"
                 autoComplete="lname"
+                value={lastName}
+                onChange={e => setLastName(e.target.value)}
               />
             </Grid>
             <Grid item xs={12}>
@@ -73,6 +103,8 @@ function RegisterView() {
                 label="Phone Number"
                 name="phone"
                 autoComplete="phone"
+                value={phoneNumber}
+                onChange={e => setPhoneNumber(e.target.value)}
               />
               </Grid>
             <Grid item xs={12}>
@@ -84,6 +116,8 @@ function RegisterView() {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
               />
             </Grid>
             <Grid item xs={12}>
@@ -96,6 +130,8 @@ function RegisterView() {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
               />
             </Grid>
             <Grid item xs={12}>
