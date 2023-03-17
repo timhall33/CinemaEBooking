@@ -14,6 +14,8 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvide, makeStyles } from '@mui/material/styles';
 import RegConfirmation from './RegConfirmation';
 import { Redirect, useNavigate } from "react-router-dom";
+import register from './FirebaseRegistration'
+import {useState} from "react";
 
 const theme = createTheme();
 
@@ -110,7 +112,7 @@ function RegisterView() {
             fullWidth
             variant="contained"
             color="primary"
-            onClick={navigateToConfirmation}
+            onClick={register}
           >
             Register
           </Button>

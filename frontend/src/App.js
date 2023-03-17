@@ -18,7 +18,7 @@ import CheckoutView from './CheckoutView';
 import AddressForm from './AddressForm';
 import PaymentForm from './PaymentForm';
 import ManageMovies from './ManageMoviesView';
-import Button from './Testing';
+import Button from './Firebase';
 
 function App() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
