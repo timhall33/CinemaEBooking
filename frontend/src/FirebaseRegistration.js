@@ -4,7 +4,7 @@ import app from './Firebase'
 import email from './RegisterView'
 import password from './RegisterView'
 
-function register() {
+function register(email, password) {
 
     const auth = getAuth(app);
     console.log(email);

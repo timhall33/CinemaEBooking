@@ -143,11 +143,10 @@ function RegisterView() {
             </Grid>
           </Grid>
           <Button
-            type="submit"
             fullWidth
             variant="contained"
             color="primary"
-            onClick={register}
+            onClick={register(email,password)}
           >
             Register
           </Button>
