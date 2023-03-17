@@ -3,7 +3,7 @@
 export class User {
      
     constructor (firstName, lastName, email, phoneNumber, promotionStatus, userStatus,uid) {
-        this.firsName = firstName
+        this.firstName = firstName
         this.lastName = lastName
         this.email = email
         this.phoneNumber = phoneNumber
