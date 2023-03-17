@@ -1,7 +1,8 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { getAuth } from "firebase/auth";
-
+import { fabClasses } from "@mui/material";
+import {  connectFirestoreEmulator, initializeFirestore } from 'firebase/firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -16,41 +17,16 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+export const app  = initializeApp(firebaseConfig);
+
+initializeFirestore(app, {
+  ignoreUndefinedProperties: true
+});
+
+
+
 const db = getFirestore(app);
 
-
-
-// reading from db
-// db name: Test
-// id: zXH4gWe1546CRXwV9DvQ
-// field name: item
-
-// async function reading(db) {
-
-
-//     const testCollection = collection(db, 'Test')
-//     const snapshot = await getDocs(testCollection)
-//     const list = snapshot.docs.map(doc => doc.data())
-
-//     return list;
-
-// }
-
-
-// function Button() {
-//     return (
-//         <div>
-            
-//             <button onClick={() => console.log(reading(db))}>
-//                 CLICK ME!!!!
-//             </button>
-//         </div>
-//     )
-// }
-
-
-export const auth = getAuth(app);
-export default app;
+export default db;
 
 
