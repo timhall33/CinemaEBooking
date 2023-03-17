@@ -1,12 +1,9 @@
-import { getAuth } from "firebase/auth";
+import { auth } from "./Firebase";
 import {createUserWithEmailAndPassword} from 'firebase/auth'
-import app from './Firebase'
-import email from './RegisterView'
-import password from './RegisterView'
+
 
 function register(email, password) {
-
-    const auth = getAuth(app);
+    
     console.log(email);
    // if(validatePassword()) {
       // Create a new user with email and password using firebase
