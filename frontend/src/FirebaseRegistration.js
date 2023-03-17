@@ -1,12 +1,12 @@
 import { auth } from "./Firebase";
 import { createUserWithEmailAndPassword } from 'firebase/auth'
-import { doc, setDoc, collection, addDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { getFirestore } from "firebase/firestore";
 import app from './Firebase';
 import {User, userConverter} from './UserModel';
 
 function register(firstName, lastName, email, phoneNumber, password) {
-    const db = getFirestore(app);
+    //const db = getFirestore(app);
 
         createUserWithEmailAndPassword(auth, email, password)
         .then((result) => {
@@ -14,7 +14,7 @@ function register(firstName, lastName, email, phoneNumber, password) {
                 
                 console.log("User created successfully")
                 
-                storeUser("Matthew","Gayle","matthewgayle50@gmail.com","4049064251",result.user.uid) 
+                storeUser(firstName,lastName,email,phoneNumber, result.user.uid) 
             } else {
                 console.log("Registration not complete")
             }

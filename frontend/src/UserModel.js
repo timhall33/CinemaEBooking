@@ -16,7 +16,7 @@ export class User {
 
 // Firestore data converter
 export const userConverter = {
-    toFirestore: function (user) {
+    toFirestore: (user) => {
         return {
             firstName: user.firstName,
             lastName: user.lastName,
@@ -27,7 +27,7 @@ export const userConverter = {
             uid: user.uid
             };
     },
-    fromFirestore: function (snapshot, options) {
+    fromFirestore: (snapshot, options) => {
         const data = snapshot.data(options);
         return new User(data.firstName, data.lastName, data.email, data.phoneNumber, data.promotionStatus, data.userStatus, data.uid);
     }
