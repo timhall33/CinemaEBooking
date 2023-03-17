@@ -146,7 +146,10 @@ function RegisterView() {
             fullWidth
             variant="contained"
             color="primary"
-            onClick={register(email,password)}
+            onClick={() => {
+              register(firstName,lastName,email,phoneNumber,password);
+              navigate('/confirmation');
+            }}
           >
             Register
           </Button>
