@@ -17,6 +17,9 @@ import { Redirect, useNavigate } from "react-router-dom";
 import register from './FirebaseRegistration'
 import {useState} from 'react';
 
+import { useEffect } from 'react';
+import { useMemo } from 'react';
+
 const theme = createTheme();
 
 
@@ -28,6 +31,14 @@ function RegisterView() {
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
+  const [promotionStatus, setPromotionStatus] = useState(false);
+
+  const [click, setClick] = useState('')
+  const [response, setResponse] = useState('')
+
+
+
+
   const navigateToConfirmation=()=> {
     navigate('/confirmation');
   };
@@ -50,6 +61,11 @@ function RegisterView() {
     console.log(firstName, lastName, email, password, phoneNumber);
     handleClose();
   };
+
+
+
+  
+
 
     return(
         <div id = "RegisterViewCont">
@@ -78,6 +94,9 @@ function RegisterView() {
                 id="firstName"
                 label="First Name"
                 autoFocus
+                
+                error = {click.length !== 0 && firstName.length === 0}
+                helperText= {click.length !== 0 && firstName.length === 0 ? "Please enter a first name": ""}
                 value={firstName}
                 onChange={e => setFirstName(e.target.value)}
               />
@@ -92,6 +111,8 @@ function RegisterView() {
                 name="lastName"
                 autoComplete="lname"
                 value={lastName}
+                error = {click.length !== 0 && lastName.length === 0}
+                helperText= {click.length !== 0 && lastName.length === 0 ? "Please enter a last name": ""}
                 onChange={e => setLastName(e.target.value)}
               />
             </Grid>
@@ -105,10 +126,13 @@ function RegisterView() {
                 name="phone"
                 autoComplete="phone"
                 value={phoneNumber}
+                error = {(click.length !== 0 && phoneNumber.length === 0) || (click.length !== 0 && (phoneNumber.length > 10 || phoneNumber.length < 10)) || (click.length !== 0 && phoneNumber.match(/^[0-9]+$/) === null)}
+                helperText= {click.length !== 0 && phoneNumber.length === 0 ? "Please enter a phone number": click.length !== 0 && (phoneNumber.length > 10 || phoneNumber.length < 10) ? 
+              "Invalid phone number length" :  (click.length !== 0 && phoneNumber.match(/^[0-9]+$/) === null) ? "Phone number must include only digits" : ""}
                 onChange={e => setPhoneNumber(e.target.value)}
               />
               </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} id ="emailGrid">
               <TextField
                 variant="outlined"
                 required
@@ -118,7 +142,9 @@ function RegisterView() {
                 name="email"
                 autoComplete="email"
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                error = {(click.length !== 0 && email.length === 0 || response.toLocaleLowerCase().includes("email") ) }
+                helperText= {click.length !== 0 && email.length === 0 ? "Please enter an email" : response.toLocaleLowerCase().includes("email") !== 0 ? response : ""}
+                onChange={e => {setEmail(e.target.value)}}
               />
             </Grid>
             <Grid item xs={12}>
@@ -132,12 +158,14 @@ function RegisterView() {
                 id="password"
                 autoComplete="current-password"
                 value={password}
+                error = {click.length !== 0 && password.length === 0 || response.toLocaleLowerCase().includes("password")}
+                helperText= {click.length !== 0 && password.length === 0 ? "Please enter a password" : response.toLocaleLowerCase().includes("password") ? response : ""}
                 onChange={e => setPassword(e.target.value)}
               />
             </Grid>
             <Grid item xs={12}>
               <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
+                control={<Checkbox  onChange={(e) => setPromotionStatus(e.target.checked)} value="allowExtraEmails" color="primary" />}
                 label="I want to receive inspiration, marketing promotions and updates via email."
               />
             </Grid>
@@ -146,13 +174,26 @@ function RegisterView() {
             fullWidth
             variant="contained"
             color="primary"
-            onClick={() => {
-              register(firstName,lastName,email,phoneNumber,password);
+            value="clicked"
+
+            
+            onClick={(e) => {
+            setClick(e.target.value)
+             
+            if (firstName.length !== 0 && lastName.length != 0 && phoneNumber.length === 10 && phoneNumber.match(/^[0-9]+$/) !== null) {
+              register(firstName,lastName,email,phoneNumber,password, promotionStatus, true, {setResponse}, navigate);
+            }
+           
+
+            console.log(response)
+
+            
              // navigate('/confirmation');
             }}
           >
             Register
           </Button>
+       
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Link href="/login" variant="body2">
@@ -160,6 +201,16 @@ function RegisterView() {
               </Link>
             </Grid>
           </Grid>
+          <Box
+                    sx={{
+            marginTop: 4,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+         
+</Box>
         </form>
         </Box>
       </Container>

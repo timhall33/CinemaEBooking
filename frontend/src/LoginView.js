@@ -13,10 +13,23 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import RegisterView from './RegisterView';
-
+import login from './FirebaseSignIn';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { sendVerification } from "./FirebaseRegistration";
+import { getAuth } from "firebase/auth";
+import {app} from './Firebase'
 const theme = createTheme();
 
 function LoginView() {
+
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const navigate = useNavigate();
+
+  const [userAuth, setUserAuth] = useState();
+
+
     return(
         <div id = "LoginViewCont">
             <Container component="main" maxWidth="xs">
@@ -41,6 +54,7 @@ function LoginView() {
               label="Email Address"
               name="email"
               autoComplete="email"
+              onChange={(e) => setEmail(e.target.value)}
               autoFocus
             />
             <TextField
@@ -52,16 +66,19 @@ function LoginView() {
               type="password"
               id="password"
               autoComplete="current-password"
+              onChange={(e) => setPassword(e.target.value)}
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
             />
             <Button
-              type="submit"
+             
+             
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              onClick={() => {login(email,password,navigate, {setUserAuth});}}
             >
               Sign In
             </Button>
@@ -77,6 +94,19 @@ function LoginView() {
                 </Link>
               </Grid>
             </Grid>
+            { userAuth === false && (
+             <div>
+              <Typography> You have not verified your email </Typography>
+              <Button fullWidth
+            variant="contained"
+            color="primary"
+            value="clicked"
+            onClick={() => sendVerification(getAuth(app))}  >Resend Vertification</Button>
+             </div>
+
+            )
+             
+            }
           </Box>
         </Box>
       </Container>

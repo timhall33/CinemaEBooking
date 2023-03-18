@@ -23,8 +23,6 @@ initializeFirestore(app, {
   ignoreUndefinedProperties: true
 });
 
-
-
 const db = getFirestore(app);
 
 export default db;
