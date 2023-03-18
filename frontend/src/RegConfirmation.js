@@ -8,11 +8,14 @@ import Stack from '@mui/material/Stack';
 import CardMedia from '@mui/material/CardMedia';
 import aotPic from './aot.png'
 import Divider from '@mui/material/Divider';
-
+import Button from '@mui/material/Button';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 
 function RegConfirmation() {
 
+    const navigate = useNavigate()
+    
     return (
         <div id = "regConfirmationCont">
               
@@ -32,7 +35,11 @@ function RegConfirmation() {
             </Typography>
                 </div>
            
-    
+    <Button 
+            onClick={() => navigate('/login')}
+            variant="contained"
+            color="primary"
+            value="clicked" > Sign in </Button>
         
             </Card>
            

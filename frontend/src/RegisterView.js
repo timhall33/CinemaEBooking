@@ -143,8 +143,8 @@ function RegisterView() {
                 autoComplete="email"
                 value={email}
                 error = {(click.length !== 0 && email.length === 0 || response.toLocaleLowerCase().includes("email") ) }
-                helperText= {click.length !== 0 && email.length === 0 ? "Please enter an email" : response.length !== 0 ? response : ""}
-                onChange={e => setEmail(e.target.value)}
+                helperText= {click.length !== 0 && email.length === 0 ? "Please enter an email" : response.toLocaleLowerCase().includes("email") !== 0 ? response : ""}
+                onChange={e => {setEmail(e.target.value)}}
               />
             </Grid>
             <Grid item xs={12}>
@@ -158,8 +158,8 @@ function RegisterView() {
                 id="password"
                 autoComplete="current-password"
                 value={password}
-                error = {click.length !== 0 && password.length === 0}
-                helperText= {click.length !== 0 && password.length === 0 ? "Please enter a password" : ""}
+                error = {click.length !== 0 && password.length === 0 || response.toLocaleLowerCase().includes("password")}
+                helperText= {click.length !== 0 && password.length === 0 ? "Please enter a password" : response.toLocaleLowerCase().includes("password") ? response : ""}
                 onChange={e => setPassword(e.target.value)}
               />
             </Grid>
@@ -181,10 +181,13 @@ function RegisterView() {
             setClick(e.target.value)
              
             if (firstName.length !== 0 && lastName.length != 0 && phoneNumber.length === 10 && phoneNumber.match(/^[0-9]+$/) !== null) {
-              register(firstName,lastName,email,phoneNumber,password, promotionStatus, true, {setResponse});
+              register(firstName,lastName,email,phoneNumber,password, promotionStatus, true, {setResponse}, navigate);
             }
            
+
             console.log(response)
+
+            
              // navigate('/confirmation');
             }}
           >
