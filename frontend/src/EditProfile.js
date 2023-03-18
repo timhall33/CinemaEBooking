@@ -18,7 +18,7 @@ import { deepOrange, deepPurple } from '@mui/material/colors';
 import { getAuth } from "firebase/auth";
 import db from './Firebase';
 import app from './Firebase';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { collection } from 'firebase/firestore';
 import { doc, getDoc } from "firebase/firestore";
 
@@ -65,14 +65,15 @@ function stringAvatar(name) {
 const auth = getAuth();
 async function fetchData() {
 const user = auth.currentUser;
-console.log("user " + user);
   if (user) {
     const uid = user.uid;
-    const docRef = doc(db, uid);
+    console.log("uid: " + uid);
+    const docRef = doc(db, "users/" + uid);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
       console.log("Document data:", docSnap.data());
+      return docSnap.data();
     } else {
       console.log("No such document!");
     }
@@ -81,11 +82,29 @@ console.log("user " + user);
   }
 }
 
-fetchData();
-
-
-
-function EditProfile() {
+  function EditProfile() {
+      const [firstName, setFirstName] = useState('');
+      const [lastName, setLastName] = useState('');
+      const [phoneNumber, setphoneNumber] = useState('');
+      const [email, setEmail] = useState('');
+      useEffect(() => {
+      fetchData().then((data) => {
+      if (data) {
+        const firstName = data.firstName;
+        setFirstName(firstName);
+        const lastName = data.lastName;
+        setLastName(lastName);
+        const phoneNumber = data.phoneNumber;
+        setphoneNumber(phoneNumber);
+        const email = data.email;
+        setEmail(email);
+      } else {
+        console.log("Error: No data found");
+      }
+    }).catch((error) => {
+      console.log("Error:", error);
+    });
+  }, []);
     return(
       <div id = "editProfileCont">
       <Container component="main" maxWidth="xs">
@@ -99,8 +118,8 @@ function EditProfile() {
     }}
   >
     <Typography component="h1" variant="h5">
-    <Avatar {...stringAvatar('Jed Watson')}></Avatar>
-    Jed Watson
+    <Avatar {...stringAvatar(firstName + " " + lastName)}></Avatar>
+    {firstName} {lastName}
     </Typography>
     <form  noValidate>
     <Grid container spacing={2}>
@@ -111,7 +130,7 @@ function EditProfile() {
           variant="outlined"
           fullWidth
           id="firstName"
-          label="Name"
+          placeholder={firstName}
           autoFocus
         />
       </Grid>
@@ -120,7 +139,7 @@ function EditProfile() {
           variant="outlined"
           fullWidth
           id="lastName"
-          label="Watson"
+          placeholder = {lastName}
           name="lastName"
           autoComplete="lname"
         />
@@ -130,7 +149,7 @@ function EditProfile() {
           variant="outlined"
           fullWidth
           id="phone"
-          label="999-999-9999"
+          placeholder = {phoneNumber}
           name="phone"
           autoComplete="phone"
         />
@@ -141,7 +160,7 @@ function EditProfile() {
           disabled="disabled"
           fullWidth
           id="email"
-          label="something@gmail.com"
+          label={email}
           name="email"
           autoComplete="email"
         />
