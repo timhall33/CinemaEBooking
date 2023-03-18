@@ -19,7 +19,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
             if (result) {
                 
                 console.log("User created successfully")
-              
+                sendVerification(auth)
          // Check for user status
           storeUser(db, firstName,lastName,email,phoneNumber,result.user.uid, promotionStatus, userStatus) 
 
@@ -47,7 +47,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
   }
   
   function sendVerification(auth) {
-    sendVerification(auth.currentUser)
+    sendEmailVerification(auth.currentUser)
   }
 
   
