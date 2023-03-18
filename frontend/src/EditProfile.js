@@ -15,6 +15,21 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import RegisterView from './RegisterView';
 import Stack from '@mui/material/Stack';
 import { deepOrange, deepPurple } from '@mui/material/colors';
+import { getAuth } from "firebase/auth";
+import db from './Firebase';
+import app from './Firebase';
+import { useState } from 'react';
+import { collection } from 'firebase/firestore';
+import { doc, getDoc } from "firebase/firestore";
+
+
+
+
+
+
+
+
+
 
 const theme = createTheme();
 
@@ -47,6 +62,29 @@ function stringAvatar(name) {
   };
 }
 
+const auth = getAuth();
+async function fetchData() {
+const user = auth.currentUser;
+console.log("user " + user);
+  if (user) {
+    const uid = user.uid;
+    const docRef = doc(db, uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      console.log("Document data:", docSnap.data());
+    } else {
+      console.log("No such document!");
+    }
+  } else {
+    console.log("No user signed in.");
+  }
+}
+
+fetchData();
+
+
+
 function EditProfile() {
     return(
       <div id = "editProfileCont">
@@ -73,7 +111,7 @@ function EditProfile() {
           variant="outlined"
           fullWidth
           id="firstName"
-          label="Jed"
+          label="Name"
           autoFocus
         />
       </Grid>
