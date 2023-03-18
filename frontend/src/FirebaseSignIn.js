@@ -1,6 +1,6 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { NavLink, useNavigate } from 'react-router-dom'
-import { getAuth } from "firebase/auth";
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import {app} from './Firebase'
 
 
@@ -19,5 +19,18 @@ export default function Login(email, password, navigate) {
         const errorMessage = error.message;
         console.log(errorCode, errorMessage)
     });
+
+    function forgotPassword(email) {
+        const auth = getAuth(app);
+        const user = auth.currentUser
+        sendPasswordResetEmail(auth, auth.currentUser.email)
+        .then(() => {
+            // Email sent
+          }).catch((error) => {
+            
+          });
+
+
+    }
 
 }

@@ -1,5 +1,5 @@
 
-import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth'
 import { doc, setDoc } from "firebase/firestore";
 import { getFirestore } from "firebase/firestore";
 import {app} from './Firebase';
@@ -12,19 +12,11 @@ function register(firstName, lastName, email, phoneNumber, password) {
       
         createUserWithEmailAndPassword(auth, email, password)
         .then((result) => {
-            if (result) {
-                
-                console.log("User created successfully")
-                
-               
-                
-             
-
-        
-  // Check for user status
-  storeUser(db, firstName,lastName,email,phoneNumber,result.user.uid) 
-
-
+            if (result) {         
+                console.log("User created successfully")        
+                // Check for user status
+                storeUser(db, firstName,lastName,email,phoneNumber,result.user.uid) 
+                sendVerification(auth.currentUser);
             } else {
                 console.log("Registration not complete")
             }
@@ -36,17 +28,16 @@ function register(firstName, lastName, email, phoneNumber, password) {
   }
 
    async function storeUser(db, firstName, lastName, email, phoneNumber, currentuid) {
-
     // adding document
-
-   
     const ref = doc(db, "users", currentuid).withConverter(userConverter)
 
-    
-  
     await setDoc(ref, new User(firstName, lastName, email, phoneNumber, true, true, currentuid))
-    
-    
-  } 
+
+  }
+  
+  function sendVerification(auth) {
+    sendVerification(auth.currentUser)
+  }
+
   
   export default register;
