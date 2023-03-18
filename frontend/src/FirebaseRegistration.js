@@ -1,20 +1,30 @@
-import { auth } from "./Firebase";
+
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { doc, setDoc } from "firebase/firestore";
 import { getFirestore } from "firebase/firestore";
-import app from './Firebase';
+import {app} from './Firebase';
+import db from './Firebase';
 import {User, userConverter} from './UserModel';
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 function register(firstName, lastName, email, phoneNumber, password) {
-    //const db = getFirestore(app);
-
+        const auth = getAuth(app);
+      
         createUserWithEmailAndPassword(auth, email, password)
         .then((result) => {
             if (result) {
                 
                 console.log("User created successfully")
                 
-                storeUser(firstName,lastName,email,phoneNumber, result.user.uid) 
+               
+                
+             
+
+        
+  // Check for user status
+  storeUser(db, firstName,lastName,email,phoneNumber,result.user.uid) 
+
+
             } else {
                 console.log("Registration not complete")
             }
@@ -25,11 +35,18 @@ function register(firstName, lastName, email, phoneNumber, password) {
 
   }
 
-    function storeUser(firstName, lastName, email, phoneNumber, currentuid) {
-    const db = getFirestore(app);
+   async function storeUser(db, firstName, lastName, email, phoneNumber, currentuid) {
+
     // adding document
-    const ref = doc(db, "Users", currentuid).withConverter(userConverter);
-    setDoc(ref, new User(firstName, lastName, email, phoneNumber, true, true));
+
+   
+    const ref = doc(db, "users", currentuid).withConverter(userConverter)
+
+    
+  
+    await setDoc(ref, new User(firstName, lastName, email, phoneNumber, true, true, currentuid))
+    
+    
   } 
   
   export default register;
