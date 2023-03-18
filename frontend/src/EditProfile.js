@@ -21,7 +21,7 @@ import app from './Firebase';
 import { useState, useEffect } from 'react';
 import { collection } from 'firebase/firestore';
 import { doc, getDoc } from "firebase/firestore";
-
+import updateProfile from './FirebaseEditProfile';
 
 
 
@@ -168,34 +168,9 @@ const user = auth.currentUser;
       <Grid item xs={12}>
         <TextField
           variant="outlined"
-          required
-          fullWidth
-          name="password"
-          label="Enter Old Password"
-          type="password"
-          id="password"
-          autoComplete="current-password"
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <TextField
-          variant="outlined"
-          required
           fullWidth
           name="password"
           label="Enter New Password"
-          type="password"
-          id="password"
-          autoComplete="current-password"
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <TextField
-          variant="outlined"
-          required
-          fullWidth
-          name="password"
-          label="Re-Enter New Password"
           type="password"
           id="password"
           autoComplete="current-password"
@@ -207,6 +182,10 @@ const user = auth.currentUser;
       fullWidth
       variant="contained"
       color="primary"
+      onClick={ () => {
+          updateProfile(firstName, lastName);
+      }
+    }
     >
       Update Profile
     </Button>

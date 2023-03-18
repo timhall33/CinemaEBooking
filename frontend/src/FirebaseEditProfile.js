@@ -1,10 +1,26 @@
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth } from "firebase/auth";
+import db from './Firebase';
+import { doc, updateDoc } from "firebase/firestore";
 
-onAuthStateChanged(function(user) {
-    if (user) {
-      var uid = user.uid;
-      console.log(uid);
-    } else {
-      console.log("User is not logged in.");
-    }
-  });
+function updateProfile (firstName, lastName, navigate){
+    const auth = getAuth();
+    const user = auth.currentUser;
+        if (user) {
+          const uid = user.uid;
+          const docRef = doc(db, 'users/' + uid);
+          const data = { firstName: {firstName}, lastName: {lastName} };
+          console.log("made it here");
+          updateDoc(docRef, data)
+            .then(() => {
+              console.log('Document updated successfully!');
+              navigate("/")
+            })
+            .catch((error) => {
+              console.error('Error updating document: ', error);
+            });
+        } else {
+          console.log('No user signed in.');
+        }
+}
+
+export default updateProfile;
