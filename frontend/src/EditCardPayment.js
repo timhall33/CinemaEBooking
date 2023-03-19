@@ -10,21 +10,21 @@ import EditIcon from '@mui/icons-material/Edit';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
-import { Button, Icon } from '@mui/material';
+import { Button, FormControl, Icon } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Fab from '@mui/material/Fab';
 import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router';
-import EditProfile from './EditProfile';
+
 
 /**
  * View that displays fields for promotion creation
  * @returns view
  */
-function AddCardView() {
+function AddCardView(props) {
     return (
-        <Stack id= "addCardViewCont" direction="column">
+        <Stack sx={{ mt: 3, mb: 2 }}  id= "addCardViewCont" direction="column">
  <TextField 
          label="Enter Card Type"
          fullWidth 
@@ -80,10 +80,19 @@ function AddCardView() {
          multiline
          variant="filled"
         />
-        <Fab variant="extended" size="medium" color="primary"  aria-label="add">
-     <AddIcon></AddIcon>
-        Create Card Information
-      </Fab>
+
+
+           
+        { props.showButton && (
+<Fab sx={{ mt: 2, mb: 1 }} variant="extended" size="medium" color="primary"  aria-label="add">
+<AddIcon></AddIcon>
+
+   Create Card Information
+ </Fab>
+        )
+
+        }
+        
         </Stack>
         
 
@@ -150,7 +159,7 @@ function EditCardPayment() {
         </Card>
 
 
-        <AddCardView></AddCardView>
+        <AddCardView showButton = {true} ></AddCardView>
         <Button
             type='submit'
             fullWidth
@@ -165,4 +174,4 @@ function EditCardPayment() {
     )
 }
 
-export default EditCardPayment;
+export {EditCardPayment, AddCardView};
