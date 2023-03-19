@@ -10,7 +10,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 
 
- function register(firstName, lastName, email, phoneNumber, password, promotionStatus, userStatus, props) {
+ function register(firstName, lastName, email, phoneNumber, password, promotionStatus, userStatus, props, navigate) {
 
 
         const auth = getAuth(app);
@@ -20,6 +20,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
                 
                 console.log("User created successfully")
                 sendVerification(auth)
+                navigate('/confirmation');
          // Check for user status
           storeUser(db, firstName,lastName,email,phoneNumber,result.user.uid, promotionStatus, userStatus) 
 
@@ -46,7 +47,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 
   }
   
-  function sendVerification(auth) {
+  export function sendVerification(auth) {
     sendEmailVerification(auth.currentUser)
   }
 

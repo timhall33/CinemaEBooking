@@ -4,15 +4,25 @@ import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import {app} from './Firebase'
 
 
-export default function Login(email, password, navigate) {
+export default function login(email, password, navigate, props) {
     const auth = getAuth(app)
+    
 
+  
+    
 
     signInWithEmailAndPassword(auth, email, password)
     .then((userCred) => {
         const user = userCred.user;
-        navigate("/")
+        if (userCred && auth.currentUser.emailVerified === true ) {
+            navigate("/")
+        } 
+      
         console.log(user)
+        
+        props.setUserAuth(auth.currentUser.emailVerified)
+
+
     })
     .catch((error) => {
         const errorCode = error.code;
@@ -20,17 +30,18 @@ export default function Login(email, password, navigate) {
         console.log(errorCode, errorMessage)
     });
 
-    function forgotPassword(email) {
-        const auth = getAuth(app);
-        const user = auth.currentUser
-        sendPasswordResetEmail(auth, email)
-        .then(() => {
-            // Email sent
-          }).catch((error) => {
-            
-          });
 
+}
 
-    }
+function forgotPassword(email) {
+    const auth = getAuth(app);
+    const user = auth.currentUser
+    sendPasswordResetEmail(auth, auth.currentUser.email)
+    .then(() => {
+        // Email sent
+      }).catch((error) => {
+        
+      });
+
 
 }

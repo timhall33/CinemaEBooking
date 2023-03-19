@@ -12,7 +12,7 @@ import Button from '@mui/material/Button';
 import { Navigate, useNavigate } from 'react-router-dom';
 
 
-function RegConfirmation() {
+function ForgotPasswordConfirmation() {
 
     const navigate = useNavigate()
     
@@ -25,21 +25,17 @@ function RegConfirmation() {
                 <div className = "center">
                     <Stack  direction="row">
                     <Typography   variant="h5">
-               Your registration is complete!
+                    Please check your email
             </Typography>
             <CheckCircleIcon sx = {{fontSize:35}} color="success"></CheckCircleIcon>
                     </Stack>
               
             <Typography gutterBottom  variant="body2">
-                An email was sent to confirm registration.
+            An email with instructions to create your password has been sent. 
+            You may need to wait a few minutes to receive the email, or check your spam or junk folders.
             </Typography>
                 </div>
            
-    <Button 
-            onClick={() => navigate('/login')}
-            variant="contained"
-            color="primary"
-            value="clicked" > Sign in </Button>
         
             </Card>
            
@@ -47,4 +43,4 @@ function RegConfirmation() {
     )
 
 }
-export default RegConfirmation
+export default ForgotPasswordConfirmation

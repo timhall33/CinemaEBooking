@@ -15,6 +15,16 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import RegisterView from './RegisterView';
 import Stack from '@mui/material/Stack';
 import { deepOrange, deepPurple } from '@mui/material/colors';
+import { getAuth } from "firebase/auth";
+import db from './Firebase';
+import app from './Firebase';
+import { useState, useEffect } from 'react';
+import { collection } from 'firebase/firestore';
+import { doc, getDoc } from "firebase/firestore";
+import updateProfile from './FirebaseEditProfile';
+import EditCardPayment from './EditCardPayment';
+import { useNavigate } from 'react-router';
+
 
 const theme = createTheme();
 
@@ -47,7 +57,53 @@ function stringAvatar(name) {
   };
 }
 
-function EditProfile() {
+const auth = getAuth();
+async function fetchData() {
+const user = auth.currentUser;
+  if (user) {
+    const uid = user.uid;
+    console.log("uid: " + uid);
+    const docRef = doc(db, "users/" + uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      console.log("Document data:", docSnap.data());
+      return docSnap.data();
+    } else {
+      console.log("No such document!");
+    }
+  } else {
+    console.log("No user signed in.");
+  }
+}
+
+  function EditProfile() {
+      const [firstName, setFirstName] = useState('');
+      const [lastName, setLastName] = useState('');
+      const [phoneNumber, setphoneNumber] = useState('');
+      const [email, setEmail] = useState('');
+      const navigate = useNavigate();
+      const navigateToCardPayments=()=> {
+        navigate('/cardPayments');
+      };
+      useEffect(() => {
+      fetchData().then((data) => {
+      if (data) {
+        const firstName = data.firstName;
+        setFirstName(firstName);
+        const lastName = data.lastName;
+        setLastName(lastName);
+        const phoneNumber = data.phoneNumber;
+        setphoneNumber(phoneNumber);
+        const email = data.email;
+        setEmail(email);
+      } else {
+        console.log("Error: No data found");
+      }
+    }).catch((error) => {
+      console.log("Error:", error);
+    });
+  }, []);
     return(
       <div id = "editProfileCont">
       <Container component="main" maxWidth="xs">
@@ -61,8 +117,8 @@ function EditProfile() {
     }}
   >
     <Typography component="h1" variant="h5">
-    <Avatar {...stringAvatar('Jed Watson')}></Avatar>
-    Jed Watson
+    <Avatar {...stringAvatar(firstName + " " + lastName)}></Avatar>
+    {firstName} {lastName}
     </Typography>
     <form  noValidate>
     <Grid container spacing={2}>
@@ -73,7 +129,7 @@ function EditProfile() {
           variant="outlined"
           fullWidth
           id="firstName"
-          label="Jed"
+          placeholder={firstName}
           autoFocus
         />
       </Grid>
@@ -82,7 +138,7 @@ function EditProfile() {
           variant="outlined"
           fullWidth
           id="lastName"
-          label="Watson"
+          placeholder = {lastName}
           name="lastName"
           autoComplete="lname"
         />
@@ -92,7 +148,7 @@ function EditProfile() {
           variant="outlined"
           fullWidth
           id="phone"
-          label="999-999-9999"
+          placeholder = {phoneNumber}
           name="phone"
           autoComplete="phone"
         />
@@ -103,7 +159,7 @@ function EditProfile() {
           disabled="disabled"
           fullWidth
           id="email"
-          label="something@gmail.com"
+          label={email}
           name="email"
           autoComplete="email"
         />
@@ -111,19 +167,6 @@ function EditProfile() {
       <Grid item xs={12}>
         <TextField
           variant="outlined"
-          required
-          fullWidth
-          name="password"
-          label="Enter Old Password"
-          type="password"
-          id="password"
-          autoComplete="current-password"
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <TextField
-          variant="outlined"
-          required
           fullWidth
           name="password"
           label="Enter New Password"
@@ -132,27 +175,80 @@ function EditProfile() {
           autoComplete="current-password"
         />
       </Grid>
+      Home Address
       <Grid item xs={12}>
         <TextField
           variant="outlined"
-          required
           fullWidth
-          name="password"
-          label="Re-Enter New Password"
-          type="password"
-          id="password"
-          autoComplete="current-password"
+          name="address1"
+          label="Address line 1"
+          id="address1"
         />
       </Grid>
+      <Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          name="address2"
+          label="Address line 2"
+          id="address2"
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          name="city"
+          label="City"
+          type="city"
+          id="city"
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          name="state"
+          label="State"
+          id="state"
+        />
+      </Grid>
+      <Grid item xs={12}>
+          <TextField
+            required
+            id="zip"
+            name="zip"
+            label="Zip / Postal code"
+            fullWidth
+            variant="outlined"
+          />
+        </Grid>
     </Grid>
-    <Button
-      type="submit"
-      fullWidth
-      variant="contained"
-      color="primary"
-    >
-      Update Profile
-    </Button>
+    <Grid item xl={6} lg={6} md={6} sm={12} xs={12} >
+      <Button
+        type='submit'
+        fullWidth
+        variant="contained"
+        color="primary"
+        onClick={ () => {
+          updateProfile(firstName, lastName);
+      }
+    }
+      >
+        Update Profile
+      </Button>
+    </Grid>
+    <Grid item xl={6} lg={6} md={6} sm={12} xs={12}>
+      <Button
+        type='submit'
+        fullWidth
+        variant="contained"
+        color="primary"
+        onClick={navigateToCardPayments}
+        >
+          Edit Card Payment
+        </Button>
+    </Grid>
   </form>
   </Box>
 </Container>

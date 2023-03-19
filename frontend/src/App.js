@@ -18,7 +18,9 @@ import CheckoutView from './CheckoutView';
 import AddressForm from './AddressForm';
 import PaymentForm from './PaymentForm';
 import ManageMovies from './ManageMoviesView';
-
+import ForgotPasswordConfirmation from './ForgotPasswordConfirmation';
+import ForgotPasswordView from './ForgotPasswordView';
+import EditCardPayment from './EditCardPayment';
 function App() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
@@ -47,6 +49,9 @@ function App() {
         <Route path="/editProfile" element={<EditProfile />} />
         <Route path="/checkout" element={<CheckoutView />} />
         <Route path="/manage" element={<ManageMovies />} />
+        <Route path="/forgotpassword" element={<ForgotPasswordView />} />
+        <Route path='/forgotConfirmation' element={<ForgotPasswordConfirmation />} />
+        <Route path='/cardPayments' element={<EditCardPayment />} />
         
       </Routes>
     </div>
