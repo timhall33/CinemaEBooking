@@ -22,13 +22,8 @@ import { useState, useEffect } from 'react';
 import { collection } from 'firebase/firestore';
 import { doc, getDoc } from "firebase/firestore";
 import updateProfile from './FirebaseEditProfile';
-
-
-
-
-
-
-
+import EditCardPayment from './EditCardPayment';
+import { useNavigate } from 'react-router';
 
 
 const theme = createTheme();
@@ -87,6 +82,10 @@ const user = auth.currentUser;
       const [lastName, setLastName] = useState('');
       const [phoneNumber, setphoneNumber] = useState('');
       const [email, setEmail] = useState('');
+      const navigate = useNavigate();
+      const navigateToCardPayments=()=> {
+        navigate('/cardPayments');
+      };
       useEffect(() => {
       fetchData().then((data) => {
       if (data) {
@@ -176,19 +175,80 @@ const user = auth.currentUser;
           autoComplete="current-password"
         />
       </Grid>
+      Home Address
+      <Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          name="address1"
+          label="Address line 1"
+          id="address1"
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          name="address2"
+          label="Address line 2"
+          id="address2"
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          name="city"
+          label="City"
+          type="city"
+          id="city"
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          name="state"
+          label="State"
+          id="state"
+        />
+      </Grid>
+      <Grid item xs={12}>
+          <TextField
+            required
+            id="zip"
+            name="zip"
+            label="Zip / Postal code"
+            fullWidth
+            variant="outlined"
+          />
+        </Grid>
     </Grid>
-    <Button
-      type="submit"
-      fullWidth
-      variant="contained"
-      color="primary"
-      onClick={ () => {
+    <Grid item xl={6} lg={6} md={6} sm={12} xs={12} >
+      <Button
+        type='submit'
+        fullWidth
+        variant="contained"
+        color="primary"
+        onClick={ () => {
           updateProfile(firstName, lastName);
       }
     }
-    >
-      Update Profile
-    </Button>
+      >
+        Update Profile
+      </Button>
+    </Grid>
+    <Grid item xl={6} lg={6} md={6} sm={12} xs={12}>
+      <Button
+        type='submit'
+        fullWidth
+        variant="contained"
+        color="primary"
+        onClick={navigateToCardPayments}
+        >
+          Edit Card Payment
+        </Button>
+    </Grid>
   </form>
   </Box>
 </Container>
