@@ -19,19 +19,23 @@ import { useNavigate } from 'react-router-dom';
 import { sendVerification } from "./FirebaseRegistration";
 import { getAuth } from "firebase/auth";
 import {app} from './Firebase'
+import ForgotPasswordConfirmation from './ForgotPasswordConfirmation';
+
 const theme = createTheme();
 
-function LoginView() {
+function ForgotPasswordView() {
 
   const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
   const navigate = useNavigate();
+  const navigateToForgotConfirmation=()=> {
+    navigate('/forgotConfirmation');
+  };
 
   const [userAuth, setUserAuth] = useState();
 
 
     return(
-        <div id = "LoginViewCont">
+        <div id = "ForgotPasswordViewCont">
             <Container component="main" maxWidth="xs">
                 <CssBaseline />
                 <Box
@@ -43,9 +47,10 @@ function LoginView() {
           }}
         >
           <Typography component="h1" variant="h5">
-            Login
+            Forgot Password
           </Typography>
           <Box component="form" noValidate sx={{ mt: 1 }}>
+            Enter Email:
             <TextField
               margin="normal"
               required
@@ -57,60 +62,20 @@ function LoginView() {
               onChange={(e) => setEmail(e.target.value)}
               autoFocus
             />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
             <Button
              
              
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
-              onClick={() => {login(email,password,navigate, {setUserAuth});}}
+              onClick={navigateToForgotConfirmation}
             >
-              Sign In
+              Continue
             </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link href="/forgotpassword" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link href='/register' variant="body2">
-                  {"Don't have an account? Register"}
-                </Link>
-              </Grid>
-            </Grid>
-            { userAuth === false && (
-             <div>
-              <Typography> You have not verified your email </Typography>
-              <Button fullWidth
-            variant="contained"
-            color="primary"
-            value="clicked"
-            onClick={() => sendVerification(getAuth(app))}  >Resend Vertification</Button>
-             </div>
-
-            )
-             
-            }
           </Box>
         </Box>
       </Container>
     </div>
     )
 }
-export default LoginView;
+export default ForgotPasswordView;
