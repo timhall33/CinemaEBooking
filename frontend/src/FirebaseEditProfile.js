@@ -1,5 +1,5 @@
 import { getAuth } from "firebase/auth";
-import db from './Firebase';
+import {db } from './Firebase';
 import { doc, updateDoc } from "firebase/firestore";
 
 function updateProfile (firstName, lastName, navigate){

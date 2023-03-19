@@ -16,9 +16,10 @@ import RegConfirmation from './RegConfirmation';
 import { Redirect, useNavigate } from "react-router-dom";
 import register from './FirebaseRegistration'
 import {useState} from 'react';
-
+import { AddCardView } from './EditCardPayment';
 import { useEffect } from 'react';
 import { useMemo } from 'react';
+import Add from '@mui/icons-material/Add';
 
 const theme = createTheme();
 
@@ -36,7 +37,7 @@ function RegisterView() {
   const [click, setClick] = useState('')
   const [response, setResponse] = useState('')
 
-
+  const [paymentOption, setPaymentOption] = useState(false)
 
 
   const navigateToConfirmation=()=> {
@@ -61,6 +62,8 @@ function RegisterView() {
     console.log(firstName, lastName, email, password, phoneNumber);
     handleClose();
   };
+
+
 
 
 
@@ -126,9 +129,9 @@ function RegisterView() {
                 name="phone"
                 autoComplete="phone"
                 value={phoneNumber}
-                error = {(click.length !== 0 && phoneNumber.length === 0) || (click.length !== 0 && (phoneNumber.length > 10 || phoneNumber.length < 10)) || (click.length !== 0 && phoneNumber.match(/^[0-9]+$/) === null)}
-                helperText= {click.length !== 0 && phoneNumber.length === 0 ? "Please enter a phone number": click.length !== 0 && (phoneNumber.length > 10 || phoneNumber.length < 10) ? 
-              "Invalid phone number length" :  (click.length !== 0 && phoneNumber.match(/^[0-9]+$/) === null) ? "Phone number must include only digits" : ""}
+
+                error = {(click.length !== 0 && phoneNumber.length === 0) || (click.length !== 0 && !(/^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/).test(phoneNumber))}
+                helperText= {click.length !== 0 && phoneNumber.length === 0 ? "Please enter a phone number" :  (click.length !== 0 && !(/^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/).test(phoneNumber)) ? "Phone number must be in a valid format. I.e, XXX-XXX-XXXX" : "Enter a phone number that follows a conventional format. I.e.: XXX-XXX-XXXX"}
                 onChange={e => setPhoneNumber(e.target.value)}
               />
               </Grid>
@@ -142,8 +145,12 @@ function RegisterView() {
                 name="email"
                 autoComplete="email"
                 value={email}
-                error = {(click.length !== 0 && email.length === 0 || response.toLocaleLowerCase().includes("email") ) }
-                helperText= {click.length !== 0 && email.length === 0 ? "Please enter an email" : response.toLocaleLowerCase().includes("email") !== 0 ? response : ""}
+             
+                onFocus={(e) => {
+                  setResponse("")
+                }}
+                error = {(click.length !== 0 && email.length === 0 || response.toLocaleLowerCase().includes("email") ) || (click.length !== 0 && !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) }
+                helperText= {click.length !== 0 && email.length === 0 ? "Please enter an email" : response.toLocaleLowerCase().includes("email") ? response : (click.length !== 0 && !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) ? "Invalid email format" : "Enter an email that follows a conventional format. I.e.: [characters]@[service].com"}
                 onChange={e => {setEmail(e.target.value)}}
               />
             </Grid>
@@ -156,10 +163,13 @@ function RegisterView() {
                 label="Password"
                 type="password"
                 id="password"
+                onFocus={(e) => {
+                  setResponse("")
+                }}
                 autoComplete="current-password"
                 value={password}
                 error = {click.length !== 0 && password.length === 0 || response.toLocaleLowerCase().includes("password")}
-                helperText= {click.length !== 0 && password.length === 0 ? "Please enter a password" : response.toLocaleLowerCase().includes("password") ? response : ""}
+                helperText= {click.length !== 0 && password.length === 0 ? "Please enter a password" : response.toLocaleLowerCase().includes("password") ? response : "Enter a password with length of at least 6"}
                 onChange={e => setPassword(e.target.value)}
               />
             </Grid>
@@ -169,7 +179,18 @@ function RegisterView() {
                 label="I want to receive inspiration, marketing promotions and updates via email."
               />
             </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={<Checkbox  onChange={(e) => setPaymentOption(e.target.checked)} value="payment" color="primary" />}
+                label="Enter a payment option"
+              />
+            </Grid>
           </Grid>
+          { paymentOption && (
+            <AddCardView showButton = {false}></AddCardView>
+          )
+
+          }
           <Button
             fullWidth
             variant="contained"
@@ -179,16 +200,15 @@ function RegisterView() {
             
             onClick={(e) => {
             setClick(e.target.value)
-             
-            if (firstName.length !== 0 && lastName.length != 0 && phoneNumber.length === 10 && phoneNumber.match(/^[0-9]+$/) !== null) {
+             console.log((/^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/).test(phoneNumber))
+            if (firstName.length !== 0 && lastName.length != 0 && (/^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/).test(phoneNumber)) {
               register(firstName,lastName,email,phoneNumber,password, promotionStatus, true, {setResponse}, navigate);
             }
            
 
-            console.log(response)
+           
 
             
-             // navigate('/confirmation');
             }}
           >
             Register

@@ -24,46 +24,164 @@ import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
-
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Divider from '@mui/material/Divider';
 import './App.css';
+import Tooltip from '@mui/material/Tooltip';
+import PersonAdd from '@mui/icons-material/PersonAdd';
+import Settings from '@mui/icons-material/Settings';
+import Logout from '@mui/icons-material/Logout';
+import { useNavigate } from 'react-router-dom';
+import {app, auth} from './Firebase'
+import {fetchData} from './EditProfile.js'
+import { useEffect } from 'react';
+import {  signOut } from "firebase/auth"
+import { getAuth } from 'firebase/auth';
+function Nav() {
 
+    const navigate = useNavigate()
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event) => {
+      setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+      setAnchorEl(null);
+    }
+      const [name, setName] = useState("")
+      const [user, setUser] = useState(auth.currentUser)
+      
+      useEffect(() => {
+        fetchData().then((data) => {
+        if (data) {
+          const firstName = data.firstName;
+          setName(firstName);
+            console.log(data)
+        } else {
+          console.log("Error: No data found");
+        }
+      }).catch((error) => {
+        console.log("Error:", error);
+      });
+
+    }, [user]);
+
+
+    return (
+        <div>
+
+            {auth.currentUser === null ? 
+ <Login onClick = {() => {navigate('/login')}}></Login> :
+ <div>
+
+
+
+<Tooltip title="Account settings">
+          <IconButton
+            onClick={handleClick }
+            size="small"
+            sx={{ mt: 1, mb: 1, mr: 1 }}
+            aria-controls={open ? 'account-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
+          >
+            <Avatar sx={{ width: 32, height: 32 }}> {name.charAt(0)}  </Avatar>
+          </IconButton>
+        </Tooltip>
+        
+        <Menu
+        anchorEl={anchorEl}
+        id="account-menu"
+        open={open}
+        onClose={handleClose}
+        onClick={handleClose}
+       
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+      
+
+        <MenuItem  onClick={() => {navigate("/promotions"); handleClose()}}>
+          <AdminPanel></AdminPanel>
+        </MenuItem>
+        <MenuItem onClick={() => {navigate("/editProfile"); handleClose()}}>
+          <EditProfile></EditProfile>
+         
+        </MenuItem>
+
+        <MenuItem onClick={() => {navigate("/manage"); handleClose()}}>
+<ManageMovie></ManageMovie>
+        </MenuItem>
+
+        <MenuItem onClick={() => {
+            handleClose();
+            signOut(auth).then((res)=>{
+                console.log(res)
+                setUser(null)
+            }). catch((err) => {
+                console.log(err)
+            })
+        } } >
+          <ListItemIcon>
+            <Logout fontSize="small" />
+          </ListItemIcon>
+          Logout
+        </MenuItem>
+
+      </Menu>
+    
+    </div>
+
+            
+            }
+         
+
+
+      </div>
+    )
+}
 
 /**
  *  Displays and contains log-in button and its functions
  * @returns 
  */
-function Login() {
+function Login(props) {
     return (
         <div id = "loginCont">
-            <Link to="/login">
-                <IconButton>
-                    <AccountCircleIcon size="large" ></AccountCircleIcon>
-                </IconButton>
-            </Link>
+           
+            <Button  onClick={props.onClick} variant="contained" endIcon={<AccountCircleIcon />}>
+  Login
+</Button>
 
         </div>
     )
 }
 
+
+
 function EditProfile() {
     return(
         <div id = "editProfileCont">
-            <Link to="/editProfile">
+          
                 <IconButton>
                     <ManageAccountsIcon></ManageAccountsIcon>
                 </IconButton>
-            </Link>
+                Edit Profile
+        
         </div>
     )
 }
 function ManageMovie() {
     return(
         <div id = "manageMovieCont">
-            <Link to="/manage">
+       
                 <IconButton>
                     <SupervisorAccountIcon></SupervisorAccountIcon>
                 </IconButton>
-            </Link>
+                Manage Movies
+            
         </div>
     )
 }
@@ -74,11 +192,12 @@ function ManageMovie() {
 function AdminPanel() {
 return (
     <div id = "adminCont">
-        <Link to="/promotions">
+   
             <IconButton>
             <AdminPanelSettingsIcon></AdminPanelSettingsIcon>
         </IconButton>
-        </Link>
+        Admin Panel
+     
     
 
 
@@ -234,10 +353,10 @@ function HomePage() {
     return (
         <div id="homePageCont">
 <div>
-<Login></Login>
-<AdminPanel></AdminPanel>
-<ManageMovie></ManageMovie>
-<EditProfile></EditProfile>
+    <div id="optionsCont">
+ <Nav></Nav>
+    </div>
+
     <Typography variant="h4" >E-Booking Cinema</Typography>
 </div>
 <SearchField></SearchField>

@@ -16,7 +16,7 @@ import RegisterView from './RegisterView';
 import Stack from '@mui/material/Stack';
 import { deepOrange, deepPurple } from '@mui/material/colors';
 import { getAuth } from "firebase/auth";
-import db from './Firebase';
+import {db }from './Firebase';
 import app from './Firebase';
 import { useState, useEffect } from 'react';
 import { collection } from 'firebase/firestore';
@@ -114,10 +114,12 @@ const user = auth.currentUser;
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
+      justifyContent: 'center',
     }}
   >
-    <Typography component="h1" variant="h5">
     <Avatar {...stringAvatar(firstName + " " + lastName)}></Avatar>
+    <Typography component="h1" variant="h5">
+    
     {firstName} {lastName}
     </Typography>
     <form  noValidate>
@@ -175,7 +177,7 @@ const user = auth.currentUser;
           autoComplete="current-password"
         />
       </Grid>
-      Home Address
+   
       <Grid item xs={12}>
         <TextField
           variant="outlined"
@@ -229,6 +231,7 @@ const user = auth.currentUser;
         type='submit'
         fullWidth
         variant="contained"
+        sx={{ mt: 2, mb: 1 }}
         color="primary"
         onClick={ () => {
           updateProfile(firstName, lastName);
@@ -242,6 +245,7 @@ const user = auth.currentUser;
       <Button
         type='submit'
         fullWidth
+        sx={{ mt: 2, mb: 1 }}
         variant="contained"
         color="primary"
         onClick={navigateToCardPayments}
@@ -255,4 +259,4 @@ const user = auth.currentUser;
 </div>
     )
 }
-export default EditProfile;
+export {EditProfile, fetchData};
