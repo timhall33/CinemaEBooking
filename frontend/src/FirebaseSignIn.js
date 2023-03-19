@@ -23,7 +23,7 @@ export default function Login(email, password, navigate) {
     function forgotPassword(email) {
         const auth = getAuth(app);
         const user = auth.currentUser
-        sendPasswordResetEmail(auth, auth.currentUser.email)
+        sendPasswordResetEmail(auth, email)
         .then(() => {
             // Email sent
           }).catch((error) => {
