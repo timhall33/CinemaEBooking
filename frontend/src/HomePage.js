@@ -51,14 +51,14 @@ function Nav() {
       setAnchorEl(null);
     }
       const [name, setName] = useState("")
-      const [user, setUser] = useState(auth.currentUser)
+      const [user, setUser] = useState("")
       
       useEffect(() => {
         fetchData().then((data) => {
         if (data) {
           const firstName = data.firstName;
           setName(firstName);
-            console.log(data)
+        
         } else {
           console.log("Error: No data found");
         }
@@ -66,7 +66,7 @@ function Nav() {
         console.log("Error:", error);
       });
 
-    }, [user]);
+    }, []);
 
 
     return (
@@ -87,7 +87,7 @@ function Nav() {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-            <Avatar sx={{ width: 32, height: 32 }}> {name.charAt(0)}  </Avatar>
+            <Avatar sx={{ width: 32, height: 32 }}> { name.charAt(0) }  </Avatar>
           </IconButton>
         </Tooltip>
         
