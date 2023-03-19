@@ -36,17 +36,16 @@ body { min-height: 100vh;
   row-gap: 20px;
   padding: 10px;
 }
-#loginCont {
+
+#optionsCont{
   position: absolute;
   right: 0;
-  margin: 10px;
+  display: flex;
+  
 }
 
-#adminCont {
-  position: absolute;
-  right: 30px;
-  margin: 10px;
-}
+
+
 
 #moviesPlayingCont {
   display: flex;

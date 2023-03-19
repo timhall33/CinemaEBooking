@@ -3,7 +3,7 @@ import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/
 import { doc, setDoc } from "firebase/firestore";
 import { getFirestore } from "firebase/firestore";
 import {app} from './Firebase';
-import db from './Firebase';
+import {db} from './Firebase';
 import {User, userConverter} from './UserModel';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 

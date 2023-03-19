@@ -16,20 +16,14 @@ import RegisterView from './RegisterView';
 import Stack from '@mui/material/Stack';
 import { deepOrange, deepPurple } from '@mui/material/colors';
 import { getAuth } from "firebase/auth";
-import db from './Firebase';
+import {db }from './Firebase';
 import app from './Firebase';
 import { useState, useEffect } from 'react';
 import { collection } from 'firebase/firestore';
 import { doc, getDoc } from "firebase/firestore";
 import updateProfile from './FirebaseEditProfile';
-
-
-
-
-
-
-
-
+import EditCardPayment from './EditCardPayment';
+import { useNavigate } from 'react-router';
 
 const theme = createTheme();
 
@@ -87,6 +81,20 @@ const user = auth.currentUser;
       const [lastName, setLastName] = useState('');
       const [phoneNumber, setphoneNumber] = useState('');
       const [email, setEmail] = useState('');
+      const [promotionStatus, setPromotionStatus] = useState(false)
+
+      const [changePass, setChangePass] = useState(false)
+      const [password, setPassword] = useState("")
+      const [newPassword, setNewPassword] = useState("")
+
+      const [errorMess, setErrorMess] = useState("")
+      const [error, setError] = useState(false)
+
+
+      const navigate = useNavigate();
+      const navigateToCardPayments=()=> {
+        navigate('/cardPayments');
+      };
       useEffect(() => {
       fetchData().then((data) => {
       if (data) {
@@ -98,6 +106,12 @@ const user = auth.currentUser;
         setphoneNumber(phoneNumber);
         const email = data.email;
         setEmail(email);
+
+        setPromotionStatus(data.promotionStatus)
+
+
+
+
       } else {
         console.log("Error: No data found");
       }
@@ -115,10 +129,12 @@ const user = auth.currentUser;
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
+      justifyContent: 'center',
     }}
   >
-    <Typography component="h1" variant="h5">
     <Avatar {...stringAvatar(firstName + " " + lastName)}></Avatar>
+    <Typography component="h1" variant="h5">
+    
     {firstName} {lastName}
     </Typography>
     <form  noValidate>
@@ -131,6 +147,7 @@ const user = auth.currentUser;
           fullWidth
           id="firstName"
           placeholder={firstName}
+          onChange={(e) => {setFirstName(e.target.value)}}
           autoFocus
         />
       </Grid>
@@ -142,6 +159,7 @@ const user = auth.currentUser;
           placeholder = {lastName}
           name="lastName"
           autoComplete="lname"
+          onChange={(e) => {setLastName(e.target.value)}}
         />
       </Grid>
       <Grid item xs={12}>
@@ -152,6 +170,7 @@ const user = auth.currentUser;
           placeholder = {phoneNumber}
           name="phone"
           autoComplete="phone"
+          onChange={(e) => {setphoneNumber(e.target.value)}}
         />
         </Grid>
       <Grid item xs={12}>
@@ -165,6 +184,87 @@ const user = auth.currentUser;
           autoComplete="email"
         />
       </Grid>
+
+   
+      <Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          name="address1"
+          label="Address line 1"
+          id="address1"
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          name="address2"
+          label="Address line 2"
+          id="address2"
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          name="city"
+          label="City"
+          type="city"
+          id="city"
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          name="state"
+          label="State"
+          id="state"
+        />
+      </Grid>
+      <Grid item xs={12}>
+          <TextField
+            required
+            id="zip"
+            name="zip"
+            label="Zip / Postal code"
+            fullWidth
+            variant="outlined"
+          />
+        </Grid>
+        <Grid item xs={12}>
+        <FormControlLabel
+                control={<Checkbox checked = {promotionStatus}  value="password" color="primary" onChange={(e) => setPromotionStatus(e.target.checked)} />}
+                label= {promotionStatus ? "Stay registered for promotions" : "Sign up for promotions"}
+              />
+                </Grid>
+
+        <Grid item xs={12}>
+        <FormControlLabel
+                control={<Checkbox   value="password" color="primary" onChange={(e) => setChangePass(e.target.checked)} />}
+                label="Change password"
+              />
+                </Grid>
+    </Grid >
+    { changePass && (
+<Grid container spacing={2}>
+<Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          name="password"
+          label="Enter Current Password"
+          type="password"
+          id="password"
+          autoComplete="current-password"
+          onChange={ (e) => {
+            setPassword(e.target.value);
+           }}
+           error = {error}
+           helperText = {error ? errorMess : ""}
+        />
+      </Grid>
       <Grid item xs={12}>
         <TextField
           variant="outlined"
@@ -173,26 +273,51 @@ const user = auth.currentUser;
           label="Enter New Password"
           type="password"
           id="password"
-          autoComplete="current-password"
+          autoComplete="new-password"
+          onChange={(e) => {setNewPassword(e.target.value)}}
+          error = {error}
+          helperText = {error ? errorMess : ""}
         />
       </Grid>
-    </Grid>
-    <Button
-      type="submit"
-      fullWidth
-      variant="contained"
-      color="primary"
-      onClick={ () => {
-          updateProfile(firstName, lastName);
+</Grid>
+    )
+
+    }
+    <Grid item xl={6} lg={6} md={6} sm={12} xs={12} >
+      <Button
+       
+        fullWidth
+        variant="contained"
+        sx={{ mt: 2, mb: 1 }}
+        color="primary"
+        onClick={ () => {
+          updateProfile(firstName, lastName, phoneNumber, promotionStatus, navigate, {changePass, newPassword, password, setErrorMess, setError});
+
+
+
+
       }
     }
-    >
-      Update Profile
-    </Button>
+      >
+        Update Profile
+      </Button>
+    </Grid>
+    <Grid item xl={6} lg={6} md={6} sm={12} xs={12}>
+      <Button
+        type='submit'
+        fullWidth
+        sx={{ mt: 2, mb: 1 }}
+        variant="contained"
+        color="primary"
+        onClick={navigateToCardPayments}
+        >
+          Edit Card Payment
+        </Button>
+    </Grid>
   </form>
   </Box>
 </Container>
 </div>
     )
 }
-export default EditProfile;
+export {EditProfile, fetchData};
