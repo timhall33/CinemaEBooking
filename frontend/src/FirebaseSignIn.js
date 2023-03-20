@@ -40,10 +40,9 @@ export function login(email, password, navigate, props) {
 
 }
 
-export function forgotPassword(email) {
-    const auth = getAuth(app);
+export function forgotPassword(auth, email) {
     const user = auth.currentUser
-    sendPasswordResetEmail(auth, auth.currentUser.email)
+    sendPasswordResetEmail(auth, email)
     .then(() => {
         // Email sent
       }).catch((error) => {

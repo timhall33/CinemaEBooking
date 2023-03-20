@@ -43,7 +43,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
     // adding document
     const ref = doc(db, "users", currentuid).withConverter(userConverter)
 
-    await setDoc(ref, new User(firstName, lastName, email, phoneNumber, true, true, currentuid))
+    await setDoc(ref, new User(firstName, lastName, email, phoneNumber, true, true, currentuid, false))
 
   }
   
