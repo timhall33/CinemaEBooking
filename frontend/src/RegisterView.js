@@ -20,6 +20,7 @@ import { AddCardView } from './EditCardPayment';
 import { useEffect } from 'react';
 import { useMemo } from 'react';
 import Add from '@mui/icons-material/Add';
+import HomeAddress from './HomeAddress';
 
 const theme = createTheme();
 
@@ -187,7 +188,7 @@ function RegisterView() {
             </Grid>
           </Grid>
           { paymentOption && (
-            <AddCardView showButton = {false}></AddCardView>
+            <><AddCardView showButton={false}></AddCardView><HomeAddress></HomeAddress></>
           )
 
           }
