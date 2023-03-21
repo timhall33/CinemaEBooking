@@ -21,6 +21,9 @@ import { useEffect } from 'react';
 import { useMemo } from 'react';
 import Add from '@mui/icons-material/Add';
 import HomeAddress from './HomeAddress';
+import { auth, db, app } from './Firebase';
+import { storeCreditCard } from './EditCardPayment';
+import { Firestore } from 'firebase/firestore';
 
 const theme = createTheme();
 
@@ -64,6 +67,14 @@ function RegisterView() {
     handleClose();
   };
 
+  const [cardType, setCardType] = useState("")
+  const [cardNum, setCardNum] = useState("")
+  const [cardExp, setCardExp] = useState("")
+  const [addy, setAddy] = useState("")
+  const [city, setCity] = useState("")
+  const [state, setState] = useState("")
+  const [zipCode, setZipCode] = useState("")
+  const [country, setCountry] = useState("")
 
 
 
@@ -188,7 +199,7 @@ function RegisterView() {
             </Grid>
           </Grid>
           { paymentOption && (
-            <><AddCardView showButton={false}></AddCardView><HomeAddress></HomeAddress></>
+            <> <AddCardView  cardSpecs = {{setCardExp, setAddy, setCardType, setCountry, setCardNum, setCity, setState, setZipCode, cardExp, addy, cardType, country, cardNum, city, state, zipCode}}   showButton = {false} ></AddCardView><HomeAddress></HomeAddress></>
           )
 
           }
@@ -201,9 +212,15 @@ function RegisterView() {
             
             onClick={(e) => {
             setClick(e.target.value)
-             console.log((/^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/).test(phoneNumber))
+         
             if (firstName.length !== 0 && lastName.length != 0 && (/^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/).test(phoneNumber)) {
               register(firstName,lastName,email,phoneNumber,password, promotionStatus, true, {setResponse}, navigate);
+
+
+              if (paymentOption) {
+                storeCreditCard(db, cardType,cardNum, cardExp, addy, addy,city,state, zipCode, country, auth.currentUser.uid)
+              }
+
             }
            
 

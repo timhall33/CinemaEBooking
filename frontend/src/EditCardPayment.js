@@ -38,7 +38,7 @@ async function readCreditCard(userId) {
   
 }
 
-async function storeCreditCard(db, cardType, cardNumber, cardExp, addyOne, addyTwo, city, state, zipCode, country, userId) {
+export async function storeCreditCard(db, cardType, cardNumber, cardExp, addyOne, addyTwo, city, state, zipCode, country, userId) {
 
   // adding document
 
@@ -65,15 +65,6 @@ async function storeCreditCard(db, cardType, cardNumber, cardExp, addyOne, addyT
  */
 function AddCardView(props) {
 
-      const [cardType, setCardType] = useState("")
-      const [cardNum, setCardNum] = useState("")
-      const [cardExp, setCardExp] = useState("")
-      const [addy, setAddy] = useState("")
-      const [city, setCity] = useState("")
-      const [state, setState] = useState("")
-      const [zipCode, setZipCode] = useState("")
-      const [country, setCountry] = useState("")
-
 
 
     return (
@@ -83,21 +74,21 @@ function AddCardView(props) {
          fullWidth 
          multiline
          variant="filled"
-         onChange = {(e) => {setCardType(e.target.value)}}
+         onChange = {(e) => {props.cardSpecs.setCardType(e.target.value)}}
         />
          <TextField 
          label="Enter Card Number"
          fullWidth 
          multiline
          variant="filled"
-         onChange = {(e) => {setCardNum(e.target.value)}}
+         onChange = {(e) => {props.cardSpecs.setCardNum(e.target.value)}}
         />
          <TextField 
          label="Enter card expirations date"
          fullWidth 
          multiline
          variant="filled"
-         onChange = {(e) => {setCardExp(e.target.value)}}
+         onChange = {(e) => {props.cardSpecs.setCardExp(e.target.value)}}
         />
         Billing Address
         <TextField 
@@ -105,42 +96,42 @@ function AddCardView(props) {
          fullWidth 
          multiline
          variant="filled"
-         onChange = {(e) => {setAddy(e.target.value)}}
+         onChange = {(e) => {props.cardSpecs.setAddy(e.target.value)}}
         />
         <TextField 
          label="Address line 2"
          fullWidth 
          multiline
          variant="filled"
-         onChange = {(e) => {setAddy(e.target.value)}}
+         onChange = {(e) => {props.cardSpecs.setAddy(e.target.value)}}
         />
         <TextField 
          label="City"
          fullWidth 
          multiline
          variant="filled"
-         onChange = {(e) => {setCity(e.target.value)}}
+         onChange = {(e) => {props.cardSpecs.setCity(e.target.value)}}
         />
         <TextField 
          label="State"
          fullWidth 
          multiline
          variant="filled"
-         onChange = {(e) => {setState(e.target.value)}}
+         onChange = {(e) => {props.cardSpecs.setState(e.target.value)}}
         />
         <TextField 
          label="Zip Code"
          fullWidth 
          multiline
          variant="filled"
-         onChange = {(e) => {setZipCode(e.target.value)}}
+         onChange = {(e) => {props.cardSpecs.setZipCode(e.target.value)}}
         />
         <TextField 
          label="Country"
          fullWidth 
          multiline
          variant="filled"
-         onChange = {(e) => {setCountry(e.target.value)}}
+         onChange = {(e) => {props.cardSpecs.setCountry(e.target.value)}}
         />
 
 
@@ -148,7 +139,7 @@ function AddCardView(props) {
         { props.showButton && (
 <Fab  onClick={()=> 
 {
-  storeCreditCard(db, cardType, cardNum, cardExp, addy, addy, city, state, zipCode, country, auth.currentUser.uid)
+  storeCreditCard(db, props.cardSpecs.cardType,props.cardSpecs.cardNum, props.cardSpecs.cardExp, props.cardSpecs.addy, props.cardSpecs.addy, props.cardSpecs.city,props.cardSpecs.state, props.cardSpecs.zipCode, props.cardSpecs.country, auth.currentUser.uid)
 
 }
 
@@ -185,6 +176,15 @@ function createEntry(data) {
 function EditCardPayment() {
 
  
+
+  const [cardType, setCardType] = useState("")
+  const [cardNum, setCardNum] = useState("")
+  const [cardExp, setCardExp] = useState("")
+  const [addy, setAddy] = useState("")
+  const [city, setCity] = useState("")
+  const [state, setState] = useState("")
+  const [zipCode, setZipCode] = useState("")
+  const [country, setCountry] = useState("")
 
   const [dataPros, setDataPros] = useState(
     readCreditCard(auth.currentUser.uid)
@@ -263,7 +263,7 @@ function EditCardPayment() {
         </Card>
 
 
-        <AddCardView showButton = {true} ></AddCardView>
+        <AddCardView  cardSpecs = {{setCardExp, setAddy, setCardType, setCountry, setCardNum, setCity, setState, setZipCode, cardExp, addy, cardType, country, cardNum, city, state, zipCode}}   showButton = {true} ></AddCardView>
         <Button
             type='submit'
             fullWidth
