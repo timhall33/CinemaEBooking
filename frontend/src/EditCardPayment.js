@@ -234,7 +234,7 @@ function EditCardPayment() {
 { data ? data.map(entry => (
   <TableRow key = {entry}>
         <TableCell component="th" scope="row">
-              {entry.cardNum}
+              {entry.cardNumber}
             </TableCell>
             <TableCell align="right" component="th" scope="row">
               <IconButton>
