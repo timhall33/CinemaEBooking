@@ -16,6 +16,14 @@ import RegConfirmation from './RegConfirmation';
 import { Redirect, useNavigate } from "react-router-dom";
 import register from './FirebaseRegistration'
 import {useState} from 'react';
+import { AddCardView } from './EditCardPayment';
+import { useEffect } from 'react';
+import { useMemo } from 'react';
+import Add from '@mui/icons-material/Add';
+import HomeAddress from './HomeAddress';
+import { auth, db, app } from './Firebase';
+import { storeCreditCard } from './EditCardPayment';
+import { Firestore } from 'firebase/firestore';
 
 const theme = createTheme();
 
@@ -28,6 +36,14 @@ function RegisterView() {
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
+  const [promotionStatus, setPromotionStatus] = useState(false);
+
+  const [click, setClick] = useState('')
+  const [response, setResponse] = useState('')
+
+  const [paymentOption, setPaymentOption] = useState(false)
+
+
   const navigateToConfirmation=()=> {
     navigate('/confirmation');
   };
@@ -50,6 +66,21 @@ function RegisterView() {
     console.log(firstName, lastName, email, password, phoneNumber);
     handleClose();
   };
+
+  const [cardType, setCardType] = useState("")
+  const [cardNum, setCardNum] = useState("")
+  const [cardExp, setCardExp] = useState("")
+  const [addy, setAddy] = useState("")
+  const [city, setCity] = useState("")
+  const [state, setState] = useState("")
+  const [zipCode, setZipCode] = useState("")
+  const [country, setCountry] = useState("")
+
+
+
+
+  
+
 
     return(
         <div id = "RegisterViewCont">
@@ -78,6 +109,9 @@ function RegisterView() {
                 id="firstName"
                 label="First Name"
                 autoFocus
+                
+                error = {click.length !== 0 && firstName.length === 0}
+                helperText= {click.length !== 0 && firstName.length === 0 ? "Please enter a first name": ""}
                 value={firstName}
                 onChange={e => setFirstName(e.target.value)}
               />
@@ -92,6 +126,8 @@ function RegisterView() {
                 name="lastName"
                 autoComplete="lname"
                 value={lastName}
+                error = {click.length !== 0 && lastName.length === 0}
+                helperText= {click.length !== 0 && lastName.length === 0 ? "Please enter a last name": ""}
                 onChange={e => setLastName(e.target.value)}
               />
             </Grid>
@@ -105,10 +141,13 @@ function RegisterView() {
                 name="phone"
                 autoComplete="phone"
                 value={phoneNumber}
+
+                error = {(click.length !== 0 && phoneNumber.length === 0) || (click.length !== 0 && !(/^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/).test(phoneNumber))}
+                helperText= {click.length !== 0 && phoneNumber.length === 0 ? "Please enter a phone number" :  (click.length !== 0 && !(/^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/).test(phoneNumber)) ? "Phone number must be in a valid format. I.e, XXX-XXX-XXXX" : "Enter a phone number that follows a conventional format. I.e.: XXX-XXX-XXXX"}
                 onChange={e => setPhoneNumber(e.target.value)}
               />
               </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} id ="emailGrid">
               <TextField
                 variant="outlined"
                 required
@@ -118,7 +157,13 @@ function RegisterView() {
                 name="email"
                 autoComplete="email"
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+             
+                onFocus={(e) => {
+                  setResponse("")
+                }}
+                error = {(click.length !== 0 && email.length === 0 || response.toLocaleLowerCase().includes("email") ) || (click.length !== 0 && !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) }
+                helperText= {click.length !== 0 && email.length === 0 ? "Please enter an email" : response.toLocaleLowerCase().includes("email") ? response : (click.length !== 0 && !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) ? "Invalid email format" : "Enter an email that follows a conventional format. I.e.: [characters]@[service].com"}
+                onChange={e => {setEmail(e.target.value)}}
               />
             </Grid>
             <Grid item xs={12}>
@@ -130,29 +175,63 @@ function RegisterView() {
                 label="Password"
                 type="password"
                 id="password"
+                onFocus={(e) => {
+                  setResponse("")
+                }}
                 autoComplete="current-password"
                 value={password}
+                error = {click.length !== 0 && password.length === 0 || response.toLocaleLowerCase().includes("password")}
+                helperText= {click.length !== 0 && password.length === 0 ? "Please enter a password" : response.toLocaleLowerCase().includes("password") ? response : "Enter a password with length of at least 6"}
                 onChange={e => setPassword(e.target.value)}
               />
             </Grid>
             <Grid item xs={12}>
               <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
+                control={<Checkbox  onChange={(e) => setPromotionStatus(e.target.checked)} value="allowExtraEmails" color="primary" />}
                 label="I want to receive inspiration, marketing promotions and updates via email."
               />
             </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={<Checkbox  onChange={(e) => setPaymentOption(e.target.checked)} value="payment" color="primary" />}
+                label="Enter a payment option"
+              />
+            </Grid>
           </Grid>
+          { paymentOption && (
+            <> <AddCardView  cardSpecs = {{setCardExp, setAddy, setCardType, setCountry, setCardNum, setCity, setState, setZipCode, cardExp, addy, cardType, country, cardNum, city, state, zipCode}}   showButton = {false} ></AddCardView><HomeAddress></HomeAddress></>
+          )
+
+          }
           <Button
             fullWidth
             variant="contained"
             color="primary"
-            onClick={() => {
-              register(firstName,lastName,email,phoneNumber,password);
-              navigate('/confirmation');
+            value="clicked"
+
+            
+            onClick={(e) => {
+            setClick(e.target.value)
+         
+            if (firstName.length !== 0 && lastName.length != 0 && (/^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/).test(phoneNumber)) {
+              register(firstName,lastName,email,phoneNumber,password, promotionStatus, true, {setResponse}, navigate);
+
+
+              if (paymentOption) {
+                storeCreditCard(db, cardType,cardNum, cardExp, addy, addy,city,state, zipCode, country, auth.currentUser.uid)
+              }
+
+            }
+           
+
+           
+
+            
             }}
           >
             Register
           </Button>
+       
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Link href="/login" variant="body2">
@@ -160,6 +239,16 @@ function RegisterView() {
               </Link>
             </Grid>
           </Grid>
+          <Box
+                    sx={{
+            marginTop: 4,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+         
+</Box>
         </form>
         </Box>
       </Container>
