@@ -30,6 +30,8 @@ import { useEffect } from 'react';
 import { signOut } from "firebase/auth"
 import {userConverter} from "./UserModel"
 import {doc , getDoc} from "firebase/firestore"
+import { getAuth } from 'firebase/auth';
+
 function Nav() {
 
     const navigate = useNavigate()
@@ -118,7 +120,7 @@ function Nav() {
 
         <MenuItem onClick={() => {
             handleClose();
-            signOut(auth).then((res)=>{
+            signOut(getAuth()).then((res)=>{
                 console.log(res)
                 setUser(null)
             }). catch((err) => {

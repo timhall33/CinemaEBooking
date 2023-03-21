@@ -1,9 +1,9 @@
 import { getAuth } from "firebase/auth";
 import {db } from './Firebase';
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, setDoc, updateDoc } from "firebase/firestore";
 import { reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
 import { updatePassword } from 'firebase/auth';
-async function updateProfile (firstName, lastName, phoneNumber, promotionStatus, navigate, props){
+async function updateProfile (firstName, lastName, phoneNumber, promotionStatus, addy, city, state, zip, userId, navigate, props){
     const auth = getAuth();
     const user = auth.currentUser;
         if (user) {
@@ -16,6 +16,17 @@ async function updateProfile (firstName, lastName, phoneNumber, promotionStatus,
             phoneNumber: phoneNumber,
             promotionStatus: promotionStatus,
           };
+
+
+          const addyDocRef = doc(db, 'address/', uid);
+          const addyData = {
+            street: addy,
+            city: city,
+            state: state,
+            zip: zip,
+            userId: userId,
+        
+        }
 
           
       
@@ -48,6 +59,15 @@ async function updateProfile (firstName, lastName, phoneNumber, promotionStatus,
               }
             
             }
+
+            await setDoc(addyDocRef, addyData)
+            .then((res) => {
+              console.log('Addy doc updated successfully!');
+            
+            })
+            .catch((error) => {
+              console.error('Error updating document: ', error);
+            });
 
 
         } else {

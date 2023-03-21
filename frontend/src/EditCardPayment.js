@@ -10,7 +10,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
-import { Button, FormControl, Icon } from '@mui/material';
+import { Button, FormControl, Icon, Typography } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Fab from '@mui/material/Fab';
 import TextField from '@mui/material/TextField';
@@ -23,17 +23,30 @@ import { auth, db, app } from './Firebase';
 import { addDoc , doc, deleteDoc} from 'firebase/firestore';
 import { getFirestore } from 'firebase/firestore';
 import { collection, query, where, getDocs } from "firebase/firestore";
+import { getCountFromServer } from 'firebase/firestore';
+
+
+
+
 
 
 
 async function readCreditCard(userId) {
   const q = query(collection(db, "creditcard"), where("userId", "==", userId));
+
+
+
+
   var list = []
   const querySnapshot = await getDocs(q);
+  
   querySnapshot.forEach((doc) => {
     // doc.data() is never undefined for query doc snapshots
     list.push(doc.data())
+   
   });
+
+
 
   return list;
   
@@ -100,13 +113,7 @@ function AddCardView(props) {
          variant="filled"
          onChange = {(e) => {props.cardSpecs.setAddy(e.target.value)}}
         />
-        <TextField 
-         label="Address line 2"
-         fullWidth 
-         multiline
-         variant="filled"
-         onChange = {(e) => {props.cardSpecs.setAddy(e.target.value)}}
-        />
+ 
         <TextField 
          label="City"
          fullWidth 
@@ -286,7 +293,13 @@ function EditCardPayment() {
         </Card>
 
 
-        <AddCardView  cardSpecs = {{setCardExp, setAddy, setCardType, setCountry, setCardNum, setCity, setState, setZipCode, cardExp, addy, cardType, country, cardNum, city, state, zipCode}}   showButton = {true} ></AddCardView>
+
+{ data ? data.size < 3 ?
+  <AddCardView  cardSpecs = {{setCardExp, setAddy, setCardType, setCountry, setCardNum, setCity, setState, setZipCode, cardExp, addy, cardType, country, cardNum, city, state, zipCode}}   showButton = {true} ></AddCardView>
+: <Typography>You have reached the limit of credit cards- 3.</Typography> :  <AddCardView  cardSpecs = {{setCardExp, setAddy, setCardType, setCountry, setCardNum, setCity, setState, setZipCode, cardExp, addy, cardType, country, cardNum, city, state, zipCode}}   showButton = {true} ></AddCardView>
+
+}
+      
         <Button
             type='submit'
             fullWidth
