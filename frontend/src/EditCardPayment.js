@@ -10,7 +10,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
-import { Button, FormControl, Icon } from '@mui/material';
+import { Button, FormControl, Icon, Typography } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Fab from '@mui/material/Fab';
 import TextField from '@mui/material/TextField';
@@ -23,18 +23,29 @@ import { auth, db, app } from './Firebase';
 import { addDoc , doc} from 'firebase/firestore';
 import { getFirestore } from 'firebase/firestore';
 import { collection, query, where, getDocs } from "firebase/firestore";
+import { getCountFromServer } from 'firebase/firestore';
+
+
+
+
 
 
 async function readCreditCard(userId) {
   const q = query(collection(db, "creditcard"), where("userId", "==", userId));
+
+  const snapshot = await getCountFromServer(q);
+  const length = snapshot.data().count
+
+
   var list = []
   const querySnapshot = await getDocs(q);
+  
   querySnapshot.forEach((doc) => {
     // doc.data() is never undefined for query doc snapshots
     list.push(doc.data())
   });
 
-  return list;
+  return [list,length];
   
 }
 
@@ -231,7 +242,7 @@ function EditCardPayment() {
         <TableBody>
 
         
-{ data ? data.map(entry => (
+{ data ? data[0].map(entry => (
   <TableRow key = {entry}>
         <TableCell component="th" scope="row">
               {entry.cardNumber}
@@ -263,7 +274,13 @@ function EditCardPayment() {
         </Card>
 
 
-        <AddCardView  cardSpecs = {{setCardExp, setAddy, setCardType, setCountry, setCardNum, setCity, setState, setZipCode, cardExp, addy, cardType, country, cardNum, city, state, zipCode}}   showButton = {true} ></AddCardView>
+
+{ data ? data[1] < 3 ?
+  <AddCardView  cardSpecs = {{setCardExp, setAddy, setCardType, setCountry, setCardNum, setCity, setState, setZipCode, cardExp, addy, cardType, country, cardNum, city, state, zipCode}}   showButton = {true} ></AddCardView>
+: <Typography>You have reached the limit of credit cards- 3.</Typography> : null
+
+}
+      
         <Button
             type='submit'
             fullWidth
