@@ -19,8 +19,7 @@ export default function HomeAddress() {
               name="address1"
               label="Address line 1"
               fullWidth
-              autoComplete="shipping address-line1"
-              variant="standard"
+              variant="filled"
             />
           </Grid>
           <Grid item xs={12}>
@@ -29,8 +28,7 @@ export default function HomeAddress() {
               name="address2"
               label="Address line 2"
               fullWidth
-              autoComplete="shipping address-line2"
-              variant="standard"
+              variant="filled"
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -40,8 +38,7 @@ export default function HomeAddress() {
               name="city"
               label="City"
               fullWidth
-              autoComplete="shipping address-level2"
-              variant="standard"
+              variant="filled"
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -50,7 +47,7 @@ export default function HomeAddress() {
               name="state"
               label="State/Province/Region"
               fullWidth
-              variant="standard"
+              variant="filled"
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -60,8 +57,7 @@ export default function HomeAddress() {
               name="zip"
               label="Zip / Postal code"
               fullWidth
-              autoComplete="shipping postal-code"
-              variant="standard"
+              variant="filled"
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -71,14 +67,7 @@ export default function HomeAddress() {
               name="country"
               label="Country"
               fullWidth
-              autoComplete="shipping country"
-              variant="standard"
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <FormControlLabel
-              control={<Checkbox color="secondary" name="saveAddress" value="yes" />}
-              label="Use this address for payment details"
+              variant="filled"
             />
           </Grid>
         </Grid>
