@@ -24,7 +24,7 @@ import { doc, getDoc } from "firebase/firestore";
 import updateProfile from './FirebaseEditProfile';
 import EditCardPayment from './EditCardPayment';
 import { useNavigate } from 'react-router';
-
+import { auth } from './Firebase';
 const theme = createTheme();
 
 function stringToColor(string) {
@@ -56,9 +56,10 @@ function stringAvatar(name) {
   };
 }
 
-const auth = getAuth();
+
 async function fetchData() {
 const user = auth.currentUser;
+
   if (user) {
     const uid = user.uid;
     console.log("uid: " + uid);
@@ -76,6 +77,26 @@ const user = auth.currentUser;
   }
 }
 
+async function fetchAddyData() {
+  const user = auth.currentUser;
+  
+    if (user) {
+      const uid = user.uid;
+      console.log("uid: " + uid);
+      const docRef = doc(db, "address/" + uid);
+      const docSnap = await getDoc(docRef);
+  
+      if (docSnap.exists()) {
+        console.log("Document data:", docSnap.data());
+        return docSnap.data();
+      } else {
+        console.log("No such document!");
+      }
+    } else {
+      console.log("No user signed in.");
+    }
+  }
+
   function EditProfile() {
       const [firstName, setFirstName] = useState('');
       const [lastName, setLastName] = useState('');
@@ -89,6 +110,12 @@ const user = auth.currentUser;
 
       const [errorMess, setErrorMess] = useState("")
       const [error, setError] = useState(false)
+
+
+      const[street, setStreet] = useState("")
+      const[city, setCity] = useState("")
+      const [state, setState] = useState("")
+      const [zip, setZip] = useState("")
 
 
       const navigate = useNavigate();
@@ -118,6 +145,17 @@ const user = auth.currentUser;
     }).catch((error) => {
       console.log("Error:", error);
     });
+
+    fetchAddyData().then((data) => {
+
+      setStreet(data.street)
+      setCity(data.city)
+      setState(data.state)
+      setZip(data.zip)
+
+    })
+
+
   }, []);
     return(
       <div id = "editProfileCont">
@@ -191,27 +229,23 @@ const user = auth.currentUser;
           variant="outlined"
           fullWidth
           name="address1"
-          label="Address line 1"
+         type="address1"
           id="address1"
+         
+          onChange={(e) => {setStreet(e.target.value)}}
+          placeholder={street}
         />
       </Grid>
-      <Grid item xs={12}>
-        <TextField
-          variant="outlined"
-          fullWidth
-          name="address2"
-          label="Address line 2"
-          id="address2"
-        />
-      </Grid>
+
       <Grid item xs={12}>
         <TextField
           variant="outlined"
           fullWidth
           name="city"
-          label="City"
           type="city"
           id="city"
+          placeholder={city}
+          onChange={(e) => {setCity(e.target.value)}}
         />
       </Grid>
       <Grid item xs={12}>
@@ -219,8 +253,10 @@ const user = auth.currentUser;
           variant="outlined"
           fullWidth
           name="state"
-          label="State"
+         
           id="state"
+          onChange={(e) => {setState(e.target.value)}}
+          placeholder={state}
         />
       </Grid>
       <Grid item xs={12}>
@@ -228,9 +264,11 @@ const user = auth.currentUser;
             required
             id="zip"
             name="zip"
-            label="Zip / Postal code"
+           
             fullWidth
             variant="outlined"
+            placeholder={zip}
+            onChange={(e) => {setZip(e.target.value)}}
           />
         </Grid>
         <Grid item xs={12}>
@@ -291,7 +329,7 @@ const user = auth.currentUser;
         sx={{ mt: 2, mb: 1 }}
         color="primary"
         onClick={ () => {
-          updateProfile(firstName, lastName, phoneNumber, promotionStatus, navigate, {changePass, newPassword, password, setErrorMess, setError});
+          updateProfile(firstName, lastName, phoneNumber, promotionStatus, street, city, state, zip, auth.currentUser.uid, navigate, {changePass, newPassword, password, setErrorMess, setError});
 
 
 
