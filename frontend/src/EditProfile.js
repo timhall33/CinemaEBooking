@@ -231,7 +231,6 @@ async function fetchAddyData() {
           name="address1"
          type="address1"
           id="address1"
-         
           onChange={(e) => {setStreet(e.target.value)}}
           placeholder={street}
         />

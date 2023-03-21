@@ -42,6 +42,8 @@ function RegisterView() {
   const [response, setResponse] = useState('')
 
   const [paymentOption, setPaymentOption] = useState(false)
+  const [addressOption, setAddressOption] = useState(false)
+
 
 
   const navigateToConfirmation=()=> {
@@ -199,10 +201,17 @@ function RegisterView() {
             </Grid>
           </Grid>
           { paymentOption && (
-            <> <AddCardView  cardSpecs = {{setCardExp, setAddy, setCardType, setCountry, setCardNum, setCity, setState, setZipCode, cardExp, addy, cardType, country, cardNum, city, state, zipCode}}   showButton = {false} ></AddCardView><HomeAddress></HomeAddress></>
+            <> <AddCardView  cardSpecs = {{setCardExp, setAddy, setCardType, setCountry, setCardNum, setCity, setState, setZipCode, cardExp, addy, cardType, country, cardNum, city, state, zipCode}}   showButton = {false} ></AddCardView></>
           )
 
           }
+          <Grid item xs={12}>
+              <FormControlLabel
+                control={<Checkbox  onChange={(e) => setAddressOption(e.target.checked)} value="address" color="primary" />}
+                label="Enter a home address"
+              />
+            </Grid>
+            { addressOption && <HomeAddress></HomeAddress>}
           <Button
             fullWidth
             variant="contained"
