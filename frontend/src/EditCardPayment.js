@@ -20,9 +20,10 @@ import { useEffect, useState } from 'react';
 import { cardConverter, CreditCard } from './CreditModel';
 import { auth, db, app } from './Firebase';
 
-import { addDoc , doc} from 'firebase/firestore';
+import { addDoc , doc, deleteDoc} from 'firebase/firestore';
 import { getFirestore } from 'firebase/firestore';
 import { collection, query, where, getDocs } from "firebase/firestore";
+
 
 
 async function readCreditCard(userId) {
@@ -37,6 +38,7 @@ async function readCreditCard(userId) {
   return list;
   
 }
+
 
 export async function storeCreditCard(db, cardType, cardNumber, cardExp, addyOne, addyTwo, city, state, zipCode, country, userId) {
 
@@ -201,10 +203,31 @@ function EditCardPayment() {
      })])
 
 
+     async function getCreditCard(cardNumber) {
+      const q = query(collection(db, "creditcard"), where("cardNumber", "==", cardNumber));
+      const querySnapshot = await getDocs(q);
+    
+      if (querySnapshot.empty) {
+        throw new Error("No credit card found with the provided card number.");
+      }
+    
+      const doc = querySnapshot.docs[0];
+      return doc.id;
+    }
 
+     async function deleteCreditCard(cardId) {
+      await deleteDoc(doc(db, "creditcard", cardId));
+    }
 
-
-  
+     const handleDeleteClick = async (c) => {
+      try {
+        const cardId = await getCreditCard(c);
+        await deleteCreditCard(cardId);
+        console.log("Credit card deleted successfully.");
+      } catch (error) {
+        console.error("Error deleting credit card:", error);
+      }
+    };
 
     const navigate = useNavigate();
       const navigateToEditProfile=()=> {
@@ -234,7 +257,7 @@ function EditCardPayment() {
 { data ? data.map(entry => (
   <TableRow key = {entry}>
         <TableCell component="th" scope="row">
-              {entry.cardNum}
+              {entry.cardNumber}
             </TableCell>
             <TableCell align="right" component="th" scope="row">
               <IconButton>
@@ -242,7 +265,7 @@ function EditCardPayment() {
               </IconButton>
             </TableCell>
             <TableCell  align="right" component="th" scope="row">
-            <IconButton>
+            <IconButton onClick={() => handleDeleteClick(entry.cardNumber)}>
                   <DeleteIcon></DeleteIcon>
               </IconButton>
             </TableCell>
