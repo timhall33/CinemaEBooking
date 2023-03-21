@@ -33,8 +33,7 @@ import { getCountFromServer } from 'firebase/firestore';
 async function readCreditCard(userId) {
   const q = query(collection(db, "creditcard"), where("userId", "==", userId));
 
-  const snapshot = await getCountFromServer(q);
-  const length = snapshot.data().count
+
 
 
   var list = []
@@ -43,9 +42,12 @@ async function readCreditCard(userId) {
   querySnapshot.forEach((doc) => {
     // doc.data() is never undefined for query doc snapshots
     list.push(doc.data())
+   
   });
 
-  return [list,length];
+
+
+  return list;
   
 }
 
@@ -109,13 +111,7 @@ function AddCardView(props) {
          variant="filled"
          onChange = {(e) => {props.cardSpecs.setAddy(e.target.value)}}
         />
-        <TextField 
-         label="Address line 2"
-         fullWidth 
-         multiline
-         variant="filled"
-         onChange = {(e) => {props.cardSpecs.setAddy(e.target.value)}}
-        />
+ 
         <TextField 
          label="City"
          fullWidth 
@@ -242,7 +238,7 @@ function EditCardPayment() {
         <TableBody>
 
         
-{ data ? data[0].map(entry => (
+{ data ? data.map(entry => (
   <TableRow key = {entry}>
         <TableCell component="th" scope="row">
               {entry.cardNumber}
@@ -275,9 +271,9 @@ function EditCardPayment() {
 
 
 
-{ data ? data[1] < 3 ?
+{ data ? data.size < 3 ?
   <AddCardView  cardSpecs = {{setCardExp, setAddy, setCardType, setCountry, setCardNum, setCity, setState, setZipCode, cardExp, addy, cardType, country, cardNum, city, state, zipCode}}   showButton = {true} ></AddCardView>
-: <Typography>You have reached the limit of credit cards- 3.</Typography> : null
+: <Typography>You have reached the limit of credit cards- 3.</Typography> :  <AddCardView  cardSpecs = {{setCardExp, setAddy, setCardType, setCountry, setCardNum, setCity, setState, setZipCode, cardExp, addy, cardType, country, cardNum, city, state, zipCode}}   showButton = {true} ></AddCardView>
 
 }
       
