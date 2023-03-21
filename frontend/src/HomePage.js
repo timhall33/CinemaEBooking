@@ -1,57 +1,56 @@
 import TextField from '@mui/material/TextField';
 
 import Avatar from '@mui/material/Avatar';
-
 import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import aotPic from './aot.png'
-import Fab from '@mui/material/Fab';
-import AddIcon from '@mui/icons-material/Add';
 import Rating from '@mui/material/Rating';
 import Paper from '@mui/material/Paper';
-import Modal from '@mui/material/Modal';
 import BuyTicketViews from './BuyTicketViews';
-import { Route, Routes, Link } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { useState } from 'react';
-import {LoginView} from './LoginView';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import Divider from '@mui/material/Divider';
 import './App.css';
 import Tooltip from '@mui/material/Tooltip';
-import PersonAdd from '@mui/icons-material/PersonAdd';
-import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom';
-import {app, auth} from './Firebase'
+import { auth, db} from './Firebase'
 import {fetchData} from './EditProfile.js'
 import { useEffect } from 'react';
-import {  signOut } from "firebase/auth"
-import { getAuth } from 'firebase/auth';
+import { signOut } from "firebase/auth"
+import {userConverter} from "./UserModel"
+import {doc , getDoc} from "firebase/firestore"
 function Nav() {
 
     const navigate = useNavigate()
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
-    const handleClick = (event) => {
+    const [isAdmin, setIsAdmin] = useState(false);
+    const handleClick = async (event) => {
       setAnchorEl(event.currentTarget);
+        const ref = doc(db, "users", auth.currentUser.uid).withConverter(userConverter)
+        const docSnap = await getDoc(ref)
+        if (docSnap.exists()) {
+            const user = docSnap.data();
+            setIsAdmin(user.adminStatus())
+          }
     };
     const handleClose = () => {
       setAnchorEl(null);
     }
       const [name, setName] = useState("")
       const [user, setUser] = useState("")
+      
       
       useEffect(() => {
         fetchData().then((data) => {
@@ -102,18 +101,20 @@ function Nav() {
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
       
-
+                {isAdmin &&
         <MenuItem  onClick={() => {navigate("/promotions"); handleClose()}}>
           <AdminPanel></AdminPanel>
         </MenuItem>
+                }
         <MenuItem onClick={() => {navigate("/editProfile"); handleClose()}}>
           <EditProfile></EditProfile>
          
         </MenuItem>
-
+                {isAdmin && 
         <MenuItem onClick={() => {navigate("/manage"); handleClose()}}>
 <ManageMovie></ManageMovie>
         </MenuItem>
+                }
 
         <MenuItem onClick={() => {
             handleClose();

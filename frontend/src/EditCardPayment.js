@@ -16,6 +16,47 @@ import Fab from '@mui/material/Fab';
 import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router';
+import { useEffect, useState } from 'react';
+import { cardConverter, CreditCard } from './CreditModel';
+import { auth, db, app } from './Firebase';
+
+import { addDoc , doc} from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore';
+import { collection, query, where, getDocs } from "firebase/firestore";
+
+
+async function readCreditCard(userId) {
+  const q = query(collection(db, "creditcard"), where("userId", "==", userId));
+  var list = []
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    // doc.data() is never undefined for query doc snapshots
+    list.push(doc.data())
+  });
+
+  return list;
+  
+}
+
+async function storeCreditCard(db, cardType, cardNumber, cardExp, addyOne, addyTwo, city, state, zipCode, country, userId) {
+
+  // adding document
+
+
+
+
+  const ref = collection(db, "creditcard").withConverter(cardConverter)
+  
+  await addDoc(ref, new CreditCard(cardType, cardNumber, cardExp, addyOne, addyTwo, city, state, zipCode, country, userId))
+  .then((res) => {
+    console.log(res)
+  }).catch((err) => {
+    console.log(err)
+  })
+
+
+
+}
 
 
 /**
@@ -23,6 +64,18 @@ import { useNavigate } from 'react-router';
  * @returns view
  */
 function AddCardView(props) {
+
+      const [cardType, setCardType] = useState("")
+      const [cardNum, setCardNum] = useState("")
+      const [cardExp, setCardExp] = useState("")
+      const [addy, setAddy] = useState("")
+      const [city, setCity] = useState("")
+      const [state, setState] = useState("")
+      const [zipCode, setZipCode] = useState("")
+      const [country, setCountry] = useState("")
+
+
+
     return (
         <Stack sx={{ mt: 3, mb: 2 }}  id= "addCardViewCont" direction="column">
  <TextField 
@@ -30,18 +83,21 @@ function AddCardView(props) {
          fullWidth 
          multiline
          variant="filled"
+         onChange = {(e) => {setCardType(e.target.value)}}
         />
          <TextField 
          label="Enter Card Number"
          fullWidth 
          multiline
          variant="filled"
+         onChange = {(e) => {setCardNum(e.target.value)}}
         />
          <TextField 
          label="Enter card expirations date"
          fullWidth 
          multiline
          variant="filled"
+         onChange = {(e) => {setCardExp(e.target.value)}}
         />
         Billing Address
         <TextField 
@@ -49,42 +105,56 @@ function AddCardView(props) {
          fullWidth 
          multiline
          variant="filled"
+         onChange = {(e) => {setAddy(e.target.value)}}
         />
         <TextField 
          label="Address line 2"
          fullWidth 
          multiline
          variant="filled"
+         onChange = {(e) => {setAddy(e.target.value)}}
         />
         <TextField 
          label="City"
          fullWidth 
          multiline
          variant="filled"
+         onChange = {(e) => {setCity(e.target.value)}}
         />
         <TextField 
          label="State"
          fullWidth 
          multiline
          variant="filled"
+         onChange = {(e) => {setState(e.target.value)}}
         />
         <TextField 
          label="Zip Code"
          fullWidth 
          multiline
          variant="filled"
+         onChange = {(e) => {setZipCode(e.target.value)}}
         />
         <TextField 
          label="Country"
          fullWidth 
          multiline
          variant="filled"
+         onChange = {(e) => {setCountry(e.target.value)}}
         />
 
 
            
         { props.showButton && (
-<Fab sx={{ mt: 2, mb: 1 }} variant="extended" size="medium" color="primary"  aria-label="add">
+<Fab  onClick={()=> 
+{
+  storeCreditCard(db, cardType, cardNum, cardExp, addy, addy, city, state, zipCode, country, auth.currentUser.uid)
+
+}
+
+}
+  
+sx={{ mt: 2, mb: 1 }} variant="extended" size="medium" color="primary"  aria-label="add" >
 <AddIcon></AddIcon>
 
    Create Card Information
@@ -106,10 +176,36 @@ function createEntry(data) {
 
 /**
  * Displays view with list of created promotions and the view responsible for promotion creation
+ * 
+ *   
+
  * @returns view 
  */
 
 function EditCardPayment() {
+
+ 
+
+  const [dataPros, setDataPros] = useState(
+    readCreditCard(auth.currentUser.uid)
+)
+
+    const [data, setData] = useState()
+
+    
+
+    useEffect(() => {
+      console.log(data)
+    },[ dataPros.then((res) => {
+      setData(res)
+     })])
+
+
+
+
+
+  
+
     const navigate = useNavigate();
       const navigateToEditProfile=()=> {
         navigate('/editProfile');
@@ -130,30 +226,38 @@ function EditCardPayment() {
             <TableCell align="right">Delete</TableCell>
           </TableRow>
         </TableHead>
-<TableBody>
-{entries.map(entry => (
-    <TableRow key = {entry.data}>
-          <TableCell component="th" scope="row">
-                {entry.data}
-              </TableCell>
-              <TableCell align="right" component="th" scope="row">
-                <IconButton>
-                    <EditIcon></EditIcon>
-                </IconButton>
-              </TableCell>
-              <TableCell  align="right" component="th" scope="row">
-              <IconButton>
-                    <DeleteIcon></DeleteIcon>
-                </IconButton>
-              </TableCell>
-    </TableRow>
-))
 
+  
+        <TableBody>
+
+        
+{ data ? data.map(entry => (
+  <TableRow key = {entry}>
+        <TableCell component="th" scope="row">
+              {entry.cardNum}
+            </TableCell>
+            <TableCell align="right" component="th" scope="row">
+              <IconButton>
+                  <EditIcon></EditIcon>
+              </IconButton>
+            </TableCell>
+            <TableCell  align="right" component="th" scope="row">
+            <IconButton>
+                  <DeleteIcon></DeleteIcon>
+              </IconButton>
+            </TableCell>
+  </TableRow>
+))
+: null
 }
+
+
 
 </TableBody>
     </Table>
+ 
 
+ 
 
         </TableContainer>
         </Card>

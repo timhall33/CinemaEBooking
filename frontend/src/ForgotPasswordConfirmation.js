@@ -1,15 +1,9 @@
 import Typography from '@mui/material/Typography';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import CardMedia from '@mui/material/CardMedia';
-import aotPic from './aot.png'
-import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 
 function ForgotPasswordConfirmation() {
@@ -36,7 +30,11 @@ function ForgotPasswordConfirmation() {
             </Typography>
                 </div>
            
-        
+            <Button 
+            onClick={() => navigate('/login')}
+            variant="contained"
+            color="primary"
+            value="clicked" > Sign in </Button>
             </Card>
            
         </div>
