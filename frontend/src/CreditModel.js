@@ -1,4 +1,4 @@
-
+import { encryptWithAES } from "./Encrypt";
 
 export class CreditCard {
      
@@ -19,24 +19,24 @@ export class CreditCard {
 // Firestore data converter
 export const cardConverter = {
     toFirestore: function (card) {
-       
+       console.log("aaa")
        
         return {
             cardType: card.cardType,
-            cardNumber: card.cardNumber,
-            cardExp: card.cardExp,
-            addyOne: card.addyOne,
+            cardNumber: encryptWithAES(card.cardNumber),
+            cardExp: encryptWithAES(card.cardExp),
+            addyOne: encryptWithAES(card.addyOne),
 
             city: card.city,
             state: card.state,
-            zipCode: card.zipCode,
+            zipCode: encryptWithAES(card.zipCode),
             country: card.country,
             userId: card.userId,
             };
     },
     fromFirestore: function (snapshot, options) {
         const data = snapshot.data(options);
-        return new CreditCard(data.cardType, data.cardNumber, data.cardExp, data.addyOne,  data.city, data.state, data.zipCode, 
+        return new CreditCard(data.cardType, encryptWithAES(data.cardNumber), encryptWithAES(data.cardExp), encryptWithAES(data.addyOne),  data.city, data.state, encryptWithAES(data.zipCode), 
             data.country, data.userId)
     }
 

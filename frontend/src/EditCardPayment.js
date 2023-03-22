@@ -202,12 +202,16 @@ function AddCardView(props) {
 
            
         { props.showButton && (
-<Fab  onClick={()=> 
+<Fab  onClick={ async ()=> 
 {
   console.log(auth.currentUser.uid)
 
-
-  storeCreditCard(db, props.cardData.cardType,props.cardData.cardNum, props.cardData.cardExp, props.cardData.addy, props.cardData.city,props.cardData.state, props.cardData.zipCode, props.cardData.country, auth.currentUser.uid)
+  
+    storeCreditCard(db, props.cardData.cardType,props.cardData.cardNum, props.cardData.cardExp, props.cardData.addy, props.cardData.city,props.cardData.state, props.cardData.zipCode, props.cardData.country, auth.currentUser.uid)
+  
+ 
+  
+ 
 
 }
 
@@ -254,6 +258,8 @@ function EditCardPayment() {
     zipCode: "",
     country: "",
   })
+
+  const [showLimitMessage, setShowLimitMessage] = useState(false)
 
 
 
@@ -334,7 +340,15 @@ function EditCardPayment() {
               </IconButton>
             </TableCell>
             <TableCell  align="right" component="th" scope="row">
-            <IconButton onClick={() => {handleDeleteClick(entry.cardNumber)}}>
+            <IconButton onClick={ async () => {
+
+          handleDeleteClick(entry.cardNumber); 
+           
+            
+           
+
+
+            }}>
                   <DeleteIcon></DeleteIcon>
               </IconButton>
             </TableCell>
@@ -357,8 +371,8 @@ function EditCardPayment() {
 
 
 { data &&  
-   (data[1] < 3) && (
-    <AddCardView  cardData = {cardData} setCardData = {setCardData} showButton = {true} ></AddCardView>
+   (data[1] < 3 ) && (
+    <AddCardView  setShowLimitMessage = {setShowLimitMessage}  cardData = {cardData} setCardData = {setCardData} showButton = {true} ></AddCardView>
   )
    
 
@@ -366,7 +380,7 @@ function EditCardPayment() {
 }
 
 { data &&
-   (data[1] >= 3) && (
+   (data[1] >= 3 ) && (
     <Typography>You have reached the limit of 3 credit cards.</Typography>
   )
   
