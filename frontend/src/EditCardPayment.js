@@ -319,7 +319,6 @@ function EditCardPayment() {
    <TableHead>
           <TableRow>
             <TableCell  >Cards</TableCell>
-            <TableCell align="right">Edit</TableCell>
             <TableCell align="right">Delete</TableCell>
           </TableRow>
         </TableHead>
@@ -334,11 +333,7 @@ function EditCardPayment() {
               {entry.cardType}
              
             </TableCell>
-            <TableCell align="right" component="th" scope="row">
-              <IconButton>
-                  <EditIcon></EditIcon>
-              </IconButton>
-            </TableCell>
+
             <TableCell  align="right" component="th" scope="row">
             <IconButton onClick={ async () => {
 
