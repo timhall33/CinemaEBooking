@@ -20,6 +20,10 @@ import { AddCardView } from './EditCardPayment';
 import { useEffect } from 'react';
 import { useMemo } from 'react';
 import Add from '@mui/icons-material/Add';
+import HomeAddress from './HomeAddress';
+import { auth, db, app } from './Firebase';
+import { storeCreditCard } from './EditCardPayment';
+import { Firestore } from 'firebase/firestore';
 
 const theme = createTheme();
 
@@ -38,6 +42,8 @@ function RegisterView() {
   const [response, setResponse] = useState('')
 
   const [paymentOption, setPaymentOption] = useState(false)
+  const [addressOption, setAddressOption] = useState(false)
+
 
 
   const navigateToConfirmation=()=> {
@@ -63,6 +69,17 @@ function RegisterView() {
     handleClose();
   };
 
+  
+  const [cardData, setCardData] = useState({
+    cardNum: "aa",
+    cardType: "",
+    cardExp: "",
+    addy: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    country: "",
+  })
 
 
 
@@ -187,10 +204,19 @@ function RegisterView() {
             </Grid>
           </Grid>
           { paymentOption && (
-            <AddCardView showButton = {false}></AddCardView>
+<div>
+             <AddCardView  cardData = {cardData} setCardData = {setCardData}   showButton = {false} ></AddCardView>
+             </div>
           )
 
           }
+          <Grid item xs={12}>
+              <FormControlLabel
+                control={<Checkbox  onChange={(e) => setAddressOption(e.target.checked)} value="address" color="primary" />}
+                label="Enter a home address"
+              />
+            </Grid>
+            { addressOption && <HomeAddress></HomeAddress>}
           <Button
             fullWidth
             variant="contained"
@@ -200,9 +226,15 @@ function RegisterView() {
             
             onClick={(e) => {
             setClick(e.target.value)
-             console.log((/^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/).test(phoneNumber))
+         
             if (firstName.length !== 0 && lastName.length != 0 && (/^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/).test(phoneNumber)) {
               register(firstName,lastName,email,phoneNumber,password, promotionStatus, true, {setResponse}, navigate);
+
+
+              if (paymentOption) {
+                storeCreditCard(db, cardData.cardType,cardData.cardNum, cardData.cardExp, cardData.addy, cardData.city,cardData.state, cardData.zipCode, cardData.country, auth.currentUser.uid)
+              }
+
             }
            
 
