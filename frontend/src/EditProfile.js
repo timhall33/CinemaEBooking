@@ -85,8 +85,9 @@ async function fetchAddyData() {
       console.log("uid: " + uid);
       const docRef = doc(db, "address/" + uid);
       const docSnap = await getDoc(docRef);
-  
+   
       if (docSnap.exists()) {
+        
         console.log("Document data:", docSnap.data());
         return docSnap.data();
       } else {
@@ -184,6 +185,7 @@ async function fetchAddyData() {
           variant="outlined"
           fullWidth
           id="firstName"
+          helperText= "First name"
           placeholder={firstName}
           onChange={(e) => {setFirstName(e.target.value)}}
           autoFocus
@@ -194,9 +196,11 @@ async function fetchAddyData() {
           variant="outlined"
           fullWidth
           id="lastName"
-          placeholder = {lastName}
-          name="lastName"
-          autoComplete="lname"
+        
+          defaultValue={lastName}
+          placeholder={lastName}
+          helperText= "Last name"
+        
           onChange={(e) => {setLastName(e.target.value)}}
         />
       </Grid>
@@ -207,6 +211,7 @@ async function fetchAddyData() {
           id="phone"
           placeholder = {phoneNumber}
           name="phone"
+          helperText= "Phone number"
           autoComplete="phone"
           onChange={(e) => {setphoneNumber(e.target.value)}}
         />
@@ -219,6 +224,7 @@ async function fetchAddyData() {
           id="email"
           label={email}
           name="email"
+          helperText= "Email"
           autoComplete="email"
         />
       </Grid>
@@ -231,8 +237,11 @@ async function fetchAddyData() {
           name="address1"
          type="address1"
           id="address1"
+         
           onChange={(e) => {setStreet(e.target.value)}}
-          placeholder={street}
+          placeholder= {street}
+          helperText= "Street address"
+         
         />
       </Grid>
 
@@ -245,6 +254,7 @@ async function fetchAddyData() {
           id="city"
           placeholder={city}
           onChange={(e) => {setCity(e.target.value)}}
+          helperText= "City"
         />
       </Grid>
       <Grid item xs={12}>
@@ -252,7 +262,7 @@ async function fetchAddyData() {
           variant="outlined"
           fullWidth
           name="state"
-         
+          helperText= "State"
           id="state"
           onChange={(e) => {setState(e.target.value)}}
           placeholder={state}
@@ -263,7 +273,7 @@ async function fetchAddyData() {
             required
             id="zip"
             name="zip"
-           
+            helperText= "Zipcode"
             fullWidth
             variant="outlined"
             placeholder={zip}

@@ -69,14 +69,17 @@ function RegisterView() {
     handleClose();
   };
 
-  const [cardType, setCardType] = useState("")
-  const [cardNum, setCardNum] = useState("")
-  const [cardExp, setCardExp] = useState("")
-  const [addy, setAddy] = useState("")
-  const [city, setCity] = useState("")
-  const [state, setState] = useState("")
-  const [zipCode, setZipCode] = useState("")
-  const [country, setCountry] = useState("")
+  
+  const [cardData, setCardData] = useState({
+    cardNum: "aa",
+    cardType: "",
+    cardExp: "",
+    addy: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    country: "",
+  })
 
 
 
@@ -201,7 +204,9 @@ function RegisterView() {
             </Grid>
           </Grid>
           { paymentOption && (
-            <> <AddCardView  cardSpecs = {{setCardExp, setAddy, setCardType, setCountry, setCardNum, setCity, setState, setZipCode, cardExp, addy, cardType, country, cardNum, city, state, zipCode}}   showButton = {false} ></AddCardView></>
+<div>
+             <AddCardView  cardData = {cardData} setCardData = {setCardData}   showButton = {false} ></AddCardView>
+             </div>
           )
 
           }
@@ -227,7 +232,7 @@ function RegisterView() {
 
 
               if (paymentOption) {
-                storeCreditCard(db, cardType,cardNum, cardExp, addy, addy,city,state, zipCode, country, auth.currentUser.uid)
+                storeCreditCard(db, cardData.cardType,cardData.cardNum, cardData.cardExp, cardData.addy, cardData.city,cardData.state, cardData.zipCode, cardData.country, auth.currentUser.uid)
               }
 
             }
