@@ -24,7 +24,7 @@ import HomeAddress from './HomeAddress';
 import { auth, db, app } from './Firebase';
 import { storeCreditCard } from './EditCardPayment';
 import { Firestore } from 'firebase/firestore';
-
+import { doc, setDoc, updateDoc } from "firebase/firestore";
 const theme = createTheme();
 
 
@@ -43,6 +43,9 @@ function RegisterView() {
 
   const [paymentOption, setPaymentOption] = useState(false)
   const [addressOption, setAddressOption] = useState(false)
+
+
+
 
 
 
@@ -71,7 +74,7 @@ function RegisterView() {
 
   
   const [cardData, setCardData] = useState({
-    cardNum: "aa",
+    cardNum: "",
     cardType: "",
     cardExp: "",
     addy: "",
@@ -80,6 +83,15 @@ function RegisterView() {
     zipCode: "",
     country: "",
   })
+
+
+  const [addressData, setAddressData] = useState({
+    street: "",
+    city: "",
+    state: "",
+    zipCode: "",
+  })
+
 
 
 
@@ -216,7 +228,7 @@ function RegisterView() {
                 label="Enter a home address"
               />
             </Grid>
-            { addressOption && <HomeAddress></HomeAddress>}
+            { addressOption && <HomeAddress setAddressData = {setAddressData}   ></HomeAddress>}
           <Button
             fullWidth
             variant="contained"
@@ -224,7 +236,7 @@ function RegisterView() {
             value="clicked"
 
             
-            onClick={(e) => {
+            onClick={ async (e) => {
             setClick(e.target.value)
          
             if (firstName.length !== 0 && lastName.length != 0 && (/^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/).test(phoneNumber)) {
@@ -233,6 +245,32 @@ function RegisterView() {
 
               if (paymentOption) {
                 storeCreditCard(db, cardData.cardType,cardData.cardNum, cardData.cardExp, cardData.addy, cardData.city,cardData.state, cardData.zipCode, cardData.country, auth.currentUser.uid)
+              }
+
+              if (setAddressData) {
+                const addyDocRef = doc(db, 'address/', auth.currentUser.uid);
+                const addyData = {
+                  street:addressData.street,
+                  city: addressData.city,
+                  state: addressData.state,
+                  zip: addressData.zipCode,
+                  userId: auth.currentUser.uid,
+              
+              }
+
+              await setDoc(addyDocRef, addyData)
+              .then((res) => {
+                console.log('Addy doc updated successfully!');
+              
+              })
+              .catch((error) => {
+                console.error('Error updating document: ', error);
+              });
+  
+  
+          
+
+              
               }
 
             }

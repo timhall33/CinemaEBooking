@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 
-export default function HomeAddress() {
+export default function HomeAddress(props) {
     return (
       <React.Fragment>
         <Typography variant="h6" gutterBottom>
@@ -20,15 +20,16 @@ export default function HomeAddress() {
               label="Address line 1"
               fullWidth
               variant="filled"
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              id="address2"
-              name="address2"
-              label="Address line 2"
-              fullWidth
-              variant="filled"
+
+
+              onChange={(e) => {
+                props.setAddressData((prev) => ({
+                  ...prev,
+                  street: e.target.value,
+                }))
+        
+              }}
+              
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -39,6 +40,15 @@ export default function HomeAddress() {
               label="City"
               fullWidth
               variant="filled"
+
+              onChange={(e) => {
+                props.setAddressData((prev) => ({
+                  ...prev,
+                  city: e.target.value,
+                }))
+        
+              }}
+
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -48,6 +58,15 @@ export default function HomeAddress() {
               label="State/Province/Region"
               fullWidth
               variant="filled"
+
+              onChange={(e) => {
+                props.setAddressData((prev) => ({
+                  ...prev,
+                  state: e.target.value,
+                }))
+        
+              }}
+
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -58,6 +77,15 @@ export default function HomeAddress() {
               label="Zip / Postal code"
               fullWidth
               variant="filled"
+
+              onChange={(e) => {
+                props.setAddressData((prev) => ({
+                  ...prev,
+                  zipCode: e.target.value,
+                }))
+        
+              }}
+
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -68,6 +96,15 @@ export default function HomeAddress() {
               label="Country"
               fullWidth
               variant="filled"
+
+              onChange={(e) => {
+                props.setAddressData((prev) => ({
+                  ...prev,
+                  country: e.target.value,
+                }))
+        
+              }}
+
             />
           </Grid>
         </Grid>
