@@ -27,9 +27,11 @@ import { useNavigate } from 'react-router-dom';
 import { auth, db} from './Firebase'
 import {fetchData} from './EditProfile.js'
 import { useEffect } from 'react';
-import { signOut } from "firebase/auth"
+import { signOut, onAuthStateChanged } from "firebase/auth"
 import {userConverter} from "./UserModel"
 import {doc , getDoc} from "firebase/firestore"
+import { getCurrentUser} from './Firebase';
+import { getAuth } from 'firebase/auth';
 function Nav() {
 
     const navigate = useNavigate()
@@ -69,78 +71,84 @@ function Nav() {
 
 
     return (
-        <div>
 
-            {auth.currentUser === null ? 
- <Login onClick = {() => {navigate('/login')}}></Login> :
- <div>
-
-
-
-<Tooltip title="Account settings">
-          <IconButton
-            onClick={handleClick }
-            size="small"
-            sx={{ mt: 1, mb: 1, mr: 1 }}
-            aria-controls={open ? 'account-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
-          >
-            <Avatar sx={{ width: 32, height: 32 }}> { name.charAt(0) }  </Avatar>
-          </IconButton>
-        </Tooltip>
         
-        <Menu
-        anchorEl={anchorEl}
-        id="account-menu"
-        open={open}
-        onClose={handleClose}
-        onClick={handleClose}
+
+//         <div>
+
+//             {auth.currentUser === null ? 
+//  <Login onClick = {() => {navigate('/login')}}></Login> :
+//  <div>
+
+
+
+// <Tooltip title="Account settings">
+//           <IconButton
+//             onClick={handleClick }
+//             size="small"
+//             sx={{ mt: 1, mb: 1, mr: 1 }}
+//             aria-controls={open ? 'account-menu' : undefined}
+//             aria-haspopup="true"
+//             aria-expanded={open ? 'true' : undefined}
+//           >
+//             <Avatar sx={{ width: 32, height: 32 }}> { name.charAt(0) }  </Avatar>
+//           </IconButton>
+//         </Tooltip>
+        
+//         <Menu
+//         anchorEl={anchorEl}
+//         id="account-menu"
+//         open={open}
+//         onClose={handleClose}
+//         onClick={handleClose}
        
-        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-      >
+//         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+//         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+//       >
       
-                {isAdmin &&
-        <MenuItem  onClick={() => {navigate("/promotions"); handleClose()}}>
-          <AdminPanel></AdminPanel>
-        </MenuItem>
-                }
-        <MenuItem onClick={() => {navigate("/editProfile"); handleClose()}}>
-          <EditProfile></EditProfile>
+//                 {isAdmin &&
+//         <MenuItem  onClick={() => {navigate("/promotions"); handleClose()}}>
+//           <AdminPanel></AdminPanel>
+//         </MenuItem>
+//                 }
+//         <MenuItem onClick={() => {navigate("/editProfile"); handleClose()}}>
+//           <EditProfile></EditProfile>
          
-        </MenuItem>
-                {isAdmin && 
-        <MenuItem onClick={() => {navigate("/manage"); handleClose()}}>
-<ManageMovie></ManageMovie>
-        </MenuItem>
-                }
+//         </MenuItem>
+//                 {isAdmin && 
+//         <MenuItem onClick={() => {navigate("/manage"); handleClose()}}>
+// <ManageMovie></ManageMovie>
+//         </MenuItem>
+//                 }
 
-        <MenuItem onClick={() => {
-            handleClose();
-            signOut(auth).then((res)=>{
-                console.log(res)
-                setUser(null)
-            }). catch((err) => {
-                console.log(err)
-            })
-        } } >
-          <ListItemIcon>
-            <Logout fontSize="small" />
-          </ListItemIcon>
-          Logout
-        </MenuItem>
+//         <MenuItem onClick={() => {
+//             handleClose();
+//             signOut(getAuth()).then((res)=>{
+//                 console.log(res)
+//                 setUser(null)
+//             }). catch((err) => {
+//                 console.log(err)
+//             })
+//         } } >
+//           <ListItemIcon>
+//             <Logout fontSize="small" />
+//           </ListItemIcon>
+//           Logout
+//         </MenuItem>
 
-      </Menu>
+//       </Menu>
     
-    </div>
+//     </div>
 
             
-            }
+//             }
          
 
 
-      </div>
+//       </div>
+
+<LoginFunctions navigate = {navigate} isAdmin = {isAdmin} open = {open} handleClick = {handleClick} handleClose = {handleClose} name = {name} anchorEl = {anchorEl} >  </LoginFunctions>
+
     )
 }
 
@@ -160,6 +168,81 @@ function Login(props) {
     )
 }
 
+function LoginFunctions(props) {
+    onAuthStateChanged(auth, (user) => {
+        if (!user) {
+            return (
+                <Login onClick = {() => {props.navigate('/login')}}></Login> 
+            )
+
+        } else {
+            return (
+            <div>
+            <Tooltip title="Account settings">
+          <IconButton
+            onClick={props.handleClick }
+            size="small"
+            sx={{ mt: 1, mb: 1, mr: 1 }}
+            aria-controls={props.open ? 'account-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={props.open ? 'true' : undefined}
+          >
+            <Avatar sx={{ width: 32, height: 32 }}> { props.name.charAt(0) }  </Avatar>
+          </IconButton>
+        </Tooltip>
+        
+        <Menu
+        anchorEl={props.anchorEl}
+        id="account-menu"
+        open={props.open}
+        onClose={props.handleClose}
+        onClick={props.handleClose}
+       
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+      
+                {props.isAdmin &&
+        <MenuItem  onClick={() => {props.navigate("/promotions"); props.handleClose()}}>
+          <AdminPanel></AdminPanel>
+        </MenuItem>
+                }
+        <MenuItem onClick={() => {props.navigate("/editProfile"); props.handleClose()}}>
+          <EditProfile></EditProfile>
+         
+        </MenuItem>
+                {props.isAdmin && 
+        <MenuItem onClick={() => {props.navigate("/manage"); props.handleClose()}}>
+<ManageMovie></ManageMovie>
+        </MenuItem>
+                }
+
+        <MenuItem onClick={() => {
+            props.handleClose();
+            signOut(getAuth()).then((res)=>{
+                console.log(res)
+                //setUser(null)
+            }). catch((err) => {
+                console.log(err)
+            })
+        } } >
+          <ListItemIcon>
+            <Logout fontSize="small" />
+          </ListItemIcon>
+          Logout
+        </MenuItem>
+
+      </Menu>
+    
+    </div>
+            )
+        }
+
+
+    });
+
+
+}
 
 
 function EditProfile() {

@@ -1,4 +1,4 @@
-
+import { encryptWithAES, decryptWithAES} from "./Encrypt"
 
 export class CreditCard {
      
@@ -22,21 +22,21 @@ export const cardConverter = {
        
        
         return {
-            cardType: card.cardType,
-            cardNumber: card.cardNumber,
-            cardExp: card.cardExp,
-            addyOne: card.addyOne,
-            addyTwo: card.addyTwo,
+            cardType: encryptWithAES(card.cardType),
+            cardNumber: encryptWithAES(card.cardNumber),
+            cardExp: encryptWithAES(card.cardExp),
+            addyOne: encryptWithAES(card.addyOne),
+            addyTwo: encryptWithAES(card.addyTwo),
             city: card.city,
             state: card.state,
-            zipCode: card.zipCode,
+            zipCode: encryptWithAES(card.zipCode),
             country: card.country,
             userId: card.userId,
             };
     },
     fromFirestore: function (snapshot, options) {
         const data = snapshot.data(options);
-        return new CreditCard(data.cardType, data.cardNumber, data.cardExp, data.addyOne, data.addyTwo, data.city, data.state, data.zipCode, 
+        return new CreditCard(decryptWithAES(data.cardType), decryptWithAES(data.cardNumber), decryptWithAES(data.cardExp), decryptWithAES(data.addyOne), decryptWithAES(data.addyTwo), data.city, data.state, decryptWithAES(data.zipCode), 
             data.country, data.userId)
     }
 

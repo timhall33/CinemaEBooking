@@ -149,7 +149,6 @@ function AddCardView(props) {
 <Fab  onClick={()=> 
 {
   storeCreditCard(db, cardType, cardNum, cardExp, addy, addy, city, state, zipCode, country, auth.currentUser.uid)
-
 }
 
 }
