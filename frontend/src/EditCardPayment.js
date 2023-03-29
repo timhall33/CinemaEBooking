@@ -10,7 +10,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
-import { Button, FormControl, Icon } from '@mui/material';
+import { Button, FormControl, Icon, Typography } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Fab from '@mui/material/Fab';
 import TextField from '@mui/material/TextField';
@@ -20,34 +20,51 @@ import { useEffect, useState } from 'react';
 import { cardConverter, CreditCard } from './CreditModel';
 import { auth, db, app } from './Firebase';
 
-import { addDoc , doc} from 'firebase/firestore';
+import { addDoc , doc, deleteDoc} from 'firebase/firestore';
 import { getFirestore } from 'firebase/firestore';
 import { collection, query, where, getDocs } from "firebase/firestore";
+import { getCountFromServer } from 'firebase/firestore';
+
+
+
+
+
 
 
 async function readCreditCard(userId) {
   const q = query(collection(db, "creditcard"), where("userId", "==", userId));
+
+
+
+  const snapshot = await getCountFromServer(q);
+  const length = snapshot.data().count
+
   var list = []
   const querySnapshot = await getDocs(q);
+  
   querySnapshot.forEach((doc) => {
     // doc.data() is never undefined for query doc snapshots
     list.push(doc.data())
+   console.log(doc)
   });
 
-  return list;
+
+
+  return [list,length];
   
 }
 
-async function storeCreditCard(db, cardType, cardNumber, cardExp, addyOne, addyTwo, city, state, zipCode, country, userId) {
+
+export async function storeCreditCard(db, cardType, cardNumber, cardExp, addyOne,  city, state, zipCode, country, userId) {
 
   // adding document
 
 
-
+  console.log(userId)
 
   const ref = collection(db, "creditcard").withConverter(cardConverter)
   
-  await addDoc(ref, new CreditCard(cardType, cardNumber, cardExp, addyOne, addyTwo, city, state, zipCode, country, userId))
+  await addDoc(ref, new CreditCard(cardType, cardNumber, cardExp, addyOne, city, state, zipCode, country, userId))
   .then((res) => {
     console.log(res)
   }).catch((err) => {
@@ -65,15 +82,6 @@ async function storeCreditCard(db, cardType, cardNumber, cardExp, addyOne, addyT
  */
 function AddCardView(props) {
 
-      const [cardType, setCardType] = useState("")
-      const [cardNum, setCardNum] = useState("")
-      const [cardExp, setCardExp] = useState("")
-      const [addy, setAddy] = useState("")
-      const [city, setCity] = useState("")
-      const [state, setState] = useState("")
-      const [zipCode, setZipCode] = useState("")
-      const [country, setCountry] = useState("")
-
 
 
     return (
@@ -83,21 +91,45 @@ function AddCardView(props) {
          fullWidth 
          multiline
          variant="filled"
-         onChange = {(e) => {setCardType(e.target.value)}}
+         onChange = {(e) => {
+
+        props.setCardData((prev) => ({
+          ...prev,
+          cardType: e.target.value
+        }))
+
+
+
+         }}
         />
          <TextField 
          label="Enter Card Number"
          fullWidth 
          multiline
          variant="filled"
-         onChange = {(e) => {setCardNum(e.target.value)}}
+         onChange = {(e) => 
+
+           props.setCardData((prev) => ({
+          ...prev,
+          cardNum: e.target.value
+        }))
+
+        
+        
+        }
         />
          <TextField 
          label="Enter card expirations date"
          fullWidth 
          multiline
          variant="filled"
-         onChange = {(e) => {setCardExp(e.target.value)}}
+         onChange = {(e) => {
+          props.setCardData((prev) => ({
+            ...prev,
+            cardExp: e.target.value
+          }))
+  
+        }}
         />
         Billing Address
         <TextField 
@@ -105,50 +137,82 @@ function AddCardView(props) {
          fullWidth 
          multiline
          variant="filled"
-         onChange = {(e) => {setAddy(e.target.value)}}
+         onChange = {(e) => {
+          props.setCardData((prev) => ({
+            ...prev,
+          addy: e.target.value
+          }))
+        
+        }}
         />
-        <TextField 
-         label="Address line 2"
-         fullWidth 
-         multiline
-         variant="filled"
-         onChange = {(e) => {setAddy(e.target.value)}}
-        />
+ 
         <TextField 
          label="City"
          fullWidth 
          multiline
          variant="filled"
-         onChange = {(e) => {setCity(e.target.value)}}
+         onChange = {(e) => {    props.setCardData((prev) => ({
+          ...prev,
+          city: e.target.value
+        }))}}
         />
         <TextField 
          label="State"
          fullWidth 
          multiline
          variant="filled"
-         onChange = {(e) => {setState(e.target.value)}}
+         onChange = {(e) => {
+          props.setCardData((prev) => ({
+            ...prev,
+            state: e.target.value
+          }))
+        
+        }}
         />
         <TextField 
          label="Zip Code"
          fullWidth 
          multiline
          variant="filled"
-         onChange = {(e) => {setZipCode(e.target.value)}}
+         onChange = {(e) => {
+          
+          props.setCardData((prev) => ({
+            ...prev,
+            zipCode: e.target.value
+          }))
+        
+        
+        }}
         />
         <TextField 
          label="Country"
          fullWidth 
          multiline
          variant="filled"
-         onChange = {(e) => {setCountry(e.target.value)}}
+         onChange = {(e) => {
+          
+          props.setCardData((prev) => ({
+            ...prev,
+            country: e.target.value
+          }))
+        
+        }}
         />
 
 
            
         { props.showButton && (
-<Fab  onClick={()=> 
+<Fab  onClick={ async ()=> 
 {
-  storeCreditCard(db, cardType, cardNum, cardExp, addy, addy, city, state, zipCode, country, auth.currentUser.uid)
+  console.log(auth.currentUser.uid)
+
+  
+    storeCreditCard(db, props.cardData.cardType,props.cardData.cardNum, props.cardData.cardExp, props.cardData.addy, props.cardData.city,props.cardData.state, props.cardData.zipCode, props.cardData.country, auth.currentUser.uid)
+  
+ 
+  
+ 
+
 }
 
 }
@@ -184,33 +248,67 @@ function createEntry(data) {
 function EditCardPayment() {
 
  
+  const [cardData, setCardData] = useState({
+    cardNum: "",
+    cardType: "",
+    cardExp: "",
+    addy: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    country: "",
+  })
 
-  const [dataPros, setDataPros] = useState(
-    readCreditCard(auth.currentUser.uid)
-)
+  const [showLimitMessage, setShowLimitMessage] = useState(false)
+
+
 
     const [data, setData] = useState()
 
     
 
     useEffect(() => {
-      console.log(data)
-    },[ dataPros.then((res) => {
-      setData(res)
-     })])
+      readCreditCard(auth.currentUser.uid).then((res) => {
+        setData(res)
+        console.log(res)
+       })
+    
+   
+    },[])
 
 
+     async function getCreditCard(cardNumber) {
+      const q = query(collection(db, "creditcard"), where("cardNumber", "==", cardNumber));
+      const querySnapshot = await getDocs(q);
+    
+      if (querySnapshot.empty) {
+        throw new Error("No credit card found with the provided card number.");
+      }
+    
+      const doc = querySnapshot.docs[0];
+      return doc.id;
+    }
 
+     async function deleteCreditCard(cardId) {
+      await deleteDoc(doc(db, "creditcard", cardId));
+    }
 
-
-  
+     const handleDeleteClick = async (c) => {
+      try {
+        const cardId = await getCreditCard(c);
+        await deleteCreditCard(cardId);
+        console.log("Credit card deleted successfully.");
+      } catch (error) {
+        console.error("Error deleting credit card:", error);
+      }
+    };
 
     const navigate = useNavigate();
       const navigateToEditProfile=()=> {
         navigate('/editProfile');
       };
 
-    const entries = [createEntry((Math.random() + 1).toString(36).substring(2)),createEntry((Math.random() + 1).toString(36).substring(2)),createEntry((Math.random() + 1).toString(36).substring(2))]
+   
 
     return (
         <div id = "promotionScreenCont">
@@ -221,7 +319,6 @@ function EditCardPayment() {
    <TableHead>
           <TableRow>
             <TableCell  >Cards</TableCell>
-            <TableCell align="right">Edit</TableCell>
             <TableCell align="right">Delete</TableCell>
           </TableRow>
         </TableHead>
@@ -230,18 +327,23 @@ function EditCardPayment() {
         <TableBody>
 
         
-{ data ? data.map(entry => (
-  <TableRow key = {entry}>
+{ data !== undefined ? data[0].map((entry,index) => (
+  <TableRow key = {index} >
         <TableCell component="th" scope="row">
-              {entry.cardNum}
+              {entry.cardType}
+             
             </TableCell>
-            <TableCell align="right" component="th" scope="row">
-              <IconButton>
-                  <EditIcon></EditIcon>
-              </IconButton>
-            </TableCell>
+
             <TableCell  align="right" component="th" scope="row">
-            <IconButton>
+            <IconButton onClick={ async () => {
+
+          handleDeleteClick(entry.cardNumber); 
+           
+            
+           
+
+
+            }}>
                   <DeleteIcon></DeleteIcon>
               </IconButton>
             </TableCell>
@@ -262,7 +364,27 @@ function EditCardPayment() {
         </Card>
 
 
-        <AddCardView showButton = {true} ></AddCardView>
+
+{ data &&  
+   (data[1] < 3 ) && (
+    <AddCardView  setShowLimitMessage = {setShowLimitMessage}  cardData = {cardData} setCardData = {setCardData} showButton = {true} ></AddCardView>
+  )
+   
+
+
+}
+
+{ data &&
+   (data[1] >= 3 ) && (
+    <Typography>You have reached the limit of 3 credit cards.</Typography>
+  )
+  
+}
+
+
+
+
+      
         <Button
             type='submit'
             fullWidth

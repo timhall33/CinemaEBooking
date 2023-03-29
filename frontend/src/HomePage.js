@@ -30,8 +30,8 @@ import { useEffect } from 'react';
 import { signOut, onAuthStateChanged } from "firebase/auth"
 import {userConverter} from "./UserModel"
 import {doc , getDoc} from "firebase/firestore"
-import { getCurrentUser} from './Firebase';
 import { getAuth } from 'firebase/auth';
+
 function Nav() {
 
     const navigate = useNavigate()

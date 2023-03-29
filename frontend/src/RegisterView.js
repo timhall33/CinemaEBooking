@@ -20,7 +20,11 @@ import { AddCardView } from './EditCardPayment';
 import { useEffect } from 'react';
 import { useMemo } from 'react';
 import Add from '@mui/icons-material/Add';
-
+import HomeAddress from './HomeAddress';
+import { auth, db, app } from './Firebase';
+import { storeCreditCard } from './EditCardPayment';
+import { Firestore } from 'firebase/firestore';
+import { doc, setDoc, updateDoc } from "firebase/firestore";
 const theme = createTheme();
 
 
@@ -38,6 +42,11 @@ function RegisterView() {
   const [response, setResponse] = useState('')
 
   const [paymentOption, setPaymentOption] = useState(false)
+  const [addressOption, setAddressOption] = useState(false)
+
+
+
+
 
 
   const navigateToConfirmation=()=> {
@@ -62,6 +71,26 @@ function RegisterView() {
     console.log(firstName, lastName, email, password, phoneNumber);
     handleClose();
   };
+
+  
+  const [cardData, setCardData] = useState({
+    cardNum: "",
+    cardType: "",
+    cardExp: "",
+    addy: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    country: "",
+  })
+
+
+  const [addressData, setAddressData] = useState({
+    street: "",
+    city: "",
+    state: "",
+    zipCode: "",
+  })
 
 
 
@@ -187,10 +216,19 @@ function RegisterView() {
             </Grid>
           </Grid>
           { paymentOption && (
-            <AddCardView showButton = {false}></AddCardView>
+<div>
+             <AddCardView  cardData = {cardData} setCardData = {setCardData}   showButton = {false} ></AddCardView>
+             </div>
           )
 
           }
+          <Grid item xs={12}>
+              <FormControlLabel
+                control={<Checkbox  onChange={(e) => setAddressOption(e.target.checked)} value="address" color="primary" />}
+                label="Enter a home address"
+              />
+            </Grid>
+            { addressOption && <HomeAddress setAddressData = {setAddressData}   ></HomeAddress>}
           <Button
             fullWidth
             variant="contained"
@@ -198,11 +236,43 @@ function RegisterView() {
             value="clicked"
 
             
-            onClick={(e) => {
+            onClick={ async (e) => {
             setClick(e.target.value)
-             console.log((/^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/).test(phoneNumber))
+         
             if (firstName.length !== 0 && lastName.length != 0 && (/^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/).test(phoneNumber)) {
               register(firstName,lastName,email,phoneNumber,password, promotionStatus, true, {setResponse}, navigate);
+
+
+              if (paymentOption) {
+                storeCreditCard(db, cardData.cardType,cardData.cardNum, cardData.cardExp, cardData.addy, cardData.city,cardData.state, cardData.zipCode, cardData.country, auth.currentUser.uid)
+              }
+
+              if (setAddressData) {
+                const addyDocRef = doc(db, 'address/', auth.currentUser.uid);
+                const addyData = {
+                  street:addressData.street,
+                  city: addressData.city,
+                  state: addressData.state,
+                  zip: addressData.zipCode,
+                  userId: auth.currentUser.uid,
+              
+              }
+
+              await setDoc(addyDocRef, addyData)
+              .then((res) => {
+                console.log('Addy doc updated successfully!');
+              
+              })
+              .catch((error) => {
+                console.error('Error updating document: ', error);
+              });
+  
+  
+          
+
+              
+              }
+
             }
            
 
