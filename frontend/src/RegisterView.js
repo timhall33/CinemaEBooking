@@ -247,7 +247,7 @@ function RegisterView() {
                 storeCreditCard(db, cardData.cardType,cardData.cardNum, cardData.cardExp, cardData.addy, cardData.city,cardData.state, cardData.zipCode, cardData.country, auth.currentUser.uid)
               }
 
-              if (setAddressData) {
+              if (addressOption) {
                 const addyDocRef = doc(db, 'address/', auth.currentUser.uid);
                 const addyData = {
                   street:addressData.street,
@@ -267,7 +267,7 @@ function RegisterView() {
                 console.error('Error updating document: ', error);
               });
   
-  
+              
           
 
               
