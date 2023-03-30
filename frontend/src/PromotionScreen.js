@@ -16,12 +16,48 @@ import Stack from '@mui/material/Stack';
 import Fab from '@mui/material/Fab';
 import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
+import { useState } from 'react';
+import { storePromo } from './FirebasePromotionFunc';
+import { db } from './Firebase';
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { getCountFromServer } from 'firebase/firestore';
+import { useEffect } from 'react';
+
+async function readPromo() {
+    const q = query(collection(db, "promotions"));
+  
+  
+    var list = []
+    const querySnapshot = await getDocs(q);
+    
+    querySnapshot.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      list.push(doc.data())
+     console.log(doc)
+    });
+  
+  
+  
+    return list;
+    
+  }
 
 /**
+ * 
  * View that displays fields for promotion creation
  * @returns view
  */
 function AddPromotionView() {
+
+    const [promoData, setPromoData] = useState({
+        title: "",
+        discount: "",
+        description: ""
+    })
+
+
+    const [clicked, setClicked] = useState(false)
+
     return (
         <Stack id= "addPromotionViewCont" direction="column">
  <TextField 
@@ -29,20 +65,65 @@ function AddPromotionView() {
          fullWidth 
          multiline
          variant="filled"
+
+         onChange = {(e) => {
+
+            setPromoData((prev) => ({
+               ...prev,
+                title: e.target.value
+             }))
+     
+     
+     
+              }}
+
+              error = {promoData.title.length == 0 && clicked}
+
         />
          <TextField 
          label="Enter a description"
          fullWidth 
          multiline
          variant="filled"
+
+         error = {promoData.discount.length == 0 && clicked}
+         onChange = {(e) => {
+
+            setPromoData((prev) => ({
+               ...prev,
+               description: e.target.value
+             }))
+     
+     
+     
+              }}
         />
          <TextField 
          label="Enter a discount percentage"
          fullWidth 
          multiline
          variant="filled"
+
+          onChange = {(e) => {
+
+            setPromoData((prev) => ({
+               ...prev,
+               discount: e.target.value
+             }))
+     
+     
+     
+              }}
+
+              error = {promoData.discount.length == 0 && clicked}
+
         />
-        <Fab variant="extended" size="medium" color="primary"  aria-label="add">
+        <Fab   onClick={(e) => {
+setClicked(true)
+storePromo(promoData.title, promoData.description, promoData.discount)
+
+
+        }}  variant="extended" size="medium" color="primary"  aria-label="add">
      <AddIcon></AddIcon>
         Create promotion
       </Fab>
@@ -64,7 +145,14 @@ function createEntry(data) {
 
 function PromotionScreen() {
 
-    const entries = [createEntry((Math.random() + 1).toString(36).substring(2)),createEntry((Math.random() + 1).toString(36).substring(2)),createEntry((Math.random() + 1).toString(36).substring(2))]
+    const [data, setData] = useState()
+
+    useEffect(() => {
+       readPromo().then((res) => {
+            setData(res)
+       })
+      },[])
+      
 
     return (
         <div id = "promotionScreenCont">
@@ -80,10 +168,12 @@ function PromotionScreen() {
           </TableRow>
         </TableHead>
 <TableBody>
-{entries.map(entry => (
+
+
+{data !== undefined ? data.map((entry,index) => (
     <TableRow key = {entry.data}>
           <TableCell component="th" scope="row">
-                {entry.data}
+                {entry.title}
               </TableCell>
               <TableCell align="right" component="th" scope="row">
                 <IconButton>
@@ -96,7 +186,7 @@ function PromotionScreen() {
                 </IconButton>
               </TableCell>
     </TableRow>
-))
+)) : null
 
 }
 
