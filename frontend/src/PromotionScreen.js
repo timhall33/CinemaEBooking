@@ -23,6 +23,8 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import { getCountFromServer } from 'firebase/firestore';
 import { useEffect } from 'react';
 
+
+
 async function readPromo() {
     const q = query(collection(db, "promotions"));
   
@@ -163,8 +165,7 @@ function PromotionScreen() {
    <TableHead>
           <TableRow>
             <TableCell  >Promotions</TableCell>
-            <TableCell align="right">Edit</TableCell>
-            <TableCell align="right">Delete</TableCell>
+       
           </TableRow>
         </TableHead>
 <TableBody>
@@ -175,16 +176,7 @@ function PromotionScreen() {
           <TableCell component="th" scope="row">
                 {entry.title}
               </TableCell>
-              <TableCell align="right" component="th" scope="row">
-                <IconButton>
-                    <EditIcon></EditIcon>
-                </IconButton>
-              </TableCell>
-              <TableCell  align="right" component="th" scope="row">
-              <IconButton>
-                    <DeleteIcon></DeleteIcon>
-                </IconButton>
-              </TableCell>
+           
     </TableRow>
 )) : null
 

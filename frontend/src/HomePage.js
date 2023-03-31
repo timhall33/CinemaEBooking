@@ -31,6 +31,7 @@ import { signOut, onAuthStateChanged } from "firebase/auth"
 import {userConverter} from "./UserModel"
 import {doc , getDoc} from "firebase/firestore"
 import { getAuth } from 'firebase/auth';
+import { collection, query, where, getDocs } from "firebase/firestore";
 
 function Nav() {
     const navigate = useNavigate()
@@ -323,6 +324,27 @@ export function BookMovieStepperView(props) {
 }
 
 
+
+async function readMovies() {
+    const q = query(collection(db, "movies"));
+  
+  
+    var list = []
+    const querySnapshot = await getDocs(q);
+    
+    querySnapshot.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      list.push(doc.data())
+     console.log(doc)
+    });
+  
+  
+  
+    return list;
+    
+  }
+
+
 /**
  * Displays the movies that are screening and soon-to-be screening
  * @returns    <CardMedia component="img"  
@@ -330,21 +352,30 @@ export function BookMovieStepperView(props) {
                  title="Greatness">
                 </CardMedia>
  */
-function MoviesView() {
+function MoviesView(props) {
 
+    const [data, setData] = useState()
 
-    let array = [1,2,3,4]
-    let embedId = "6r8Dooe7f-k"
+    useEffect(() => {
+        readMovies().then((res) => {
+            setData(res)
+        })
+    },[])
 
+   
+
+   
     return (
         <div id="moviesViewCont">
              <Typography  variant="h4" component="div">Now Screening </Typography>
         <div id = "moviesPlayingCont">
     
-    {array.map(item => (
+    { data != null ? data.filter(item => (item.movieTitle.toLowerCase().includes(props.query.toLowerCase()) || 
+    item.movieCategory.toLowerCase().includes(props.query.toLowerCase())
+    )).map(item => (
         <Card elevation = {8} className = "movieCard" key = {item} sx={{ maxWidth: 400 }}>
          <div className ="iframeCont">
-         <iframe className = "trailer" src= {`https://www.youtube.com/embed/${embedId}`}
+         <iframe className = "trailer" src= {`https://www.youtube.com/embed/${item.movieTrailer}`}
    allow='autoplay; encrypted-media'
    allowfullscreen
    title='video'
@@ -356,11 +387,11 @@ function MoviesView() {
                 <Stack className = "movieTitle" direction = "row">
 
                 <Typography  variant="h10" component="div">Title: </Typography>
-                <Typography  variant="h6" component="div">Greatness</Typography>
+                <Typography  variant="h6" component="div">{item.movieTitle}</Typography>
                 </Stack>
                 <Stack className = "movieRating" direction = "row">
                 <Typography  variant="h10" component="div">Rating: </Typography>
-                <Typography  variant="h6" component="div">TV-MA</Typography>
+                <Typography  variant="h6" component="div">{item.movieRatingCode}</Typography>
                 </Stack>
 <div className = "bottomCardCont">
 <Rating name="half-rating-read" defaultValue={5} precision={0.5} readOnly />
@@ -374,37 +405,51 @@ function MoviesView() {
 </div>
             </CardContent>
         </Card>
-    ))
+    )) : null
 
     }
     </div>
     <Typography  variant="h4" component="div">Screening Soon </Typography>
         <div id = "moviesPlayingCont">
-        {array.map(item => (
-            <Card elevation = {8} className = "movieCard" key = {item} sx={{ maxWidth: 400 }}>
-             <div className ="iframeCont">
-             <iframe className = "trailer" src= {`https://www.youtube.com/embed/${embedId}`}
-       allow='autoplay; encrypted-media'
-       allowfullscreen
-       title='video'
-       >
-      </iframe>
-             </div>
-               
-                <CardContent>
-                    <Stack className = "movieTitle" direction = "row">
-                    <Typography  variant="h10" component="div">Title: </Typography>
-                    <Typography  variant="h6" component="div">Greatness</Typography>
-                    </Stack>
-                    <Stack className = "movieRating" direction = "row">
-                    <Typography  variant="h10" component="div">Rating: </Typography>
-                    <Typography  variant="h6" component="div">TV-MA</Typography>
-                    </Stack>
-                </CardContent>
-            </Card>
-        ))
+     
+        { data != null ? data.filter(item => (item.movieTitle.toLowerCase().includes(props.query.toLowerCase()) || 
+    item.movieCategory.toLowerCase().includes(props.query.toLowerCase())
+    )).map(item => (
+        <Card elevation = {8} className = "movieCard" key = {item} sx={{ maxWidth: 400 }}>
+         <div className ="iframeCont">
+         <iframe className = "trailer" src= {`https://www.youtube.com/embed/${item.movieTrailer}`}
+   allow='autoplay; encrypted-media'
+   allowfullscreen
+   title='video'
+   >
+  </iframe>
+         </div>
+           
+            <CardContent>
+                <Stack className = "movieTitle" direction = "row">
 
-        }
+                <Typography  variant="h10" component="div">Title: </Typography>
+                <Typography  variant="h6" component="div">{item.movieTitle}</Typography>
+                </Stack>
+                <Stack className = "movieRating" direction = "row">
+                <Typography  variant="h10" component="div">Rating: </Typography>
+                <Typography  variant="h6" component="div">{item.movieRatingCode}</Typography>
+                </Stack>
+<div className = "bottomCardCont">
+<Rating name="half-rating-read" defaultValue={5} precision={0.5} readOnly />
+  
+<Link to="/buytickets" style={{ textDecoration: 'none' }}>
+    <Button variant="contained" >
+        Book
+    </Button>
+</Link>
+
+</div>
+            </CardContent>
+        </Card>
+    )) : null
+
+    }
         </div>
         
         </div>
@@ -415,10 +460,11 @@ function MoviesView() {
  * Displays search field where user can filter movie by {whatever specified in requirements}
  * @returns 
  */
-function SearchField() {
+function SearchField(props) {
+   
     return (
  
-            <TextField  sx={{maxWidth: 500, width: "100%"}} label="Browse movies" variant="filled" />
+            <TextField  onChange = {(e) => props.setQuery(e.target.value)}   sx={{maxWidth: 500, width: "100%"}} label="Browse movies" variant="filled" />
         
     )
 }
@@ -428,6 +474,7 @@ function SearchField() {
  * @returns 
  */
 function HomePage() {
+    const [query, setQuery] = useState("")
     return (
         <div id="homePageCont">
 <div>
@@ -437,8 +484,8 @@ function HomePage() {
 
     <Typography variant="h4" >E-Booking Cinema</Typography>
 </div>
-<SearchField></SearchField>
-    <MoviesView></MoviesView>
+<SearchField setQuery = {setQuery} query = {query}></SearchField>
+    <MoviesView setQuery = {setQuery} query = {query}></MoviesView>
 
         </div>
     )
