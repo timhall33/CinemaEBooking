@@ -10,6 +10,7 @@ import CardMedia from '@mui/material/CardMedia';
 import aotPic from './aot.png'
 import Divider from '@mui/material/Divider';
 
+
 /*
 Upon successful payment, the 
 system should display a booking confirmation 
@@ -18,6 +19,8 @@ Along with the confirmation page, a confirmation e-mail should be sent to the us
 
 Order total price is the sum of tickets prices, sales tax, and online fees.
 */
+
+
 
 /**
  * Displays poster of the selected movie and selected showtime
