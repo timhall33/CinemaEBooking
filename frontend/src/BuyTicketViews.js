@@ -28,6 +28,11 @@ import PaymentForm from './PaymentForm';
 import AddressForm from './AddressForm';
 import OrderConfirmationView from './OrderConfirmationView';
 import PlaceOrder from './PlaceOrder';
+import { useParams } from 'react-router-dom';
+import { collection, query, where, getDocs, limit } from "firebase/firestore";
+import { db} from './Firebase'
+
+
 
 
 /*
@@ -78,15 +83,32 @@ function TabPanel(props) {
  * @returns 
  */
 function ShowTimeView() {
+    const {movieTitle}  = useParams();
+    const moviesRef = collection(db, "movies");
+    const q = query(moviesRef, where("movieTitle", "==", movieTitle), limit(1));
+    const [movieShowDate, setMovieShowDate] = useState("");
+    const [movieShowTime, setMovieShowTime] = useState("");
 
+
+
+    getDocs(q).then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          const movieData = doc.data();
+          setMovieShowDate(movieData.movieShowDate);
+          setMovieShowTime(movieData.movieShowTime);
+        });
+      }).catch((error) => {
+        console.log("Error getting movie document:", error);
+      });    
+    
     const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  var dates = ["Mar 12","Mar 13","Mar 14","Mar 15","Mar 16","Mar 17","Mar 18","Mar 19"]
-  var times = ["3:45","4:45","5:34","7:34","8:45","9:45","10:30","11:30"]
+  let dates = movieShowDate.split(/, ?/);
+  let times = movieShowTime.split(/, ?/);
 
     return (
         <Card  elevation = {3} id="showTimeView"    sx={{maxWidth: 680, width: "100%"}}>

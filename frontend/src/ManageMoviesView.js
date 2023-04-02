@@ -27,13 +27,13 @@ function AddMovieView() {
     const [movieData, setMovieData] = useState({
         movieTitle: "",
         movieCategory: "",
-        movieCast:"",
+        movieCast: "",
         movieDirector: "",
         movieProducer: "",
         movieSynopsis: "",
-        movieTrailer:"",
+        movieTrailer: "",
         movieRatingCode: "",
-        movieShowTime:"",
+        movieShowTime: "",
         movieShowDate: ""
       })
 
@@ -215,7 +215,7 @@ function AddMovieView() {
         <Fab onClick={(e) => {
 
 setClicked(true)
-storeMovie(movieData.movieTitle, movieData.movieCategory, movieData.movieCast, movieData.movieProducer, movieData.movieSynopsis, movieData.movieTrailer, movieData.movieRatingCode, movieData.movieShowDate, movieData.movieShowTime)
+storeMovie(movieData.movieTitle, movieData.movieCategory, movieData.movieCast, movieData.movieDirector, movieData.movieProducer, movieData.movieSynopsis, movieData.movieTrailer, movieData.movieRatingCode, movieData.movieShowDate, movieData.movieShowTime)
 
 }} variant="extended" size="medium" color="primary"  aria-label="add">
      <AddIcon ></AddIcon>
