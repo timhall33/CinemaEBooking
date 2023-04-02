@@ -51,7 +51,7 @@ function App() {
 
        
         <Route path="/" element={  <HomePage />} />
-        <Route path="/buytickets" element={<BookMovieStepperView />} />
+        <Route path="/buytickets/:movieTitle" element={<BookMovieStepperView />} />
         <Route path="/orderConfirmation" element={<OrderConfirmationView />} />
         <Route path="/promotions" element={<PromotionScreen />} />
         <Route path="/login" element={<LoginView />} />
