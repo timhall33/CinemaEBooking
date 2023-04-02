@@ -24,7 +24,7 @@ import HomeAddress from './HomeAddress';
 import { auth, db, app } from './Firebase';
 import { storeCreditCard } from './EditCardPayment';
 import { Firestore } from 'firebase/firestore';
-
+import { doc, setDoc, updateDoc } from "firebase/firestore";
 const theme = createTheme();
 
 
@@ -43,6 +43,9 @@ function RegisterView() {
 
   const [paymentOption, setPaymentOption] = useState(false)
   const [addressOption, setAddressOption] = useState(false)
+
+
+
 
 
 
@@ -69,14 +72,26 @@ function RegisterView() {
     handleClose();
   };
 
-  const [cardType, setCardType] = useState("")
-  const [cardNum, setCardNum] = useState("")
-  const [cardExp, setCardExp] = useState("")
-  const [addy, setAddy] = useState("")
-  const [city, setCity] = useState("")
-  const [state, setState] = useState("")
-  const [zipCode, setZipCode] = useState("")
-  const [country, setCountry] = useState("")
+  
+  const [cardData, setCardData] = useState({
+    cardNum: "",
+    cardType: "",
+    cardExp: "",
+    addy: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    country: "",
+  })
+
+
+  const [addressData, setAddressData] = useState({
+    street: "",
+    city: "",
+    state: "",
+    zipCode: "",
+  })
+
 
 
 
@@ -201,7 +216,9 @@ function RegisterView() {
             </Grid>
           </Grid>
           { paymentOption && (
-            <> <AddCardView  cardSpecs = {{setCardExp, setAddy, setCardType, setCountry, setCardNum, setCity, setState, setZipCode, cardExp, addy, cardType, country, cardNum, city, state, zipCode}}   showButton = {false} ></AddCardView></>
+<div>
+             <AddCardView  cardData = {cardData} setCardData = {setCardData}   showButton = {false} ></AddCardView>
+             </div>
           )
 
           }
@@ -211,7 +228,7 @@ function RegisterView() {
                 label="Enter a home address"
               />
             </Grid>
-            { addressOption && <HomeAddress></HomeAddress>}
+            { addressOption && <HomeAddress setAddressData = {setAddressData}   ></HomeAddress>}
           <Button
             fullWidth
             variant="contained"
@@ -219,7 +236,7 @@ function RegisterView() {
             value="clicked"
 
             
-            onClick={(e) => {
+            onClick={ async (e) => {
             setClick(e.target.value)
          
             if (firstName.length !== 0 && lastName.length != 0 && (/^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/).test(phoneNumber)) {
@@ -227,7 +244,33 @@ function RegisterView() {
 
 
               if (paymentOption) {
-                storeCreditCard(db, cardType,cardNum, cardExp, addy, addy,city,state, zipCode, country, auth.currentUser.uid)
+                storeCreditCard(db, cardData.cardType,cardData.cardNum, cardData.cardExp, cardData.addy, cardData.city,cardData.state, cardData.zipCode, cardData.country, auth.currentUser.uid)
+              }
+
+              if (addressOption) {
+                const addyDocRef = doc(db, 'address/', auth.currentUser.uid);
+                const addyData = {
+                  street:addressData.street,
+                  city: addressData.city,
+                  state: addressData.state,
+                  zip: addressData.zipCode,
+                  userId: auth.currentUser.uid,
+              
+              }
+
+              await setDoc(addyDocRef, addyData)
+              .then((res) => {
+                console.log('Addy doc updated successfully!');
+              
+              })
+              .catch((error) => {
+                console.error('Error updating document: ', error);
+              });
+  
+              
+          
+
+              
               }
 
             }
