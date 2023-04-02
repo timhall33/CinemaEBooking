@@ -17,7 +17,11 @@ import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
 import { storeMovie } from './FirebaseMovieFunctions';
 import { useState } from 'react';
-
+import { readMovies } from './HomePage'
+import { db} from './Firebase'
+import {doc , getDoc} from "firebase/firestore"
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { movieConverter } from './MovieModel';
 /**
  * View that displays fields for promotion creation
  * @returns view
@@ -239,7 +243,7 @@ function createEntry(data) {
 
 function ManageMovies() {
 
-    const entries = [createEntry("Megan"),createEntry("Tupac"),createEntry("Dogs")]
+      let entries = [createEntry(getMovies())]
 
     return (
         <div id = "movieScreenCont">
