@@ -31,7 +31,10 @@ import { signOut } from "firebase/auth"
 import {userConverter} from "./UserModel"
 import {doc , getDoc} from "firebase/firestore"
 import { getAuth } from 'firebase/auth';
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, limit } from "firebase/firestore";
+import { useParams } from 'react-router-dom';
+
+
 
 function Nav() {
 
@@ -211,21 +214,52 @@ return (
 
 
 function MovieSelectedView() {
+    const {movieTitle}  = useParams();
+    const moviesRef = collection(db, "movies");
+    const q = query(moviesRef, where("movieTitle", "==", movieTitle), limit(1));
+    const [movieData, setMovieData] = useState(null); // Add state to store the movie data
+
+    useEffect(() => {
+        getDocs(q)
+            .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    setMovieData(doc.data()); // Save the movie data in state
+                });
+            })
+            .catch((error) => {
+                console.log("Error getting documents: ", error);
+            });
+    }, [movieTitle]);
+
+    if (!movieData) {
+        return <div>Loading...</div>;
+    }
+
+    const { movieTitle: title, movieTrailer, movieShowDate, ...rest } = movieData;
+
     return (
         <Stack direction = "row" id ="movieSelectedView">
             <div id="moviePosterCont">
             <img id="moviePoster" src={aotPic}>
             </img>
             </div>
-            <Stack className="movieSelectionDetails" >
-        <Typography  variant="h5">
-               Greatness
-            </Typography>
-            <Typography  variant="h7">
-              Sunday, April 11 at 2:45 PM
-            </Typography>
-        </Stack>
             
+            <Stack className="movieSelectionDetails" >
+            <Typography variant="h2">{title}</Typography>
+            {Object.entries(rest).map(([key, value]) => (
+                    <Typography key={key} variant="h5">
+                        {key}: {value}
+                    </Typography>
+                ))}
+        </Stack>
+            <div id = "movieTraier">
+            <iframe src= {`https://www.youtube.com/embed/${movieTrailer}`}
+   allow='autoplay; encrypted-media'
+   allowfullscreen
+   title='video'
+   >
+  </iframe>
+            </div>
         </Stack>
     )
 }
@@ -270,6 +304,7 @@ async function readMovies() {
   }
 
 
+
 /**
  * Displays the movies that are screening and soon-to-be screening
  * @returns    <CardMedia component="img"  
@@ -280,14 +315,12 @@ async function readMovies() {
 function MoviesView(props) {
 
     const [data, setData] = useState()
-
+    
     useEffect(() => {
         readMovies().then((res) => {
             setData(res)
         })
     },[])
-
-   
 
    
     return (
@@ -320,9 +353,8 @@ function MoviesView(props) {
                 </Stack>
 <div className = "bottomCardCont">
 <Rating name="half-rating-read" defaultValue={5} precision={0.5} readOnly />
-  
-<Link to="/buytickets" style={{ textDecoration: 'none' }}>
-    <Button variant="contained" >
+<Link to={{pathname: `/buytickets/${item.movieTitle}`}} style={{ textDecoration: 'none' }}>
+    <Button variant="contained">
         Book
     </Button>
 </Link>
@@ -363,7 +395,7 @@ function MoviesView(props) {
 <div className = "bottomCardCont">
 <Rating name="half-rating-read" defaultValue={5} precision={0.5} readOnly />
   
-<Link to="/buytickets" style={{ textDecoration: 'none' }}>
+<Link to={{pathname: `/buytickets/${item.movieTitle}`}} style={{ textDecoration: 'none' }}>
     <Button variant="contained" >
         Book
     </Button>
@@ -400,6 +432,7 @@ function SearchField(props) {
  */
 function HomePage() {
     const [query, setQuery] = useState("")
+    const [movieTitle, setMovieTitle] = useState("")
     return (
         <div id="homePageCont">
 <div>
@@ -410,7 +443,7 @@ function HomePage() {
     <Typography variant="h4" >E-Booking Cinema</Typography>
 </div>
 <SearchField setQuery = {setQuery} query = {query}></SearchField>
-    <MoviesView setQuery = {setQuery} query = {query}></MoviesView>
+    <MoviesView setMovieTitle = {setMovieTitle} setQuery = {setQuery} query = {query}></MoviesView>
 
         </div>
     )
