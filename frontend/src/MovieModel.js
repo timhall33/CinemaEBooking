@@ -11,10 +11,8 @@ export class Movie {
         this.movieSynopsis = movieSynopsis
         this.movieTrailer = movieTrailer
         this.movieRatingCode = movieRatingCode
-        this.movieShowTime = movieShowTime
         this.movieShowDate = movieShowDate
-
-        
+        this.movieShowTime = movieShowTime
     }   
     
 }
@@ -32,8 +30,8 @@ export const movieConverter = {
             movieSynopsis: movie.movieSynopsis,
             movieTrailer: movie.movieTrailer,
             movieRatingCode: movie.movieRatingCode,
-            movieShowTime: movie.movieShowTime,
-            movieShowDate: movie.movieShowDate
+            movieShowDate: movie.movieShowDate,
+            movieShowTime: movie.movieShowTime
             };
     },
     fromFirestore: function (snapshot, options) {
