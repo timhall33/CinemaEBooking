@@ -2,7 +2,7 @@
 
 export class Movie {
      
-    constructor (movieTitle, movieCategory, movieCast, movieDirector, movieProducer, movieSynopsis, movieTrailer, movieRatingCode, movieShowDate, movieShowTime) {
+    constructor (movieTitle, movieCategory, movieCast, movieDirector, movieProducer, movieSynopsis, movieTrailer, movieRatingCode, movieShowDate, movieShowTime, movieID) {
         this.movieTitle = movieTitle
         this.movieCategory = movieCategory
         this.movieDirector = movieDirector
@@ -13,7 +13,8 @@ export class Movie {
         this.movieRatingCode = movieRatingCode
         this.movieShowDate = movieShowDate
         this.movieShowTime = movieShowTime
-    }   
+        this.movieID = movieID
+    } 
     
 }
 // Firestore data converter
@@ -31,12 +32,13 @@ export const movieConverter = {
             movieTrailer: movie.movieTrailer,
             movieRatingCode: movie.movieRatingCode,
             movieShowDate: movie.movieShowDate,
-            movieShowTime: movie.movieShowTime
+            movieShowTime: movie.movieShowTime,
+            movieID: movie.movieID
             };
     },
     fromFirestore: function (snapshot, options) {
         const data = snapshot.data(options);
-        return new Movie(data.movieTitle, data.movieCategory, data.movieCast, data.movieDirector, data.movieProducer, data.movieSynopsis, data.movieTrailer, data.movieRatingCode, data.movieShowDate, data.movieShowTime)
+        return new Movie(data.movieTitle, data.movieCategory, data.movieCast, data.movieDirector, data.movieProducer, data.movieSynopsis, data.movieTrailer, data.movieRatingCode, data.movieShowDate, data.movieShowTime, data.movieID)
     }
 
 }; 

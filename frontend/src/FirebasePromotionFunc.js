@@ -4,8 +4,10 @@ import { getFirestore } from "firebase/firestore";
 import {app} from './Firebase';
 import {db} from './Firebase';
 import {Promotion, promoConverter} from './PromotionModel';
-import { addDoc ,deleteDoc} from 'firebase/firestore';
+import { addDoc ,deleteDoc , getDocs, query, where} from 'firebase/firestore';
 import { collection } from "firebase/firestore";
+import {userConverter} from './UserModel'
+import emailjs, { send } from "@emailjs/browser"
 
 
 export async function storePromo(title, description, discount) {
@@ -16,9 +18,35 @@ export async function storePromo(title, description, discount) {
     await addDoc(ref, new Promotion(title, description, discount))
     .then((e) => {{
         console.log(e)
+        window.location.reload(false)
+        sendPromotionEmails(discount,description)
     }})
     .catch((error) => {
         console.log(error)
     })
 
+  }
+
+  async function sendPromotionEmails(promotionAmount, promotionDescription) {
+
+    const q = query(collection(db, "users") , where("promotionStatus" , "==", true));
+    const querySnapshot = await getDocs(q);  
+    querySnapshot.forEach((doc) => {
+    const user = doc.data()
+    var params = {
+        name: user.firstName,
+        email: user.email,
+        promotionAmount: promotionAmount,
+        promotionDescription: promotionDescription
+    };
+    emailjs.send("service_1s3tmck","template_1oybops",params)
+    .then((e) => {{
+
+    }})
+    .catch((error) => {
+        console.log(error)
+    })
+
+    });
+  
   }

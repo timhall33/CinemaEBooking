@@ -315,7 +315,7 @@ function MovieSelectedView() {
     return (
         <Stack direction = "row" id ="movieSelectedView">
             <div id="moviePosterCont">
-            <img id="moviePoster" src={aotPic}>
+            <img id="moviePoster">
             </img>
             </div>
             
@@ -359,7 +359,7 @@ export function BookMovieStepperView(props) {
 
 
 
-async function readMovies() {
+export async function readMovies() {
     const q = query(collection(db, "movies"));
   
   

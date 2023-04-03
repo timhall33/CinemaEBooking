@@ -1,5 +1,5 @@
 
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, updateDoc } from "firebase/firestore";
 import { getFirestore } from "firebase/firestore";
 import {app} from './Firebase';
 import {db} from './Firebase';
@@ -12,10 +12,14 @@ export async function storeMovie(movieTitle, movieCategory, movieCast, movieDire
 
     // adding document
     const ref = collection(db, "movies").withConverter(movieConverter)
-    console.log("a")
-    await addDoc(ref, new Movie(movieTitle, movieCategory, movieCast, movieDirector, movieProducer, movieSynopsis, movieTrailer, movieRatingCode, movieShowDate, movieShowTime))
+    await addDoc(ref, new Movie(movieTitle, movieCategory, movieCast, movieDirector, movieProducer, movieSynopsis, movieTrailer, movieRatingCode, movieShowDate, movieShowTime, ""))
     .then((e) => {{
         console.log(e)
+        const newRef = doc(db, "movies", e.id);
+        updateDoc(newRef, {
+            movieID: e.id
+        })
+        window.location.reload(false)
     }})
     .catch((error) => {
         console.log(error)

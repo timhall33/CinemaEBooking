@@ -88,7 +88,7 @@ function AddPromotionView() {
          multiline
          variant="filled"
 
-         error = {promoData.discount.length == 0 && clicked}
+         error = {promoData.description.length == 0 && clicked}
          onChange = {(e) => {
 
             setPromoData((prev) => ({
@@ -122,7 +122,9 @@ function AddPromotionView() {
         />
         <Fab   onClick={(e) => {
 setClicked(true)
+if (promoData.title.length != 0 && promoData.description.length != 0 && promoData.discount.length != 0) {
 storePromo(promoData.title, promoData.description, promoData.discount)
+}
 
 
         }}  variant="extended" size="medium" color="primary"  aria-label="add">
