@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { fabClasses } from "@mui/material";
 import {  connectFirestoreEmulator, initializeFirestore } from 'firebase/firestore';
 // TODO: Add SDKs for Firebase products that you want to use

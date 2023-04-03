@@ -7,10 +7,10 @@ import { setPersistence,  browserSessionPersistence } from "firebase/auth";
 
 export function login(email, password, navigate, props) {
     
-    if (props.rememberMe) {
-        setPersistence(auth, browserSessionPersistence)
+    // if (props.rememberMe) {
+    //     setPersistence(auth, browserSessionPersistence)
 
-    }
+    // }
 
   
 

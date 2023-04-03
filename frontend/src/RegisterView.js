@@ -239,7 +239,7 @@ function RegisterView() {
             onClick={ async (e) => {
             setClick(e.target.value)
          
-            if (firstName.length !== 0 && lastName.length != 0 && (/^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/).test(phoneNumber)) {
+            if (firstName.length !== 0 && lastName.length != 0 &&  (/^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/).test(phoneNumber) && (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) {
               register(firstName,lastName,email,phoneNumber,password, promotionStatus, true, {setResponse}, navigate);
 
 

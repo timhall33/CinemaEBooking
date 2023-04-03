@@ -17,7 +17,12 @@ import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
 import { storeMovie } from './FirebaseMovieFunctions';
 import { useState } from 'react';
-
+import { readMovies } from './HomePage'
+import { db} from './Firebase'
+import {doc , getDoc} from "firebase/firestore"
+import { collection, query, where, getDocs, deleteDoc  } from "firebase/firestore";
+import { movieConverter } from './MovieModel';
+import { useEffect } from 'react';
 /**
  * View that displays fields for promotion creation
  * @returns view
@@ -215,7 +220,9 @@ function AddMovieView() {
         <Fab onClick={(e) => {
 
 setClicked(true)
+if (movieData.movieTitle.length != 0 && movieData.movieCategory.length != 0 && movieData.movieCast.length != 0 && movieData.movieDirector.length != 0 && movieData.movieProducer.length != 0 && movieData.movieSynopsis.length != 0 && movieData.movieTrailer.length != 0 && movieData.movieRatingCode.length != 0 && movieData.movieShowTime.length != 0 && movieData.movieShowDate.length != 0) {
 storeMovie(movieData.movieTitle, movieData.movieCategory, movieData.movieCast, movieData.movieDirector, movieData.movieProducer, movieData.movieSynopsis, movieData.movieTrailer, movieData.movieRatingCode, movieData.movieShowDate, movieData.movieShowTime)
+} 
 
 }} variant="extended" size="medium" color="primary"  aria-label="add">
      <AddIcon ></AddIcon>
@@ -227,9 +234,6 @@ storeMovie(movieData.movieTitle, movieData.movieCategory, movieData.movieCast, m
     
     )
 }
-function createEntry(data) {
-    return {data}
-}
 
 
 /**
@@ -238,8 +242,12 @@ function createEntry(data) {
  */
 
 function ManageMovies() {
-
-    const entries = [createEntry("Megan"),createEntry("Tupac"),createEntry("Dogs")]
+ const [data, setData] = useState()
+ useEffect(() => {
+  readMovies().then((res) => {
+      setData(res)
+  })
+},[])
 
     return (
         <div id = "movieScreenCont">
@@ -250,28 +258,24 @@ function ManageMovies() {
    <TableHead>
           <TableRow>
             <TableCell  >Movie</TableCell>
-            <TableCell align="right">Edit</TableCell>
             <TableCell align="right">Delete</TableCell>
           </TableRow>
         </TableHead>
 <TableBody>
-{entries.map(entry => (
-    <TableRow key = {entry.data}>
+{data != null ? data.map(entry => (
+    <TableRow key = {entry}>
           <TableCell component="th" scope="row">
-                {entry.data}
-              </TableCell>
-              <TableCell align="right" component="th" scope="row">
-                <IconButton>
-                    <EditIcon></EditIcon>
-                </IconButton>
+                {entry.movieTitle}
               </TableCell>
               <TableCell  align="right" component="th" scope="row">
-              <IconButton>
+              <IconButton
+               onClick={()=> {deleteMovie(entry.movieID)}}
+               >
                     <DeleteIcon></DeleteIcon>
                 </IconButton>
               </TableCell>
     </TableRow>
-))
+)) : null
 
 }
 
@@ -287,6 +291,16 @@ function ManageMovies() {
         </div>
         </div>
     )
+}
+async function deleteMovie(movieID) {
+  await deleteDoc(doc(db, "movies", movieID))
+    .then(() => {{
+      window.location.reload(false)
+      }})
+    .catch((error) => {
+      console.log(error)
+    })
+
 }
 
 export default ManageMovies;
