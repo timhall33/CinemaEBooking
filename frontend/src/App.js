@@ -21,9 +21,9 @@ import ManageMovies from './ManageMoviesView';
 import ForgotPasswordConfirmation from './ForgotPasswordConfirmation';
 import ForgotPasswordView from './ForgotPasswordView';
 import {EditCardPayment} from './EditCardPayment';
-
+import AdminPanelView from './AdminPanelView';
 import { useEffect } from 'react';
-
+import ManageUsers from './ManageUsers';
 import {app, auth} from './Firebase'
 import { getAuth } from "firebase/auth";;
 
@@ -53,17 +53,19 @@ function App() {
         <Route path="/" element={  <HomePage />} />
         <Route path="/buytickets/:movieTitle" element={<BookMovieStepperView />} />
         <Route path="/orderConfirmation" element={<OrderConfirmationView />} />
-        <Route path="/promotions" element={<PromotionScreen />} />
+
         <Route path="/login" element={<LoginView />} />
         <Route path="/register" element={<RegisterView />} />
         <Route path="/confirmation" element={<RegConfirmation />} />
         <Route path="/editProfile" element={<EditProfile />} />
         <Route path="/checkout" element={<CheckoutView />} />
         <Route path="/manage" element={<ManageMovies />} />
+        <Route path="/promotions" element={<PromotionScreen />} />
+        <Route path="/manageUsers" element={<ManageUsers />} />
         <Route path="/forgotpassword" element={<ForgotPasswordView />} />
         <Route path='/forgotConfirmation' element={<ForgotPasswordConfirmation />} />
         <Route path='/cardPayments' element={<  EditCardPayment  />} />
-
+        <Route path='/adminPanel' element={<  AdminPanelView  />} />
 
 
       </Routes>

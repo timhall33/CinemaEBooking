@@ -27,16 +27,14 @@ import { useNavigate } from 'react-router-dom';
 import { auth, db} from './Firebase'
 import {fetchData} from './EditProfile.js'
 import { useEffect } from 'react';
-import { signOut, onAuthStateChanged } from "firebase/auth"
+import { signOut } from "firebase/auth"
 import {userConverter} from "./UserModel"
 import {doc , getDoc} from "firebase/firestore"
 import { getAuth } from 'firebase/auth';
-import { collection, query, where, getDocs, limit } from "firebase/firestore";
-import { useParams } from 'react-router-dom';
-
-
+import { collection, query, where, getDocs } from "firebase/firestore";
 
 function Nav() {
+
     const navigate = useNavigate()
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -107,7 +105,7 @@ function Nav() {
       >
       
                 {isAdmin &&
-        <MenuItem  onClick={() => {navigate("/promotions"); handleClose()}}>
+        <MenuItem  onClick={() => {navigate("/adminPanel"); handleClose()}}>
           <AdminPanel></AdminPanel>
         </MenuItem>
                 }
@@ -115,11 +113,7 @@ function Nav() {
           <EditProfile></EditProfile>
          
         </MenuItem>
-                {isAdmin && 
-        <MenuItem onClick={() => {navigate("/manage"); handleClose()}}>
-<ManageMovie></ManageMovie>
-        </MenuItem>
-                }
+          
 
         <MenuItem onClick={() => {
             handleClose();
@@ -147,7 +141,6 @@ function Nav() {
 
       </div>
     )
-
 }
 
 /**
@@ -166,81 +159,6 @@ function Login(props) {
     )
 }
 
-function LoginFunctions(props) {
-    onAuthStateChanged(auth, (user) => {
-        if (!user) {
-            return (
-                <Login onClick = {() => {props.navigate('/login')}}></Login> 
-            )
-
-        } else {
-            return (
-            <div>
-            <Tooltip title="Account settings">
-          <IconButton
-            onClick={props.handleClick }
-            size="small"
-            sx={{ mt: 1, mb: 1, mr: 1 }}
-            aria-controls={props.open ? 'account-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={props.open ? 'true' : undefined}
-          >
-            <Avatar sx={{ width: 32, height: 32 }}> { props.name.charAt(0) }  </Avatar>
-          </IconButton>
-        </Tooltip>
-        
-        <Menu
-        anchorEl={props.anchorEl}
-        id="account-menu"
-        open={props.open}
-        onClose={props.handleClose}
-        onClick={props.handleClose}
-       
-        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-      >
-      
-                {props.isAdmin &&
-        <MenuItem  onClick={() => {props.navigate("/promotions"); props.handleClose()}}>
-          <AdminPanel></AdminPanel>
-        </MenuItem>
-                }
-        <MenuItem onClick={() => {props.navigate("/editProfile"); props.handleClose()}}>
-          <EditProfile></EditProfile>
-         
-        </MenuItem>
-                {props.isAdmin && 
-        <MenuItem onClick={() => {props.navigate("/manage"); props.handleClose()}}>
-<ManageMovie></ManageMovie>
-        </MenuItem>
-                }
-
-        <MenuItem onClick={() => {
-            props.handleClose();
-            signOut(getAuth()).then((res)=>{
-                console.log(res)
-                //setUser(null)
-            }). catch((err) => {
-                console.log(err)
-            })
-        } } >
-          <ListItemIcon>
-            <Logout fontSize="small" />
-          </ListItemIcon>
-          Logout
-        </MenuItem>
-
-      </Menu>
-    
-    </div>
-            )
-        }
-
-
-    });
-
-
-}
 
 
 function EditProfile() {
@@ -289,52 +207,21 @@ return (
 
 
 function MovieSelectedView() {
-    const {movieTitle}  = useParams();
-    const moviesRef = collection(db, "movies");
-    const q = query(moviesRef, where("movieTitle", "==", movieTitle), limit(1));
-    const [movieData, setMovieData] = useState(null); // Add state to store the movie data
-
-    useEffect(() => {
-        getDocs(q)
-            .then((querySnapshot) => {
-                querySnapshot.forEach((doc) => {
-                    setMovieData(doc.data()); // Save the movie data in state
-                });
-            })
-            .catch((error) => {
-                console.log("Error getting documents: ", error);
-            });
-    }, [movieTitle]);
-
-    if (!movieData) {
-        return <div>Loading...</div>;
-    }
-
-    const { movieTitle: title, movieTrailer, movieShowDate, movieShowTime, movieID, ...rest } = movieData;
-
     return (
         <Stack direction = "row" id ="movieSelectedView">
             <div id="moviePosterCont">
-            <img id="moviePoster">
+            <img id="moviePoster" src={aotPic}>
             </img>
             </div>
-            
             <Stack className="movieSelectionDetails" >
-            <Typography variant="h2">{title}</Typography>
-            {Object.entries(rest).map(([key, value]) => (
-                    <Typography key={key} variant="h5">
-                        {key}: {value}
-                    </Typography>
-                ))}
+        <Typography  variant="h5">
+               Greatness
+            </Typography>
+            <Typography  variant="h7">
+              Sunday, April 11 at 2:45 PM
+            </Typography>
         </Stack>
-            <div id = "movieTraier">
-            <iframe src= {`https://www.youtube.com/embed/${movieTrailer}`}
-   allow='autoplay; encrypted-media'
-   allowfullscreen
-   title='video'
-   >
-  </iframe>
-            </div>
+            
         </Stack>
     )
 }
@@ -379,7 +266,6 @@ export async function readMovies() {
   }
 
 
-
 /**
  * Displays the movies that are screening and soon-to-be screening
  * @returns    <CardMedia component="img"  
@@ -390,13 +276,15 @@ export async function readMovies() {
 function MoviesView(props) {
 
     const [data, setData] = useState()
-    
+
     useEffect(() => {
         readMovies().then((res) => {
             setData(res)
         })
     },[])
 
+   
+    const navigate = useNavigate()
    
     return (
         <div id="moviesViewCont">
@@ -428,11 +316,12 @@ function MoviesView(props) {
                 </Stack>
 <div className = "bottomCardCont">
 <Rating name="half-rating-read" defaultValue={5} precision={0.5} readOnly />
-<Link to={{pathname: `/buytickets/${item.movieTitle}`}} style={{ textDecoration: 'none' }}>
-    <Button variant="contained">
+  
+
+    <Button variant="contained" onClick={(e) => {navigate(`/buytickets/${item.movieTitle}`)}} >
         Book
     </Button>
-</Link>
+
 
 </div>
             </CardContent>
@@ -470,11 +359,6 @@ function MoviesView(props) {
 <div className = "bottomCardCont">
 <Rating name="half-rating-read" defaultValue={5} precision={0.5} readOnly />
   
-<Link to={{pathname: `/buytickets/${item.movieTitle}`}} style={{ textDecoration: 'none' }}>
-    <Button variant="contained" >
-        Book
-    </Button>
-</Link>
 
 </div>
             </CardContent>
@@ -507,7 +391,6 @@ function SearchField(props) {
  */
 function HomePage() {
     const [query, setQuery] = useState("")
-    const [movieTitle, setMovieTitle] = useState("")
     return (
         <div id="homePageCont">
 <div>
@@ -518,7 +401,7 @@ function HomePage() {
     <Typography variant="h4" >E-Booking Cinema</Typography>
 </div>
 <SearchField setQuery = {setQuery} query = {query}></SearchField>
-    <MoviesView setMovieTitle = {setMovieTitle} setQuery = {setQuery} query = {query}></MoviesView>
+    <MoviesView setQuery = {setQuery} query = {query}></MoviesView>
 
         </div>
     )
