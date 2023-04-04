@@ -25,7 +25,11 @@ import { useEffect } from 'react';
 
 
 async function deletePromo(promoId) {
-  await deleteDoc(doc(db, "promotions", promoId));
+  await deleteDoc(doc(db, "promotions", promoId)).then((e) => {
+    window.location.reload(false)
+    console.log(e)
+  })
+  
 }
 
 
