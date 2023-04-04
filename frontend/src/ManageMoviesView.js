@@ -215,7 +215,7 @@ function ManageMovies() {
   const [selectedMovieId, setSelectedMovieId] = useState(null);
 
   const handleAddNewTimeClick = (movieId) => {
-    setShowTimeForm(true);
+    setShowTimeForm(showTimeForm => !showTimeForm);
     setSelectedMovieId(movieId);
   };
   
@@ -266,13 +266,13 @@ function ManageMovies() {
 }
 
 </TableBody>
-<div> {showTimeForm && <TimeForm movieId = {selectedMovieId}/>}</div>
 
     </Table>
 
 
         </TableContainer>
         </Card>
+        <div> {showTimeForm && <TimeForm movieId = {selectedMovieId}/>}</div>
 
 
         <AddMovieView></AddMovieView>
@@ -324,6 +324,8 @@ function TimeForm({movieId}) {
     setTime('');
   };
   
+  const isDisabled = !date || !time;
+
 
   return (
     <form onSubmit={handleSubmit}>
@@ -332,7 +334,6 @@ function TimeForm({movieId}) {
           label="Date"
           name="date"
           type="date"
-          defaultValue="1"
           InputLabelProps={{ shrink: true }}
           onChange={handleDateChange}
           value={date}
@@ -341,13 +342,12 @@ function TimeForm({movieId}) {
           label="Time"
           name="time"
           type="time"
-          defaultValue="10:00"
           InputLabelProps={{ shrink: true }}
           inputProps={{ step: 300 }}
           onChange={handleTimeChange}
           value={time}
         />
-        <Button type="submit" variant="contained">
+        <Button type="submit" variant="contained" disabled={isDisabled}>
           Add Time
         </Button>
       </Stack>
