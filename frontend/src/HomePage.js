@@ -310,7 +310,7 @@ function MovieSelectedView() {
         return <div>Loading...</div>;
     }
 
-    const { movieTitle: title, movieTrailer, movieShowDate, movieShowTime, movieID, times, ...rest } = movieData;
+    const { movieTitle: title, movieTrailer, movieID, times, ...rest } = movieData;
 
     return (
         <Stack direction = "row" id ="movieSelectedView">
@@ -403,9 +403,9 @@ function MoviesView(props) {
              <Typography  variant="h4" component="div">Now Screening </Typography>
         <div id = "moviesPlayingCont">
     
-    { data != null ? data.filter(item => (item.movieTitle.toLowerCase().includes(props.query.toLowerCase()) || 
+    { data != null ? data.filter(item => ((item.movieTitle.toLowerCase().includes(props.query.toLowerCase()) || 
     item.movieCategory.toLowerCase().includes(props.query.toLowerCase())
-    )).map(item => (
+    )) && item.times.length != 0).map(item => (
         <Card elevation = {8} className = "movieCard" key = {item} sx={{ maxWidth: 400 }}>
          <div className ="iframeCont">
          <iframe className = "trailer" src= {`https://www.youtube.com/embed/${item.movieTrailer}`}
@@ -444,9 +444,9 @@ function MoviesView(props) {
     <Typography  variant="h4" component="div">Screening Soon </Typography>
         <div id = "moviesPlayingCont">
      
-        { data != null ? data.filter(item => (item.movieTitle.toLowerCase().includes(props.query.toLowerCase()) || 
+        { data != null ? data.filter(item => ((item.movieTitle.toLowerCase().includes(props.query.toLowerCase()) || 
     item.movieCategory.toLowerCase().includes(props.query.toLowerCase())
-    )).map(item => (
+    )) && item.times.length === 0).map(item => (
         <Card elevation = {8} className = "movieCard" key = {item} sx={{ maxWidth: 400 }}>
          <div className ="iframeCont">
          <iframe className = "trailer" src= {`https://www.youtube.com/embed/${item.movieTrailer}`}
