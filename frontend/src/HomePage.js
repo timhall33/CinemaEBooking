@@ -310,7 +310,7 @@ function MovieSelectedView() {
         return <div>Loading...</div>;
     }
 
-    const { movieTitle: title, movieTrailer, movieShowDate, movieShowTime, movieID, ...rest } = movieData;
+    const { movieTitle: title, movieTrailer, movieShowDate, movieShowTime, movieID, times, ...rest } = movieData;
 
     return (
         <Stack direction = "row" id ="movieSelectedView">

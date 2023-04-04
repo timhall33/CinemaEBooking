@@ -1,7 +1,7 @@
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Stack from '@mui/material/Stack';
-import { useState } from 'react';
+import { useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -30,7 +30,10 @@ import OrderConfirmationView from './OrderConfirmationView';
 import PlaceOrder from './PlaceOrder';
 import { useParams } from 'react-router-dom';
 import { collection, query, where, getDocs, limit } from "firebase/firestore";
-import { db} from './Firebase'
+import { db} from './Firebase';
+import { CardContent, Box } from "@mui/material";
+
+
 
 
 
@@ -52,98 +55,81 @@ All views that are needed to buy tickets
 
 
 
-function TabPanel(props) {
-    const { children, value, index, ...other } = props;
+function ShowTimeView() {
+    const {movieTitle}  = useParams();
+    const [times, setTimes] = useState([]);
+    const [selectedDateIndex, setSelectedDateIndex] = useState(0);
+
+    useEffect(() => {
+      const moviesRef = collection(db, "movies");
+      const q = query(moviesRef, where("movieTitle", "==", movieTitle), limit(1));
+      getDocs(q)
+        .then((querySnapshot) => {
+          const data = querySnapshot.docs[0].data();
+          setTimes(data.times);
+        })
+        .catch((error) => {
+          console.log("Error getting document:", error);
+        });
+    }, []);
+  
+    const sortedDates = [...new Set(times.map((t) => t.date))].sort();
+
+    const handleTabChange = (event, newValue) => {
+        setSelectedDateIndex(newValue);
+      };
+    
+    return (
+      <Card elevation={3} id="showTimeView" sx={{ maxWidth: 680, width: "100%" }}>
+        <CardContent>
+          <Tabs value={selectedDateIndex} onChange={handleTabChange} variant="scrollable" scrollButtons="auto"aria-label="screening options">
+            {sortedDates.map((date, index) => (
+              <Tab key={index} label={date} />
+            ))}
+          </Tabs>
+          {sortedDates.map((date, index) => (
+            <TabPanel key={index} date={date} times={times} value={selectedDateIndex} index={index} className="showTimePanel">
+            <Stack className = "showTimeOption" direction="row">
+              {selectedDateIndex === index &&times
+                .filter((t) => t.date === date)
+                .sort((a, b) => a.time.localeCompare(b.time))
+                .map((t, index) => (
+                  <Button
+                    key={index}
+                    variant="contained"
+                    sx={{ width: 50 }}
+                    onClick={() => console.log(t)}
+                  >
+                    {t.time}
+                  </Button>
+                ))}
+                 </Stack>
+            </TabPanel>
+          ))}
+        </CardContent>
+      </Card>
+    );
+  }
+  
+  function TabPanel(props) {
+    const { children, date, times, value, index, ...other } = props;
   
     return (
       <div
         role="tabpanel"
         hidden={value !== index}
-        id={`simple-tabpanel-${index}`}
-        aria-labelledby={`simple-tab-${index}`}
+        id={`showTimePanel-${date}`}
+        aria-labelledby={`showTimeTab-${date}`}
         {...other}
       >
         {value === index && (
-          <Stack sx={{ p: 3 }}>
-            <Typography>{children}</Typography>
-          </Stack>
+         <Stack sx={{ p: 3 }}>
+         <Typography>{children}</Typography>
+        </Stack>
         )}
       </div>
     );
   }
-  
-  TabPanel.propTypes = {
-    children: PropTypes.node,
-    index: PropTypes.number.isRequired,
-    value: PropTypes.number.isRequired,
-  };
-
-/**
- * Displays a list of showtimes for a movie
- * @returns 
- */
-function ShowTimeView() {
-    const {movieTitle}  = useParams();
-    const moviesRef = collection(db, "movies");
-    const q = query(moviesRef, where("movieTitle", "==", movieTitle), limit(1));
-    const [movieShowDate, setMovieShowDate] = useState("");
-    const [movieShowTime, setMovieShowTime] = useState("");
-
-
-
-    getDocs(q).then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          const movieData = doc.data();
-          setMovieShowDate(movieData.movieShowDate);
-          setMovieShowTime(movieData.movieShowTime);
-        });
-      }).catch((error) => {
-        console.log("Error getting movie document:", error);
-      });    
-    
-    const [value, setValue] = useState(0);
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-
-  let dates = movieShowDate.split(/, ?/);
-  let times = movieShowTime.split(/, ?/);
-
-    return (
-        <Card  elevation = {3} id="showTimeView"    sx={{maxWidth: 680, width: "100%"}}>
-                  <Tabs
-              
-        value={value} 
-        onChange={handleChange}
-        variant="scrollable"
-        scrollButtons="auto"
-        aria-label="screening options"
-      >
-       {dates.map(date => (
-        <Tab key = {date} label={date}></Tab>
-       ))
-       }
-      </Tabs>
-        {
-            dates.map((date,index) => (
-                <TabPanel key = {date} index={index} value={value} className="showTimePanel">
-    <Stack className = "showTimeOption" direction="row">
-        {times.map(item => (
-            <Button key = {item} variant="contained" sx={{width: 50}}>
-            {item}
-            </Button>
-        ))
-
-        }
-       </Stack>
-                </TabPanel>
-            ))
-        }
- 
-            </Card>
-    )
-}
 
 function createTicket(ageCat, price, ticketCount) {
     return {ageCat, price, ticketCount}
