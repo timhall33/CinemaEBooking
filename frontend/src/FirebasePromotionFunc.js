@@ -7,7 +7,7 @@ import {Promotion, promoConverter} from './PromotionModel';
 import { addDoc ,deleteDoc , getDocs, query, where} from 'firebase/firestore';
 import { collection } from "firebase/firestore";
 import {userConverter} from './UserModel'
-import emailjs, { send } from "@emailjs/browser"
+import emailjs, { sendForm } from "@emailjs/browser"
 
 
 export async function storePromo(title, description, discount) {
@@ -18,35 +18,41 @@ export async function storePromo(title, description, discount) {
     await addDoc(ref, new Promotion(title, description, discount))
     .then((e) => {{
         console.log(e)
-        window.location.reload(false)
         sendPromotionEmails(discount,description)
     }})
     .catch((error) => {
         console.log(error)
     })
-
   }
 
-  async function sendPromotionEmails(promotionAmount, promotionDescription) {
-
+   async function sendPromotionEmails(promotionAmount, promotionDescription) {
+    var emailList = []
     const q = query(collection(db, "users") , where("promotionStatus" , "==", true));
     const querySnapshot = await getDocs(q);  
     querySnapshot.forEach((doc) => {
     const user = doc.data()
-    var params = {
-        name: user.firstName,
-        email: user.email,
+    emailList.push(user.email)
+    // var params = {
+    //     name: user.firstName,
+    //     email: user.email,
+    //     promotionAmount: promotionAmount,
+    //     promotionDescription: promotionDescription
+    // };
+    //emailjs.sendForm("service_1s3tmck","template_1oybops",params,"EJ1BDajCipvNpTd2_")
+    });
+
+    emailList.forEach(async (email) => {
+        var params = {
+        email: email,
         promotionAmount: promotionAmount,
         promotionDescription: promotionDescription
     };
-    emailjs.send("service_1s3tmck","template_1oybops",params)
-    .then((e) => {{
-
-    }})
-    .catch((error) => {
-        console.log(error)
+        emailjs.sendForm("service_1s3tmck","template_1oybops",params,"EJ1BDajCipvNpTd2_")
+        await sleep(2000)
     })
+    
+  }
 
-    });
-  
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
