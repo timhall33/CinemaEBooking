@@ -326,7 +326,6 @@ function TimeForm({movieId}) {
   
   const isDisabled = !date || !time;
 
-
   return (
     <form onSubmit={handleSubmit}>
       <Stack direction="row">
