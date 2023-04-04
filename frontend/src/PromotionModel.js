@@ -2,10 +2,11 @@
 
 export class Promotion {
      
-    constructor (title, description, discount) {
+    constructor (title, description, discount, promotionId) {
         this.title = title
         this.description = description
         this.discount = discount
+        this.promotionId = promotionId
 
         
     }
@@ -19,13 +20,15 @@ export const promoConverter = {
         return {
             title : promo.title,
             description: promo.description,
-            discount: promo.discount
+            discount: promo.discount,
+            promotionId: promo.promotionId,
+
 
             };
     },
     fromFirestore: function (snapshot, options) {
         const data = snapshot.data(options);
-        return new Promotion(data.title, data.description, data.discount)
+        return new Promotion(data.title, data.description, data.discount, data.promotionId)
     }
 
 }; 
