@@ -267,3 +267,7 @@ BuyTicketViews style
   height: 100%;
   padding: 10px;
  }
+
+ #time-form {
+    margin: 30px;
+ }

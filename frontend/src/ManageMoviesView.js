@@ -272,7 +272,7 @@ function ManageMovies() {
 
         </TableContainer>
         </Card>
-        <div> {showTimeForm && <TimeForm movieId = {selectedMovieId}/>}</div>
+        <div id = "time-form"> {showTimeForm && <TimeForm movieId = {selectedMovieId}/>}</div>
 
 
         <AddMovieView></AddMovieView>
