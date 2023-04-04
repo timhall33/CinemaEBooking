@@ -20,9 +20,11 @@ import { useState } from 'react';
 import { readMovies } from './HomePage'
 import { db} from './Firebase'
 import {doc , getDoc} from "firebase/firestore"
-import { collection, query, where, getDocs, deleteDoc  } from "firebase/firestore";
+import { collection, query, where, getDocs, deleteDoc, updateDoc, arrayUnion  } from "firebase/firestore";
 import { movieConverter } from './MovieModel';
 import { useEffect } from 'react';
+import Button from '@mui/material/Button';
+
 /**
  * View that displays fields for promotion creation
  * @returns view
@@ -38,11 +40,10 @@ function AddMovieView() {
         movieSynopsis: "",
         movieTrailer: "",
         movieRatingCode: "",
-        movieShowTime: "",
-        movieShowDate: ""
       })
 
       const [clicked, setClicked] = useState(false)
+      
 
     return (
         <Stack id= "addPromotionViewCont" direction="column">
@@ -183,45 +184,11 @@ function AddMovieView() {
      
               }}
         />
-        <TextField 
-         label="Movie show dates"
-         fullWidth 
-         multiline
-         error = {movieData.movieShowDate.length == 0 && clicked}
-         variant="filled"
-         onChange = {(e) => {
-
-            setMovieData((prev) => ({
-               ...prev,
-               movieShowDate: e.target.value
-             }))
-     
-     
-     
-              }}
-        />
-        <TextField 
-         label="Movie show times"
-         fullWidth 
-         multiline
-         error = {movieData.movieShowTime.length == 0 && clicked}
-         variant="filled"
-         onChange = {(e) => {
-
-            setMovieData((prev) => ({
-               ...prev,
-               movieShowTime: e.target.value
-             }))
-     
-     
-     
-              }}
-        />
         <Fab onClick={(e) => {
 
 setClicked(true)
-if (movieData.movieTitle.length != 0 && movieData.movieCategory.length != 0 && movieData.movieCast.length != 0 && movieData.movieDirector.length != 0 && movieData.movieProducer.length != 0 && movieData.movieSynopsis.length != 0 && movieData.movieTrailer.length != 0 && movieData.movieRatingCode.length != 0 && movieData.movieShowTime.length != 0 && movieData.movieShowDate.length != 0) {
-storeMovie(movieData.movieTitle, movieData.movieCategory, movieData.movieCast, movieData.movieDirector, movieData.movieProducer, movieData.movieSynopsis, movieData.movieTrailer, movieData.movieRatingCode, movieData.movieShowDate, movieData.movieShowTime)
+if (movieData.movieTitle.length != 0 && movieData.movieCategory.length != 0 && movieData.movieCast.length != 0 && movieData.movieDirector.length != 0 && movieData.movieProducer.length != 0 && movieData.movieSynopsis.length != 0 && movieData.movieTrailer.length != 0 && movieData.movieRatingCode.length != 0) {
+storeMovie(movieData.movieTitle, movieData.movieCategory, movieData.movieCast, movieData.movieDirector, movieData.movieProducer, movieData.movieSynopsis, movieData.movieTrailer, movieData.movieRatingCode)
 } 
 
 }} variant="extended" size="medium" color="primary"  aria-label="add">
@@ -242,6 +209,17 @@ storeMovie(movieData.movieTitle, movieData.movieCategory, movieData.movieCast, m
  */
 
 function ManageMovies() {
+
+
+  const [showTimeForm, setShowTimeForm] = useState(false);
+  const [selectedMovieId, setSelectedMovieId] = useState(null);
+
+  const handleAddNewTimeClick = (movieId) => {
+    setShowTimeForm(showTimeForm => !showTimeForm);
+    setSelectedMovieId(movieId);
+  };
+  
+
  const [data, setData] = useState()
  useEffect(() => {
   readMovies().then((res) => {
@@ -257,7 +235,8 @@ function ManageMovies() {
    <Table stickyHeader aria-label="sticky table" id ="movieTable"sx={{ maxWidth: 550 }} >
    <TableHead>
           <TableRow>
-            <TableCell  >Movie</TableCell>
+            <TableCell>Movie</TableCell>
+            <TableCell align = "right"> Schedule Movie</TableCell> 
             <TableCell align="right">Delete</TableCell>
           </TableRow>
         </TableHead>
@@ -268,6 +247,12 @@ function ManageMovies() {
                 {entry.movieTitle}
               </TableCell>
               <TableCell  align="right" component="th" scope="row">
+                <IconButton onClick={() => handleAddNewTimeClick(entry.movieID)}>
+                  <EditIcon></EditIcon>
+                </IconButton>
+              </TableCell>
+              
+              <TableCell  align="right" component="th" scope="row">
               <IconButton
                onClick={()=> {deleteMovie(entry.movieID)}}
                >
@@ -275,16 +260,19 @@ function ManageMovies() {
                 </IconButton>
               </TableCell>
     </TableRow>
+    
 )) : null
 
 }
 
 </TableBody>
+
     </Table>
 
 
         </TableContainer>
         </Card>
+        <div id = "time-form"> {showTimeForm && <TimeForm movieId = {selectedMovieId}/>}</div>
 
 
         <AddMovieView></AddMovieView>
@@ -301,6 +289,69 @@ async function deleteMovie(movieID) {
       console.log(error)
     })
 
+}
+
+function TimeForm({movieId}) {
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+
+  const handleDateChange = (event) => {
+    setDate(event.target.value);
+  };
+
+  const handleTimeChange = (event) => {
+    setTime(event.target.value);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const movieTime = {
+      date,
+      time
+    };
+    try {
+        const movieDoc = doc(db, 'movies', movieId);
+        await updateDoc(movieDoc, {
+          times: arrayUnion(movieTime)
+        });
+        console.log("Movie time added successfully!");
+    } catch (error) {
+      console.error("Error adding movie time: ", error);
+    }
+
+    // Clear the form after submission
+    setDate('');
+    setTime('');
+  };
+  
+  const isDisabled = !date || !time;
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <Stack direction="row">
+        <TextField
+          label="Date"
+          name="date"
+          type="date"
+          InputLabelProps={{ shrink: true }}
+          onChange={handleDateChange}
+          value={date}
+        />
+        <TextField
+          label="Time"
+          name="time"
+          type="time"
+          InputLabelProps={{ shrink: true }}
+          inputProps={{ step: 300 }}
+          onChange={handleTimeChange}
+          value={time}
+        />
+        <Button type="submit" variant="contained" disabled={isDisabled}>
+          Add Time
+        </Button>
+      </Stack>
+    </form>
+  );
 }
 
 export default ManageMovies;

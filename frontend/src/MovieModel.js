@@ -2,7 +2,7 @@
 
 export class Movie {
      
-    constructor (movieTitle, movieCategory, movieCast, movieDirector, movieProducer, movieSynopsis, movieTrailer, movieRatingCode, movieShowDate, movieShowTime, movieID) {
+    constructor (movieTitle, movieCategory, movieCast, movieDirector, movieProducer, movieSynopsis, movieTrailer, movieRatingCode, times, movieID) {
         this.movieTitle = movieTitle
         this.movieCategory = movieCategory
         this.movieDirector = movieDirector
@@ -11,8 +11,7 @@ export class Movie {
         this.movieSynopsis = movieSynopsis
         this.movieTrailer = movieTrailer
         this.movieRatingCode = movieRatingCode
-        this.movieShowDate = movieShowDate
-        this.movieShowTime = movieShowTime
+        this.times = times
         this.movieID = movieID
     } 
     
@@ -31,14 +30,13 @@ export const movieConverter = {
             movieSynopsis: movie.movieSynopsis,
             movieTrailer: movie.movieTrailer,
             movieRatingCode: movie.movieRatingCode,
-            movieShowDate: movie.movieShowDate,
-            movieShowTime: movie.movieShowTime,
+            times: movie.times,
             movieID: movie.movieID
             };
     },
     fromFirestore: function (snapshot, options) {
         const data = snapshot.data(options);
-        return new Movie(data.movieTitle, data.movieCategory, data.movieCast, data.movieDirector, data.movieProducer, data.movieSynopsis, data.movieTrailer, data.movieRatingCode, data.movieShowDate, data.movieShowTime, data.movieID)
+        return new Movie(data.movieTitle, data.movieCategory, data.movieCast, data.movieDirector, data.movieProducer, data.movieSynopsis, data.movieTrailer, data.movieRatingCode, data.times, data.movieID)
     }
 
 }; 

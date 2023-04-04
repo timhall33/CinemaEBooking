@@ -207,21 +207,52 @@ return (
 
 
 function MovieSelectedView() {
+    const {movieTitle}  = useParams();
+    const moviesRef = collection(db, "movies");
+    const q = query(moviesRef, where("movieTitle", "==", movieTitle), limit(1));
+    const [movieData, setMovieData] = useState(null); // Add state to store the movie data
+
+    useEffect(() => {
+        getDocs(q)
+            .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    setMovieData(doc.data()); // Save the movie data in state
+                });
+            })
+            .catch((error) => {
+                console.log("Error getting documents: ", error);
+            });
+    }, [movieTitle]);
+
+    if (!movieData) {
+        return <div>Loading...</div>;
+    }
+
+    const { movieTitle: title, movieTrailer, movieID, times, ...rest } = movieData;
+
     return (
         <Stack direction = "row" id ="movieSelectedView">
             <div id="moviePosterCont">
-            <img id="moviePoster" src={aotPic}>
+            <img id="moviePoster">
             </img>
             </div>
-            <Stack className="movieSelectionDetails" >
-        <Typography  variant="h5">
-               Greatness
-            </Typography>
-            <Typography  variant="h7">
-              Sunday, April 11 at 2:45 PM
-            </Typography>
-        </Stack>
             
+            <Stack className="movieSelectionDetails" >
+            <Typography variant="h2">{title}</Typography>
+            {Object.entries(rest).map(([key, value]) => (
+                    <Typography key={key} variant="h5">
+                        {key}: {value}
+                    </Typography>
+                ))}
+        </Stack>
+            <div id = "movieTraier">
+            <iframe src= {`https://www.youtube.com/embed/${movieTrailer}`}
+   allow='autoplay; encrypted-media'
+   allowfullscreen
+   title='video'
+   >
+  </iframe>
+            </div>
         </Stack>
     )
 }
@@ -291,9 +322,9 @@ function MoviesView(props) {
              <Typography  variant="h4" component="div">Now Screening </Typography>
         <div id = "moviesPlayingCont">
     
-    { data != null ? data.filter(item => (item.movieTitle.toLowerCase().includes(props.query.toLowerCase()) || 
+    { data != null ? data.filter(item => ((item.movieTitle.toLowerCase().includes(props.query.toLowerCase()) || 
     item.movieCategory.toLowerCase().includes(props.query.toLowerCase())
-    )).map(item => (
+    )) && item.times.length != 0).map(item => (
         <Card elevation = {8} className = "movieCard" key = {item} sx={{ maxWidth: 400 }}>
          <div className ="iframeCont">
          <iframe className = "trailer" src= {`https://www.youtube.com/embed/${item.movieTrailer}`}
@@ -333,9 +364,9 @@ function MoviesView(props) {
     <Typography  variant="h4" component="div">Screening Soon </Typography>
         <div id = "moviesPlayingCont">
      
-        { data != null ? data.filter(item => (item.movieTitle.toLowerCase().includes(props.query.toLowerCase()) || 
+        { data != null ? data.filter(item => ((item.movieTitle.toLowerCase().includes(props.query.toLowerCase()) || 
     item.movieCategory.toLowerCase().includes(props.query.toLowerCase())
-    )).map(item => (
+    )) && item.times.length === 0).map(item => (
         <Card elevation = {8} className = "movieCard" key = {item} sx={{ maxWidth: 400 }}>
          <div className ="iframeCont">
          <iframe className = "trailer" src= {`https://www.youtube.com/embed/${item.movieTrailer}`}
