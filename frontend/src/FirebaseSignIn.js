@@ -3,7 +3,29 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import {app, auth} from './Firebase'
 import { setPersistence,  browserSessionPersistence } from "firebase/auth";
+import { collection, query, where, getDocs, deleteDoc  } from "firebase/firestore";
+import { db} from './Firebase'
 
+async function checkUserState(userId) {
+    const q = query(collection(db, "users"), where("userId", "==", userId));
+  
+  
+  
+  
+
+    const querySnapshot = await getDocs(q);
+    
+    querySnapshot.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      
+     console.log(doc)
+    });
+  
+  
+  
+    
+    
+  }
 
 export function login(email, password, navigate, props) {
     
@@ -18,7 +40,6 @@ export function login(email, password, navigate, props) {
     .then((userCred) => {
         const user = userCred.user;
 
-     
 
             if (user  && auth.currentUser.emailVerified === true ) {
                 navigate("/")
