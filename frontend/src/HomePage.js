@@ -31,7 +31,8 @@ import { signOut } from "firebase/auth"
 import {userConverter} from "./UserModel"
 import {doc , getDoc} from "firebase/firestore"
 import { getAuth } from 'firebase/auth';
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, limit } from "firebase/firestore";
+import { useParams } from 'react-router-dom';
 
 function Nav() {
 
