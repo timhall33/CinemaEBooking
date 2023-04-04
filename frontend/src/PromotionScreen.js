@@ -19,10 +19,18 @@ import AddIcon from '@mui/icons-material/Add';
 import { useState } from 'react';
 import { storePromo } from './FirebasePromotionFunc';
 import { db } from './Firebase';
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, updateDoc , deleteDoc, doc} from "firebase/firestore";
 import { getCountFromServer } from 'firebase/firestore';
 import { useEffect } from 'react';
 
+
+async function deletePromo(promoId) {
+  await deleteDoc(doc(db, "promotions", promoId)).then((e) => {
+    window.location.reload(false)
+    console.log(e)
+  })
+  
+}
 
 
 async function readPromo() {
@@ -167,7 +175,7 @@ function PromotionScreen() {
    <TableHead>
           <TableRow>
             <TableCell  >Promotions</TableCell>
-       
+            <TableCell  ></TableCell>
           </TableRow>
         </TableHead>
 <TableBody>
@@ -177,6 +185,14 @@ function PromotionScreen() {
     <TableRow key = {entry.data}>
           <TableCell component="th" scope="row">
                 {entry.title}
+              </TableCell>
+
+              <TableCell component="th" scope="row">
+              <IconButton
+               onClick={()=> {deletePromo(entry.promotionID)}}
+               >
+                    <DeleteIcon></DeleteIcon>
+                </IconButton>
               </TableCell>
            
     </TableRow>

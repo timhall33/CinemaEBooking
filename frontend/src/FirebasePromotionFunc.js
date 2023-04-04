@@ -4,7 +4,7 @@ import { getFirestore } from "firebase/firestore";
 import {app} from './Firebase';
 import {db} from './Firebase';
 import {Promotion, promoConverter} from './PromotionModel';
-import { addDoc ,deleteDoc , getDocs, query, where} from 'firebase/firestore';
+import { addDoc ,deleteDoc , getDocs, query, where, updateDoc} from 'firebase/firestore';
 import { collection } from "firebase/firestore";
 import {userConverter} from './UserModel'
 import emailjs, { sendForm } from "@emailjs/browser"
@@ -17,12 +17,20 @@ export async function storePromo(title, description, discount) {
 
     await addDoc(ref, new Promotion(title, description, discount))
     .then((e) => {{
+
+        console.log(e)
+        const newRef = doc(db, "promotions", e.id);
+        updateDoc(newRef, {
+            promotionID: e.id
+        })
         console.log(e)
         sendPromotionEmails(discount,description)
     }})
     .catch((error) => {
         console.log(error)
     })
+    window.location.reload(false)
+
   }
 
    async function sendPromotionEmails(promotionAmount, promotionDescription) {
