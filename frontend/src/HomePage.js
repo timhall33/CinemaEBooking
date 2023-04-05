@@ -288,7 +288,7 @@ export async function readMovies() {
     querySnapshot.forEach((doc) => {
       // doc.data() is never undefined for query doc snapshots
       list.push(doc.data())
-     console.log(doc)
+ 
     });
   
   
@@ -325,8 +325,8 @@ function MoviesView(props) {
     
     { data != null ? data.filter(item => ((item.movieTitle.toLowerCase().includes(props.query.toLowerCase()) || 
     item.movieCategory.toLowerCase().includes(props.query.toLowerCase())
-    )) && item.times.length != 0).map(item => (
-        <Card elevation = {8} className = "movieCard" key = {item} sx={{ maxWidth: 400 }}>
+    )) && item.times.length != 0).map((item,index) => (
+        <Card elevation = {8} className = "movieCard" key = {index} sx={{ maxWidth: 400 }}>
          <div className ="iframeCont">
          <iframe className = "trailer" src= {`https://www.youtube.com/embed/${item.movieTrailer}`}
    allow='autoplay; encrypted-media'
@@ -367,8 +367,8 @@ function MoviesView(props) {
      
         { data != null ? data.filter(item => ((item.movieTitle.toLowerCase().includes(props.query.toLowerCase()) || 
     item.movieCategory.toLowerCase().includes(props.query.toLowerCase())
-    )) && item.times.length === 0).map(item => (
-        <Card elevation = {8} className = "movieCard" key = {item} sx={{ maxWidth: 400 }}>
+    )) && item.times.length === 0).map((item,index)=> (
+        <Card elevation = {8} className = "movieCard" key = {index} sx={{ maxWidth: 400 }}>
          <div className ="iframeCont">
          <iframe className = "trailer" src= {`https://www.youtube.com/embed/${item.movieTrailer}`}
    allow='autoplay; encrypted-media'

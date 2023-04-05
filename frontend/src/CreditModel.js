@@ -19,7 +19,7 @@ export class CreditCard {
 // Firestore data converter
 export const cardConverter = {
     toFirestore: function (card) {
-       console.log("aaa")
+
        
         return {
             cardType: card.cardType,

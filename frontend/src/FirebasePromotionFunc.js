@@ -8,9 +8,9 @@ import { addDoc ,deleteDoc , getDocs, query, where, updateDoc} from 'firebase/fi
 import { collection } from "firebase/firestore";
 import {userConverter} from './UserModel'
 import emailjs, { sendForm } from "@emailjs/browser"
+import React from "react";
 
-
-export async function storePromo(title, description, discount) {
+export async function storePromo(title, description, discount,formRef) {
 
     // adding document
     const ref = collection(db, "promotions").withConverter(promoConverter)
@@ -24,22 +24,23 @@ export async function storePromo(title, description, discount) {
             promotionID: e.id
         })
         console.log(e)
-        sendPromotionEmails(discount,description)
+        sendPromotionEmails(discount,description,formRef)
     }})
     .catch((error) => {
         console.log(error)
     })
-    window.location.reload(false)
+   
 
   }
 
-   async function sendPromotionEmails(promotionAmount, promotionDescription) {
+   async function sendPromotionEmails(promotionAmount, promotionDescription, formRef) {
     var emailList = []
     const q = query(collection(db, "users") , where("promotionStatus" , "==", true));
     const querySnapshot = await getDocs(q);  
     querySnapshot.forEach((doc) => {
     const user = doc.data()
     emailList.push(user.email)
+    console.log(user.email)
     // var params = {
     //     name: user.firstName,
     //     email: user.email,
@@ -55,8 +56,16 @@ export async function storePromo(title, description, discount) {
         promotionAmount: promotionAmount,
         promotionDescription: promotionDescription
     };
-        emailjs.sendForm("service_1s3tmck","template_1oybops",params,"EJ1BDajCipvNpTd2_")
-        await sleep(2000)
+    
+
+
+    emailjs.sendForm("service_zonv1b2","template_1tdqq1l",formRef,"Wu_JsPCsb84O3Td2K")
+    .then((res) => {
+        console.log(res)
+    }).catch((error) => {
+        console.log(error)
+    })
+        
     })
     
   }

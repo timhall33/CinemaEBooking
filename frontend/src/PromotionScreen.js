@@ -21,8 +21,8 @@ import { storePromo } from './FirebasePromotionFunc';
 import { db } from './Firebase';
 import { collection, query, where, getDocs, updateDoc , deleteDoc, doc} from "firebase/firestore";
 import { getCountFromServer } from 'firebase/firestore';
-import { useEffect } from 'react';
-
+import { useEffect, useRef } from 'react';
+import { FormControl } from '@mui/material';
 
 async function deletePromo(promoId) {
   await deleteDoc(doc(db, "promotions", promoId)).then((e) => {
@@ -65,11 +65,21 @@ function AddPromotionView() {
         description: ""
     })
 
+    const formRef = useRef()
 
+      const addPromAndEmail = (e) => {
+        e.preventDefault();
+      setClicked(true)
+      if (promoData.title.length != 0 && promoData.description.length != 0 && promoData.discount.length != 0) {
+      storePromo(promoData.title, promoData.description, promoData.discount, formRef.current)
+      } 
+      e.target.reset()
+    }
     const [clicked, setClicked] = useState(false)
 
     return (
         <Stack id= "addPromotionViewCont" direction="column">
+          <form ref={formRef} onSubmit={addPromAndEmail} >
  <TextField 
          label="Enter a promotion"
          fullWidth 
@@ -77,7 +87,7 @@ function AddPromotionView() {
          variant="filled"
 
          onChange = {(e) => {
-
+          
             setPromoData((prev) => ({
                ...prev,
                 title: e.target.value
@@ -95,7 +105,7 @@ function AddPromotionView() {
          fullWidth 
          multiline
          variant="filled"
-
+          name = "promotionDescription"
          error = {promoData.description.length == 0 && clicked}
          onChange = {(e) => {
 
@@ -107,13 +117,14 @@ function AddPromotionView() {
      
      
               }}
+             
         />
          <TextField 
          label="Enter a discount percentage"
          fullWidth 
          multiline
          variant="filled"
-
+         name = "promotionAmount"
           onChange = {(e) => {
 
             setPromoData((prev) => ({
@@ -128,17 +139,11 @@ function AddPromotionView() {
               error = {promoData.discount.length == 0 && clicked}
 
         />
-        <Fab   onClick={(e) => {
-setClicked(true)
-if (promoData.title.length != 0 && promoData.description.length != 0 && promoData.discount.length != 0) {
-storePromo(promoData.title, promoData.description, promoData.discount)
-}
-
-
-        }}  variant="extended" size="medium" color="primary"  aria-label="add">
+        <Fab  type="submit"  variant="extended" size="medium" color="primary"  aria-label="add">
      <AddIcon></AddIcon>
         Create promotion
       </Fab>
+      </form>
         </Stack>
         
 
@@ -182,7 +187,7 @@ function PromotionScreen() {
 
 
 {data !== undefined ? data.map((entry,index) => (
-    <TableRow key = {entry.data}>
+    <TableRow key = {index}>
           <TableCell component="th" scope="row">
                 {entry.title}
               </TableCell>

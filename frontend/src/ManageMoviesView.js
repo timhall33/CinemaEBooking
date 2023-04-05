@@ -24,6 +24,8 @@ import { collection, query, where, getDocs, deleteDoc, updateDoc, arrayUnion  } 
 import { movieConverter } from './MovieModel';
 import { useEffect } from 'react';
 import Button from '@mui/material/Button';
+import { Promotion } from './PromotionModel';
+import Alert from '@mui/material/Alert';
 
 /**
  * View that displays fields for promotion creation
@@ -241,8 +243,8 @@ function ManageMovies() {
           </TableRow>
         </TableHead>
 <TableBody>
-{data != null ? data.map(entry => (
-    <TableRow key = {entry}>
+{data != null ? data.map((entry,index) => (
+    <TableRow key = {index}>
           <TableCell component="th" scope="row">
                 {entry.movieTitle}
               </TableCell>
@@ -282,18 +284,59 @@ function ManageMovies() {
 }
 async function deleteMovie(movieID) {
   await deleteDoc(doc(db, "movies", movieID))
-    .then(() => {{
+    .then(() => {
       window.location.reload(false)
-      }})
+      })
     .catch((error) => {
       console.log(error)
     })
 
 }
 
-function TimeForm({movieId}) {
+
+async function checkConflict(movieTime)  {
+
+  const q = query(collection(db, "movies"));
+
+      const querySnapshot = await getDocs(q);
+
+      var res = undefined
+
+      querySnapshot.forEach((entry) => {
+
+        const times = entry.data().times
+        const movieTitle = entry.data().movieTitle
+          
+        times.forEach((time) => {
+
+          
+          if (movieTime.time === time.time && movieTime.date === time.date) {
+            console.log(movieTitle)
+            console.log(movieTime)
+    
+            return res = {movieTitle: movieTitle, movieTime: movieTime}
+            
+        }
+        })
+
+
+
+      })
+
+     return res  
+}
+
+function TimeForm(props) {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
+
+
+  const [conflict, setConflict] = useState({
+
+    conflictStatus: false,
+    conflictMessage: "",
+
+  })
 
   const handleDateChange = (event) => {
     setDate(event.target.value);
@@ -303,32 +346,60 @@ function TimeForm({movieId}) {
     setTime(event.target.value);
   };
 
+
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const movieTime = {
       date,
       time
     };
-    try {
-        const movieDoc = doc(db, 'movies', movieId);
-        await updateDoc(movieDoc, {
-          times: arrayUnion(movieTime)
-        });
-        console.log("Movie time added successfully!");
-    } catch (error) {
-      console.error("Error adding movie time: ", error);
+    const checkConflictRes = async () => {
+      return await checkConflict(movieTime)
     }
+    
+    checkConflictRes().then(async (res) => {
+      if (res === undefined) {
+        try {
+          const movieDoc = doc(db, 'movies', props.movieId);
+          await updateDoc(movieDoc, {
+            times: arrayUnion(movieTime)
+          });
+          console.log("Movie time added successfully!");
+      } catch (error) {
+        console.error("Error adding movie time: ", error);
+      }
 
-    // Clear the form after submission
-    setDate('');
-    setTime('');
+      setConflict({conflictStatus: false, conflictMessage: ""})
+  
+      } else {
+        const movieTitle =  res.movieTitle
+        const time = res.movieTime
+ 
+        setConflict({conflictStatus: true, conflictMessage: `${movieTitle} is scheduled at ${time.time} on ${time.date}`})
+        console.log(conflict)
+
+        
+
+      }
+  
+      // Clear the form after submission
+      setDate('');
+      setTime('');
+    })
+    
+    
+   
+   
   };
   
   const isDisabled = !date || !time;
 
   return (
     <form onSubmit={handleSubmit}>
-      <Stack direction="row">
+      <Stack direction="column" rowGap={"20px"}>
+
+      <Stack direction="row" columnGap={"10px"}>
         <TextField
           label="Date"
           name="date"
@@ -349,6 +420,13 @@ function TimeForm({movieId}) {
         <Button type="submit" variant="contained" disabled={isDisabled}>
           Add Time
         </Button>
+       </Stack>
+
+        { conflict.conflictStatus && (
+          <Alert sx={{width: "500px"}} severity="error">Time conflict — {conflict.conflictMessage}!</Alert>
+        )
+
+        }
       </Stack>
     </form>
   );

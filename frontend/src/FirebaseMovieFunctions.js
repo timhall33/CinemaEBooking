@@ -5,10 +5,11 @@ import {app} from './Firebase';
 import {db} from './Firebase';
 import {Movie, movieConverter} from './MovieModel';
 import { addDoc ,deleteDoc} from 'firebase/firestore';
-import { collection } from "firebase/firestore";
+import { collection, query, getDocs } from "firebase/firestore";
 
 
 export async function storeMovie(movieTitle, movieCategory, movieCast, movieDirector, movieProducer, movieSynopsis, movieTrailer, movieRatingCode) {
+
 
     // adding document
     const ref = collection(db, "movies").withConverter(movieConverter)
@@ -26,7 +27,6 @@ export async function storeMovie(movieTitle, movieCategory, movieCast, movieDire
     })
 
   }
-
 
 
   
