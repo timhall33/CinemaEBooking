@@ -323,7 +323,9 @@ function MoviesView(props) {
              <Typography  variant="h4" component="div">Now Screening </Typography>
         <div id = "moviesPlayingCont">
     
-    { data != null ? data.filter(item => ((item.movieTitle.toLowerCase().includes(props.query.toLowerCase()) || 
+    { data != null && data.filter(item => ((item.movieTitle.toLowerCase().includes(props.query.toLowerCase()) || 
+    item.movieCategory.toLowerCase().includes(props.query.toLowerCase())
+    )) && item.times.length != 0).length != 0 ? data.filter(item => ((item.movieTitle.toLowerCase().includes(props.query.toLowerCase()) || 
     item.movieCategory.toLowerCase().includes(props.query.toLowerCase())
     )) && item.times.length != 0).map((item,index) => (
         <Card elevation = {8} className = "movieCard" key = {index} sx={{ maxWidth: 400 }}>
@@ -358,14 +360,20 @@ function MoviesView(props) {
 </div>
             </CardContent>
         </Card>
-    )) : null
-
-    }
+    )) 
+:  <Typography  variant="h4" component="div"> No movie "{props.query}" is screening </Typography>
+    } 
     </div>
     <Typography  variant="h4" component="div">Screening Soon </Typography>
         <div id = "moviesPlayingCont">
      
-        { data != null ? data.filter(item => ((item.movieTitle.toLowerCase().includes(props.query.toLowerCase()) || 
+        { data != null && data.filter(item => ((item.movieTitle.toLowerCase().includes(props.query.toLowerCase()) || 
+    item.movieCategory.toLowerCase().includes(props.query.toLowerCase())
+    )) && item.times.length != 0).length != 0  ?  
+    
+    
+    
+    data.filter(item => ((item.movieTitle.toLowerCase().includes(props.query.toLowerCase()) || 
     item.movieCategory.toLowerCase().includes(props.query.toLowerCase())
     )) && item.times.length === 0).map((item,index)=> (
         <Card elevation = {8} className = "movieCard" key = {index} sx={{ maxWidth: 400 }}>
@@ -395,7 +403,7 @@ function MoviesView(props) {
 </div>
             </CardContent>
         </Card>
-    )) : null
+    ))  :  <Typography  variant="h4" component="div"> No movie "{props.query}" is screening soon </Typography>
 
     }
         </div>
