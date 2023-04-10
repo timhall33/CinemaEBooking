@@ -33,9 +33,9 @@ import {doc , getDoc} from "firebase/firestore"
 import { getAuth } from 'firebase/auth';
 import { collection, query, where, getDocs, limit } from "firebase/firestore";
 import { useParams } from 'react-router-dom';
+import {withAuth} from "./Firebase";
 
 function Nav() {
-
     const navigate = useNavigate()
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -429,7 +429,7 @@ function SearchField(props) {
  * Displays what is needed for the homepage. **Requirement 1
  * @returns 
  */
-function HomePage() {
+function HomePage({user}) {
     const [query, setQuery] = useState("")
     return (
         <div id="homePageCont">
@@ -451,4 +451,4 @@ function HomePage() {
 
 
 
-export default HomePage;
+export default withAuth(HomePage);
