@@ -161,7 +161,11 @@ function createTicket(ageCat, price, ticketCount) {
 function TicketView(props) {
 
    
-  console.log(props)
+
+  useEffect(() => {
+    updateTotal()
+},[props.booking.ticket])
+
 
     var subtract = (index) => {
        const updatedTickets = props.booking.ticket.map((item,i) => {
@@ -188,7 +192,24 @@ function TicketView(props) {
     }
 
 
+    var updateTotal = () => {
+      props.setBooking((prev) => {return {...prev, price: getTotal(props.booking.ticket)}})
+    }
 
+    var getTotal = (tickets) => {
+
+      var total = 0;
+
+      props.booking.ticket.forEach((item) => {
+        total = total + (parseInt(item.price) * parseInt(item.ticketCount))
+      })
+
+
+    
+
+
+      return total
+    }
 
     return (
 
@@ -201,11 +222,11 @@ function TicketView(props) {
     <ListItem >
                 <ListItemText primary={ticket.ageCat} secondary={ticket.price}></ListItemText>
                 <div>
-                <IconButton onClick={() => {subtract(index);}} disabled = {ticket.ticketCount === 0}> 
+                <IconButton onClick={() => {subtract(index); updateTotal()}} disabled = {ticket.ticketCount === 0}> 
                     <RemoveCircleIcon></RemoveCircleIcon>
                 </IconButton>
                 {ticket.ticketCount}
-                <IconButton onClick={() => {add(index) }}>
+                <IconButton onClick={() => {add(index); updateTotal() }}>
                     <AddCircleIcon></AddCircleIcon>
                      </IconButton>
                 </div>
@@ -285,8 +306,9 @@ function BuyTicketViews() {
 
     const [booking, setBooking] = useState({
       showTime: {},
-            ticket:  [createTicket("Adult","$9.00",0),createTicket("Child","$6.00",0),createTicket("Senior","$6.00",0)]
+            ticket:  [createTicket("Adult","9.00",0),createTicket("Child","6.00",0),createTicket("Senior","6.00",0)]
             ,
+            price: 0,
             seat: {},
             address: {
               firstName: "",

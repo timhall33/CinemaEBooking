@@ -13,6 +13,7 @@ import { grey } from '@mui/material/colors';
 import BuyTicketViews from './BuyTicketViews';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import { useEffect } from 'react';
 
 const products = [
   {
@@ -50,8 +51,31 @@ function createTicket(ageCat, price, ticketCount) {
 }
 export default function Review(props) {
 
+  useEffect(() => {
+    updateTotal()
+},[props.booking.ticket])
 
-    console.log(props.booking.ticket)
+
+
+var updateTotal = () => {
+  props.setBooking((prev) => {return {...prev, price: getTotal(props.booking.ticket)}})
+}
+
+var getTotal = (tickets) => {
+
+  var total = 0;
+
+  props.booking.ticket.forEach((item) => {
+    total = total + (parseInt(item.price) * parseInt(item.ticketCount))
+  })
+
+
+
+
+
+  return total
+}
+
     var subtract = (index) => {
        const updatedTickets = props.booking.ticket.map((item,i) => {
             if (i === index) {
@@ -127,7 +151,9 @@ export default function Review(props) {
 
         }
 
-
+<Typography variant ="h6" gutterBottom>
+            Your total is {props.booking.price}
+          </Typography>
 
         </List>
         </React.Fragment>
