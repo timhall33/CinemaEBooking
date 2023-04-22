@@ -160,18 +160,11 @@ function createTicket(ageCat, price, ticketCount) {
  */
 function TicketView(props) {
 
-    const defaultTickets = [createTicket("Adult","$9.00",0),createTicket("Child","$6.00",0),createTicket("Senior","$6.00",0)]
-
-
-    
-    const [tickets, setTicket] = useState(defaultTickets)
-
-
-
+   
   console.log(props)
 
     var subtract = (index) => {
-       const updatedTickets = tickets.map((item,i) => {
+       const updatedTickets = props.booking.ticket.map((item,i) => {
             if (i === index) {
                 return {ageCat: item.ageCat,price: item.price,ticketCount: item.ticketCount - 1}
 
@@ -179,11 +172,11 @@ function TicketView(props) {
                 return item
             }
         });
-        setTicket(updatedTickets)
+        props.setBooking((prev) => {return {...prev, ticket: updatedTickets}})
     }
 
     var add = (index) => {
-        const updatedTickets = tickets.map((item,i) => {
+        const updatedTickets = props.booking.ticket.map((item,i) => {
             if (i === index) {
                 return {ageCat: item.ageCat,price: item.price,ticketCount: item.ticketCount + 1}
 
@@ -191,31 +184,28 @@ function TicketView(props) {
                 return item
             }
         });
-        setTicket(updatedTickets)
+        props.setBooking((prev) => {return {...prev, ticket: updatedTickets}})
     }
 
-    var updateTickets = (tickets) => {
-        props.setBooking((prev) => { return {...prev, ticket: tickets}})
-    }
+
 
 
     return (
 
         <List sx={{ width: '100%', maxWidth: 550}} >
 
-        {props.booking.ticket.length === 0 ?
+        {
         
-        
-        tickets.map((ticket,index) => (
+        props.booking.ticket.map((ticket,index) => (
             <div key = {index}>
     <ListItem >
                 <ListItemText primary={ticket.ageCat} secondary={ticket.price}></ListItemText>
                 <div>
-                <IconButton onClick={() => {subtract(index); updateTickets(tickets)}} disabled = {ticket.ticketCount === 0}> 
+                <IconButton onClick={() => {subtract(index);}} disabled = {ticket.ticketCount === 0}> 
                     <RemoveCircleIcon></RemoveCircleIcon>
                 </IconButton>
                 {ticket.ticketCount}
-                <IconButton onClick={() => {add(index) ; updateTickets(tickets)}}>
+                <IconButton onClick={() => {add(index) }}>
                     <AddCircleIcon></AddCircleIcon>
                      </IconButton>
                 </div>
@@ -226,26 +216,6 @@ function TicketView(props) {
         
         ))
 
-         :     
-        props.booking.ticket.map((ticket,index) => (
-            <div key = {index}>
-    <ListItem >
-                <ListItemText primary={ticket.ageCat} secondary={ticket.price}></ListItemText>
-                <div>
-                <IconButton onClick={() => {subtract(index); updateTickets(tickets)}} disabled = {ticket.ticketCount === 0}> 
-                    <RemoveCircleIcon></RemoveCircleIcon>
-                </IconButton>
-                {ticket.ticketCount}
-                <IconButton onClick={() => {add(index) ; updateTickets(tickets)}}>
-                    <AddCircleIcon></AddCircleIcon>
-                     </IconButton>
-                </div>
-               
-            </ListItem>
-            <Divider variant="middle" />
-            </div>
-        
-        ))
 
         } 
 
@@ -315,7 +285,8 @@ function BuyTicketViews() {
 
     const [booking, setBooking] = useState({
       showTime: {},
-            ticket:  [],
+            ticket:  [createTicket("Adult","$9.00",0),createTicket("Child","$6.00",0),createTicket("Senior","$6.00",0)]
+            ,
             seat: {},
             address: {
               firstName: "",
