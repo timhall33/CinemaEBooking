@@ -32,8 +32,7 @@ import { useParams } from 'react-router-dom';
 import { collection, query, where, getDocs, limit } from "firebase/firestore";
 import { db} from '../Controls/Firebase';
 import { CardContent, Box } from "@mui/material";
-
-
+import { useMemo } from 'react';
 
 
 
@@ -55,10 +54,13 @@ All views that are needed to buy tickets
 
 
 
-function ShowTimeView() {
+function ShowTimeView(props) {
     const {movieTitle}  = useParams();
     const [times, setTimes] = useState([]);
     const [selectedDateIndex, setSelectedDateIndex] = useState(0);
+
+
+    const [click, setClick] = useState(false)
 
     useEffect(() => {
       const moviesRef = collection(db, "movies");
@@ -98,12 +100,26 @@ function ShowTimeView() {
                     key={index}
                     variant="contained"
                     sx={{ width: 50 }}
-                    onClick={() => console.log(t)}
+                    onClick={() => {
+                    
+                    
+                    setClick((prev) => !prev)
+                  
+                    props.setBooking((prev) => {
+                      return {...prev, showTime: t}
+                    })
+                    console.log(props.booking.showTime)
+                    }}
+                   
+
                   >
                     {t.time}
                   </Button>
                 ))}
                  </Stack>
+                 {props.booking.showTime.date && (
+                  <p>You have selected {props.booking.showTime.date} at {props.booking.showTime.time} </p>
+                 )}
             </TabPanel>
           ))}
         </CardContent>
@@ -142,11 +158,17 @@ function createTicket(ageCat, price, ticketCount) {
  * Displays view that prompts user to input amount of ticket to purchase 
  * @returns 
  */
-function TicketView() {
+function TicketView(props) {
 
     const defaultTickets = [createTicket("Adult","$9.00",0),createTicket("Child","$6.00",0),createTicket("Senior","$6.00",0)]
+
+
     
     const [tickets, setTicket] = useState(defaultTickets)
+
+
+
+  console.log(props)
 
     var subtract = (index) => {
        const updatedTickets = tickets.map((item,i) => {
@@ -172,22 +194,28 @@ function TicketView() {
         setTicket(updatedTickets)
     }
 
+    var updateTickets = (tickets) => {
+        props.setBooking((prev) => { return {...prev, ticket: tickets}})
+    }
 
 
     return (
 
         <List sx={{ width: '100%', maxWidth: 550}} >
 
-        {tickets.map((ticket,index) => (
+        {props.booking.ticket.length === 0 ?
+        
+        
+        tickets.map((ticket,index) => (
             <div key = {index}>
     <ListItem >
                 <ListItemText primary={ticket.ageCat} secondary={ticket.price}></ListItemText>
                 <div>
-                <IconButton onClick={() => subtract(index)} disabled = {ticket.ticketCount === 0}> 
+                <IconButton onClick={() => {subtract(index); updateTickets(tickets)}} disabled = {ticket.ticketCount === 0}> 
                     <RemoveCircleIcon></RemoveCircleIcon>
                 </IconButton>
                 {ticket.ticketCount}
-                <IconButton onClick={() => add(index)}>
+                <IconButton onClick={() => {add(index) ; updateTickets(tickets)}}>
                     <AddCircleIcon></AddCircleIcon>
                      </IconButton>
                 </div>
@@ -198,7 +226,28 @@ function TicketView() {
         
         ))
 
-        }
+         :     
+        props.booking.ticket.map((ticket,index) => (
+            <div key = {index}>
+    <ListItem >
+                <ListItemText primary={ticket.ageCat} secondary={ticket.price}></ListItemText>
+                <div>
+                <IconButton onClick={() => {subtract(index); updateTickets(tickets)}} disabled = {ticket.ticketCount === 0}> 
+                    <RemoveCircleIcon></RemoveCircleIcon>
+                </IconButton>
+                {ticket.ticketCount}
+                <IconButton onClick={() => {add(index) ; updateTickets(tickets)}}>
+                    <AddCircleIcon></AddCircleIcon>
+                     </IconButton>
+                </div>
+               
+            </ListItem>
+            <Divider variant="middle" />
+            </div>
+        
+        ))
+
+        } 
 
 
 
@@ -210,19 +259,48 @@ function TicketView() {
  * Displays graphical interface of the seat selection
  * @returns 
  */
-function SeatView() {
+function SeatView(props) {
+  const seatQuery = query(collection(db, "seats"));
+  const [seatData, setSeatData] = useState(null);
 
-    let grids = [...Array(30).keys()]
+  var fetchSeat = async () => {
+    var list = []
+    const querySnapshot = await getDocs(seatQuery );
+    querySnapshot.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      list.push(doc.data())
+ 
+    });
+
+    return list
+  }
+
+  useEffect(() => {
+    fetchSeat().then((res) => {
+      setSeatData(res)
+    })
+    }, []);
+
+
+
     return (
         <Paper id="seatMapCont" sx={{}} elevation={3}>
         <Grid id ="seatMap">
-            {grids.map(grid => (
+            { seatData && (seatData.map(grid => (
                 <Grid key = {grid}>
-<IconButton>
+<IconButton disabled={grid.userId !== null} onClick={() => {
+
+  if (grid.userId !== null) {
+      props.setBooking((prev) => {return {...prev, seat: grid}})
+  }
+
+
+}}>
     <EventSeatIcon  color="primary" fontSize='large'></EventSeatIcon>
 </IconButton>
+
                 </Grid>
-            ))}
+            )))}
         </Grid>
         </Paper>
 
@@ -235,6 +313,27 @@ function BuyTicketViews() {
 
     const [step,setStep] = useState(0)
 
+    const [booking, setBooking] = useState({
+      showTime: {},
+            ticket:  [],
+            seat: {},
+            address: {
+              firstName: "",
+              lastName: "",
+              addy1: "",
+              addy2: "",
+              city: "",
+              zip: "",
+              state: "",
+              country: "",
+            },
+            payment: {
+              name: "",
+              cardNumber: "",
+              date: "",
+              cvv: ""
+            },
+    })
     const stepViews = [<ShowTimeView></ShowTimeView>,<SeatView></SeatView>]
 
     const nextStep = () => {
@@ -261,21 +360,21 @@ function BuyTicketViews() {
         </Stepper>
 
 { step === 0 && (
-    <ShowTimeView  ></ShowTimeView>
+    <ShowTimeView booking = {booking} setBooking={setBooking} ></ShowTimeView>
 )
 }
 { step === 1 && (
-   <TicketView></TicketView>
+   <TicketView booking = {booking} setBooking={setBooking}></TicketView>
 )
 }
 
 { step === 2 && (
-   <SeatView></SeatView>
+   <SeatView booking = {booking} setBooking={setBooking}></SeatView>
 )
 }
 
 { step === 3 && (
-   <Review></Review>
+   <Review booking = {booking} setBooking={setBooking}></Review>
 )
 }
 
