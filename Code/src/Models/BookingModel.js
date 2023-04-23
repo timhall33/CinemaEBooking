@@ -1,6 +1,7 @@
 export class Booking {
      
-    constructor (showTime, ticket,price, seat, address, payment, userId) {
+    constructor (movie, showTime, ticket,price, seat, address, payment, userId) {
+        this.movie = movie
         this.showTime = showTime
         this.ticket = ticket
         this.seat = seat
@@ -17,6 +18,7 @@ export const bookingConverter = {
        
        
         return {
+            movie: booking.movie,
             showTime: booking.showTime,
             ticket:  booking.ticket,
             seat: booking.seat,
@@ -28,7 +30,7 @@ export const bookingConverter = {
     },
     fromFirestore: function (snapshot, options) {
         const data = snapshot.data(options);
-        return new Booking(data.showTime, data.ticket, data.price, data.seat, data.address, data.payment, data.userId)
+        return new Booking(data.movie, data.showTime, data.ticket, data.price, data.seat, data.address, data.payment, data.userId)
     }
 
 }; 

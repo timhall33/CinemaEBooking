@@ -2,10 +2,11 @@
 
 export class Seat {
      
-    constructor (row, col, userId) {
+    constructor (row, col, userId, seatId) {
         this.row = row
         this.col = col
         this.userId = userId
+        this.seatId = seatId
     }   
     
 }
@@ -17,12 +18,13 @@ export const seatConverter = {
         return {
             row: seat.row,
             col: seat.col,
-            userId: userId
+            userId: userId,
+            seatId: seatId
             };
     },
     fromFirestore: function (snapshot, options) {
         const data = snapshot.data(options);
-        return new Seat(data.row, data.col, col.userId)
+        return new Seat(data.row, data.col, data.userId, data.seatId)
     }
 
 }; 

@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 
-export default function AddressForm() {
+export default function AddressForm(props) {
   return (
     <React.Fragment>
       <Typography variant="h6" gutterBottom>
@@ -21,6 +21,13 @@ export default function AddressForm() {
             fullWidth
             autoComplete="given-name"
             variant="standard"
+            value={props.booking.address.firstName}
+            onChange={(e) => {
+              props.setBooking((prev) => {
+                return {...prev, address: {...prev.address, firstName: e.target.value}}
+              })
+       
+            }}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -32,6 +39,13 @@ export default function AddressForm() {
             fullWidth
             autoComplete="family-name"
             variant="standard"
+            value={props.booking.address.lastName}
+            onChange={(e) => {
+              props.setBooking((prev) => {
+                return {...prev, address: {...prev.address, lastName: e.target.value}}
+              })
+
+            }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -43,6 +57,13 @@ export default function AddressForm() {
             fullWidth
             autoComplete="shipping address-line1"
             variant="standard"
+            value={props.booking.address.addy1}
+            onChange={(e) => {
+              props.setBooking((prev) => {
+                return {...prev, address: {...prev.address, addy1: e.target.value}}
+              })
+
+            }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -53,6 +74,13 @@ export default function AddressForm() {
             fullWidth
             autoComplete="shipping address-line2"
             variant="standard"
+            value={props.booking.address.addy2}
+            onChange={(e) => {
+              props.setBooking((prev) => {
+                return {...prev, address: {...prev.address, addy2: e.target.value}}
+              })
+
+            }}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -64,6 +92,13 @@ export default function AddressForm() {
             fullWidth
             autoComplete="shipping address-level2"
             variant="standard"
+            value={props.booking.address.city}
+            onChange={(e) => {
+              props.setBooking((prev) => {
+                return {...prev, address: {...prev.address, city: e.target.value}}
+              })
+
+            }}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -73,6 +108,13 @@ export default function AddressForm() {
             label="State/Province/Region"
             fullWidth
             variant="standard"
+            value={props.booking.address.state}
+            onChange={(e) => {
+              props.setBooking((prev) => {
+                return {...prev, address: {...prev.address, state: e.target.value}}
+              })
+
+            }}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -84,6 +126,13 @@ export default function AddressForm() {
             fullWidth
             autoComplete="shipping postal-code"
             variant="standard"
+            value={props.booking.address.zip}
+            onChange={(e) => {
+              props.setBooking((prev) => {
+                return {...prev, address: {...prev.address, zip: e.target.value}}
+              })
+
+            }}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -95,6 +144,13 @@ export default function AddressForm() {
             fullWidth
             autoComplete="shipping country"
             variant="standard"
+            value={props.booking.address.country}
+            onChange={(e) => {
+              props.setBooking((prev) => {
+                return {...prev, address: {...prev.address, country: e.target.value}}
+              })
+
+            }}
           />
         </Grid>
         <Grid item xs={12}>

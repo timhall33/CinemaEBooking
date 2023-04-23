@@ -33,10 +33,10 @@ import { collection, query, where, getDocs, limit } from "firebase/firestore";
 import { db} from '../Controls/Firebase';
 import { CardContent, Box } from "@mui/material";
 import { useMemo } from 'react';
-
-
-
-
+import { storeBooking } from '../Controls/FirebaseBookingFunctions';
+import { app } from '../Controls/Firebase';
+import { getAuth } from 'firebase/auth';
+import { arrayUnion } from 'firebase/firestore';
 /*
 To book tickets, users should select the movie, 
 show date and time, the number of tickets and the age category for each ticket. 
@@ -277,12 +277,14 @@ function SeatView(props) {
     return (
         <Paper id="seatMapCont" sx={{}} elevation={3}>
         <Grid id ="seatMap">
-            { seatData && (seatData.map(grid => (
-                <Grid key = {grid}>
+            { seatData && (seatData.map((grid,index) => (
+                <Grid key = {index}>
 <IconButton disabled={grid.userId !== null} onClick={() => {
 
-  if (grid.userId !== null) {
-      props.setBooking((prev) => {return {...prev, seat: grid}})
+  if (grid.userId === null && !props.booking.seat.includes(grid)) {
+    console.log(grid)
+
+      props.setBooking((prev) => {return {...prev, seat: [...prev.seat,grid]}})
   }
 
 
@@ -298,18 +300,20 @@ function SeatView(props) {
     )
 }
 
-function BuyTicketViews() {
+function BuyTicketViews(props) {
 
     const steps = ['Select a showtime','Select tickets',"Select seats",'Review your order', 'Shipping address', 'Payment details', 'Confirm Booking']
 
     const [step,setStep] = useState(0)
+    const {movieTitle}  = useParams();
 
     const [booking, setBooking] = useState({
+      movie: movieTitle,
       showTime: {},
             ticket:  [createTicket("Adult","9.00",0),createTicket("Child","6.00",0),createTicket("Senior","6.00",0)]
             ,
             price: 0,
-            seat: {},
+            seat: [],
             address: {
               firstName: "",
               lastName: "",
@@ -372,17 +376,17 @@ function BuyTicketViews() {
 }
 
 { step === 4 && (
-   <AddressForm></AddressForm>
+   <AddressForm booking = {booking} setBooking={setBooking} ></AddressForm>
 )
 }
 
 { step === 5 && (
-   <PaymentForm></PaymentForm>
+   <PaymentForm booking = {booking} setBooking={setBooking} ></PaymentForm>
 )
 }
 
 { step === 6 && (
-   <PlaceOrder></PlaceOrder>
+   <PlaceOrder booking = {booking} setBooking={setBooking} ></PlaceOrder>
 )
 }
 
@@ -401,8 +405,26 @@ function BuyTicketViews() {
 { step < 7 && (
 
 <Link to= {step == 6 ? "/orderConfirmation" : ""} style={{ textDecoration: 'none' }}>
-        <Button onClick={() => nextStep()} variant="contained" >
+        <Button onClick={() => 
+        
+        {
+         if (step === steps.length - 1 ) {
+          console.log(getAuth(app).currentUser.uid)
+          storeBooking(movieTitle, booking.showTime, booking.ticket, booking.price, booking.seat, booking.address, booking.payment, getAuth(app).currentUser.uid)
+         } else {
+          nextStep()
+         }
+        }
+      
+        
+        
+        } variant="contained" >
+
+
         {step=== steps.length - 1 ? 'Confirm Booking' : 'Next'}
+
+
+
       </Button>
       </Link>
   

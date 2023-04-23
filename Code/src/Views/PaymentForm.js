@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 
-export default function PaymentForm() {
+export default function PaymentForm(props) {
   return (
     <React.Fragment>
       <Typography variant="h6" gutterBottom>
@@ -20,6 +20,13 @@ export default function PaymentForm() {
             fullWidth
             autoComplete="cc-name"
             variant="standard"
+            value = {props.booking.payment.name}
+            onChange={(e) => {
+              props.setBooking((prev) => {
+                return {...prev, payment: {...prev.payment, name: e.target.value}}
+              })
+
+            }}
           />
         </Grid>
         <Grid item xs={12} md={6}>
@@ -30,6 +37,13 @@ export default function PaymentForm() {
             fullWidth
             autoComplete="cc-number"
             variant="standard"
+            value = {props.booking.payment.cardNumber}
+            onChange={(e) => {
+              props.setBooking((prev) => {
+                return {...prev, payment: {...prev.payment, cardNumber: e.target.value}}
+              })
+
+            }}
           />
         </Grid>
         <Grid item xs={12} md={6}>
@@ -40,6 +54,13 @@ export default function PaymentForm() {
             fullWidth
             autoComplete="cc-exp"
             variant="standard"
+            value = {props.booking.payment.date}
+            onChange={(e) => {
+              props.setBooking((prev) => {
+                return {...prev, payment: {...prev.payment, date: e.target.value}}
+              })
+
+            }}
           />
         </Grid>
         <Grid item xs={12} md={6}>
@@ -51,6 +72,13 @@ export default function PaymentForm() {
             fullWidth
             autoComplete="cc-csc"
             variant="standard"
+            value = {props.booking.payment.cvv}
+            onChange={(e) => {
+              props.setBooking((prev) => {
+                return {...prev, payment: {...prev.payment, cvv: e.target.value}}
+              })
+
+            }}
           />
         </Grid>
         <Grid item xs={12}>
