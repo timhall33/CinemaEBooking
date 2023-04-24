@@ -232,13 +232,14 @@ function MovieSelectedView() {
     const { movieTitle: title, movieTrailer, movieID, times, ...rest } = movieData;
 
     return (
-        <Stack direction = "row" id ="movieSelectedView">
+        <Stack justifyContent={"space-around"} alignItems={"center"}  direction = "row" id ="movieSelectedView">
             <div id="moviePosterCont">
             <img id="moviePoster">
             </img>
             </div>
             
-            <Stack className="movieSelectionDetails" >
+            <Stack width="100%"
+             justifyContent={"start"} alignItems={"start"}  className="movieSelectionDetails" >
             <Typography variant="h2">{title}</Typography>
             {Object.entries(rest).map(([key, value]) => (
                     <Typography key={key} variant="h5">
@@ -247,7 +248,7 @@ function MovieSelectedView() {
                 ))}
         </Stack>
             <div id = "movieTraier">
-            <iframe src= {`https://www.youtube.com/embed/${movieTrailer}`}
+            <iframe style={{border: "none"}} src= {`https://www.youtube.com/embed/${movieTrailer}`}
    allow='autoplay; encrypted-media'
    allowfullscreen
    title='video'

@@ -13,6 +13,7 @@ import { grey } from '@mui/material/colors';
 import BuyTicketViews from './BuyTicketViews';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import { useEffect } from 'react';
 
 const products = [
   {
@@ -48,13 +49,35 @@ const payments = [
 function createTicket(ageCat, price, ticketCount) {
   return {ageCat, price, ticketCount}
 }
-export default function Review() {
-  const defaultTickets = [createTicket("Adult","$9.00",3)]
-    
-    const [tickets, setTicket] = useState(defaultTickets)
+export default function Review(props) {
+
+  useEffect(() => {
+    updateTotal()
+},[props.booking.ticket])
+
+
+
+var updateTotal = () => {
+  props.setBooking((prev) => {return {...prev, price: getTotal(props.booking.ticket)}})
+}
+
+var getTotal = (tickets) => {
+
+  var total = 0;
+
+  props.booking.ticket.forEach((item) => {
+    total = total + (parseInt(item.price) * parseInt(item.ticketCount))
+  })
+
+
+
+
+
+  return total
+}
 
     var subtract = (index) => {
-       const updatedTickets = tickets.map((item,i) => {
+       const updatedTickets = props.booking.ticket.map((item,i) => {
             if (i === index) {
                 return {ageCat: item.ageCat,price: item.price,ticketCount: item.ticketCount - 1}
 
@@ -62,11 +85,11 @@ export default function Review() {
                 return item
             }
         });
-        setTicket(updatedTickets)
+        props.setBooking((prev) => {return {...prev, ticket: updatedTickets}})
     }
 
     var add = (index) => {
-        const updatedTickets = tickets.map((item,i) => {
+        const updatedTickets = props.booking.ticket.map((item,i) => {
             if (i === index) {
                 return {ageCat: item.ageCat,price: item.price,ticketCount: item.ticketCount + 1}
 
@@ -74,21 +97,25 @@ export default function Review() {
                 return item
             }
         });
-        setTicket(updatedTickets)
+    
+        props.setBooking((prev) => {return {...prev, ticket: updatedTickets}})
     }
 
     var deleted = (index) => {
-      const updatedTickets = tickets.map((item,i) => {
+      const updatedTickets = props.booking.ticket.map((item,i) => {
         if (i === index) {
-            return {ageCat: item.ageCat,price: item.price,ticketCount: item.ticketCount - item.ticketCount}
+            return {ageCat: item.ageCat,price: item.price,ticketCount: 0}
 
         } else {
             return item
         }
     });
-    setTicket(updatedTickets)
+
+    props.setBooking((prev) => {return {...prev, ticket: updatedTickets}})
     }
 
+
+  
 
 
     return (
@@ -99,19 +126,19 @@ export default function Review() {
           </Typography>
           <List sx={{ width: '100%', maxWidth: 550}} >
 
-        {tickets.map((ticket,index) => (
+        {props.booking.ticket.map((ticket,index) => (
             <div key = {index}>
     <ListItem >
                 <ListItemText primary={ticket.ageCat} secondary={ticket.price}></ListItemText>
                 <div>
-                <IconButton onClick={() => subtract(index)} disabled = {ticket.ticketCount === 0}> 
+                <IconButton onClick={() => {subtract(index); }} disabled = {ticket.ticketCount === 0}> 
                     <RemoveCircleIcon></RemoveCircleIcon>
                 </IconButton>
                 {ticket.ticketCount}
-                <IconButton onClick={() => add(index)}>
+                <IconButton onClick={() => {add(index); }}>
                   <AddCircleOutlineIcon></AddCircleOutlineIcon>
                 </IconButton>
-                <IconButton onClick={() => deleted(index)}>
+                <IconButton disabled = {ticket.ticketCount === 0} onClick={() => {deleted(index);}}>
                 <DeleteIcon></DeleteIcon>
                 </IconButton>
                 </div>
@@ -124,7 +151,9 @@ export default function Review() {
 
         }
 
-
+<Typography variant ="h6" gutterBottom>
+            Your total is {props.booking.price}
+          </Typography>
 
         </List>
         </React.Fragment>

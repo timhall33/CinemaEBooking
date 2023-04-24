@@ -4,25 +4,29 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Grid from '@mui/material/Grid';
+import { fetchData } from './EditProfile';
+import { useEffect } from 'react';
+import { useState } from 'react';
 
-const products = [
-  {
-    name: 'Product 1',
-    desc: 'A nice thing',
-    price: '$9.99',
-  },
-  { name: 'Shipping', desc: '', price: 'Free' },
-];
 
-const addresses = ['1 MUI Drive', 'Reactville', 'Anytown', '99999', 'USA'];
-const payments = [
-  { name: 'Card type', detail: 'Visa' },
-  { name: 'Card holder', detail: 'Mr John Smith' },
-  { name: 'Card number', detail: 'xxxx-xxxx-xxxx-1234' },
-  { name: 'Expiry date', detail: '04/2024' },
-];
+export default function PlaceOrder(props) {
 
-export default function PlaceOrder() {
+
+
+  const addresses = [props.booking.address.addy1, props.booking.address.city, props.booking.address.state,
+  props.booking.address.zip, props.booking.address.country]
+  
+  const products = props.booking.ticket
+  const payments = [
+    { name: 'Card type', detail: props.booking.payment.name },
+  { name: 'Card holder', detail: props.booking.address.firstName + " " + props.booking.address.lastName },
+  { name: 'Card number', detail: props.booking.payment.cardNumber },
+  { name: 'Expiry date', detail: props.booking.payment.date },
+  ]
+
+  
+  
+  
 
 
   return (
@@ -30,20 +34,36 @@ export default function PlaceOrder() {
       <Typography variant="h6" gutterBottom>
         Order summary
       </Typography>
-      <List disablePadding>
-        {products.map((product) => (
-          <ListItem key={product.name} sx={{ py: 1, px: 0 }}>
-            <ListItemText primary={product.name} secondary={product.desc} />
+      <List disablePadding style={{width: "250px"}}>
+        {products.map((product) => {
+
+          return product.ticketCount != 0 && (
+            <ListItem style={{display: "flex", justifyContent:"space-between"}} key={product} sx={{ py: 1, px: 0 }}>
+            <ListItemText primary={product.ageCat} secondary={product.ticketCount} />
             <Typography variant="body2">{product.price}</Typography>
           </ListItem>
-        ))}
+          )
+
+          
+          
+}
+
+        )}
       </List>
+      <Typography variant="h6" gutterBottom>
+        Total: {props.booking.price}
+      </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
           <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
             Shipping
           </Typography>
-          <Typography gutterBottom>John Smith</Typography>
+
+       
+    <Typography gutterBottom>{props.booking.address.firstName} {props.booking.address.lastName}</Typography>
+          
+
+
           <Typography gutterBottom>{addresses.join(', ')}</Typography>
         </Grid>
         <Grid item container direction="column" xs={12} sm={6}>

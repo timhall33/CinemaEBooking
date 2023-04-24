@@ -31,7 +31,7 @@ function App() {
 
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
-  console.log(getAuth(app).currentUser)
+
   const theme = useMemo(
     () =>
       createTheme({

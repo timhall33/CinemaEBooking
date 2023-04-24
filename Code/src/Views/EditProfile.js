@@ -57,7 +57,7 @@ function stringAvatar(name) {
 }
 
 
-async function fetchData() {
+ async function fetchData() {
 const user = auth.currentUser;
 
   if (user) {
