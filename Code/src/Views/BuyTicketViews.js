@@ -37,6 +37,7 @@ import { storeBooking } from '../Controls/FirebaseBookingFunctions';
 import { app } from '../Controls/Firebase';
 import { getAuth } from 'firebase/auth';
 import { arrayUnion } from 'firebase/firestore';
+import { auth } from '../Controls/Firebase';
 /*
 To book tickets, users should select the movie, 
 show date and time, the number of tickets and the age category for each ticket. 
@@ -160,11 +161,11 @@ function createTicket(ageCat, price, ticketCount) {
  */
 function TicketView(props) {
 
-   
+  const updateTotal = (tickets) => {
+    var result = getTotal(tickets)
+    props.setBooking((prev) => {return {...prev, price: result.total, count: result.count}})
+  }
 
-  useEffect(() => {
-    updateTotal()
-},[props.booking.ticket])
 
 
     var subtract = (index) => {
@@ -176,39 +177,43 @@ function TicketView(props) {
                 return item
             }
         });
-        props.setBooking((prev) => {return {...prev, ticket: updatedTickets}})
+        props.setBooking((prev) => {return {...prev, ticket: updatedTickets, seat: []}})
+        updateTotal(updatedTickets)
     }
 
     var add = (index) => {
         const updatedTickets = props.booking.ticket.map((item,i) => {
             if (i === index) {
+              console.log(item.ticketCount + 1)
                 return {ageCat: item.ageCat,price: item.price,ticketCount: item.ticketCount + 1}
 
             } else {
                 return item
             }
         });
-        props.setBooking((prev) => {return {...prev, ticket: updatedTickets}})
+        props.setBooking((prev) => {return {...prev, ticket: updatedTickets,  seat: []}})
+        updateTotal(updatedTickets)
     }
 
 
-    var updateTotal = () => {
-      props.setBooking((prev) => {return {...prev, price: getTotal(props.booking.ticket)}})
-    }
+
 
     var getTotal = (tickets) => {
 
       var total = 0;
+      var count = 0;
 
-      props.booking.ticket.forEach((item) => {
+     tickets.forEach((item) => {
         total = total + (parseInt(item.price) * parseInt(item.ticketCount))
+        count = count + item.ticketCount
+        
       })
 
 
     
 
 
-      return total
+      return {total: total, count: count}
     }
 
     return (
@@ -222,11 +227,12 @@ function TicketView(props) {
     <ListItem >
                 <ListItemText primary={ticket.ageCat} secondary={ticket.price}></ListItemText>
                 <div>
-                <IconButton onClick={() => {subtract(index); updateTotal()}} disabled = {ticket.ticketCount === 0}> 
+                <IconButton onClick={() => {subtract(index)}} disabled = {ticket.ticketCount === 0}> 
                     <RemoveCircleIcon></RemoveCircleIcon>
+                    
                 </IconButton>
                 {ticket.ticketCount}
-                <IconButton onClick={() => {add(index); updateTotal() }}>
+                <IconButton onClick={() => {add(index) } } >
                     <AddCircleIcon></AddCircleIcon>
                      </IconButton>
                 </div>
@@ -259,14 +265,27 @@ function SeatView(props) {
     const querySnapshot = await getDocs(seatQuery );
     querySnapshot.forEach((doc) => {
       // doc.data() is never undefined for query doc snapshots
-      list.push(doc.data())
+      const ordered = Object.keys(doc.data()).sort().reduce(
+        (obj, key) => { 
+          obj[key] = doc.data()[key]; 
+          return obj;
+        }, 
+        {}
+      );
+      
+      list.push(ordered)
+      
  
     });
 
     return list
   }
 
+
+
   useEffect(() => {
+  
+    console.log(props.booking.seat)
     fetchSeat().then((res) => {
       setSeatData(res)
     })
@@ -278,24 +297,43 @@ function SeatView(props) {
         <Paper id="seatMapCont" sx={{}} elevation={3}>
         <Grid id ="seatMap">
             { seatData && (seatData.map((grid,index) => (
-                <Grid key = {index}>
-<IconButton disabled={grid.userId !== null} onClick={() => {
+       
+<IconButton key = {index} disabled={grid.userId !== null  } onClick={() => {
 
-  if (grid.userId === null && !props.booking.seat.includes(grid)) {
-    console.log(grid)
+  if (grid.userId === null && !props.booking.seat.some(item => item.row === grid.row && item.col === grid.col) && props.booking.count !== 0) {
 
-      props.setBooking((prev) => {return {...prev, seat: [...prev.seat,grid]}})
-  }
+    
 
+      props.setBooking((prev) => {return {...prev, seat: [...prev.seat, {...grid, userId: auth.currentUser.uid}], count: prev.count - 1}})
+  } else if (props.booking.seat.some(item => item.row === grid.row && item.col === grid.col)) {
+   
+
+
+ props.setBooking((prev) => {return {...prev, seat: prev.seat.filter(item => item.row !== grid.row || item.col !== grid.col), count: prev.count + 1}})
+
+
+  } 
 
 }}>
-    <EventSeatIcon  color="primary" fontSize='large'></EventSeatIcon>
+    <EventSeatIcon  color={grid.userId !== null ? "error" : props.booking.seat.some(item => item.row === grid.row && item.col === grid.col) ? "secondary" :   "primary"} fontSize='large'></EventSeatIcon>
 </IconButton>
 
-                </Grid>
+          
             )))}
+         
         </Grid>
+
+
+        <Typography>You have {props.booking.count} seats left to select </Typography>
+
+        {props.booking.seat.map((item,index) => (
+ <Typography key = {index}>You have selected seat {item.row}{item.col} </Typography>
+        ))
+
+        }
+       
         </Paper>
+        
 
     )
 }
@@ -313,6 +351,7 @@ function BuyTicketViews(props) {
             ticket:  [createTicket("Adult","9.00",0),createTicket("Child","6.00",0),createTicket("Senior","6.00",0)]
             ,
             price: 0,
+            count: 0,
             seat: [],
             address: {
               firstName: "",

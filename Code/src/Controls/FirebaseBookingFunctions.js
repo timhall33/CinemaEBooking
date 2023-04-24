@@ -15,7 +15,10 @@ export async function storeBooking(movie, showTime, ticket,price, seat, address,
     const data = {
         userId: userId
     }
-    const seatRef = doc(db, 'seats/', seat.seatId);
+
+
+    seat.forEach(async item => {
+      const seatRef = doc(db, 'seats/', item.seatId);
 
     await updateDoc(seatRef, data)
             .then((res) => {
@@ -25,4 +28,6 @@ export async function storeBooking(movie, showTime, ticket,price, seat, address,
             .catch((error) => {
               console.error('Error updating document: ', error);
             });
+    });
+    
   }
