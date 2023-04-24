@@ -26,7 +26,7 @@ import { useEffect } from 'react';
 import Button from '@mui/material/Button';
 import { Promotion } from '../Models/PromotionModel';
 import Alert from '@mui/material/Alert';
-
+import {withAuth} from '../Controls/Firebase';
 /**
  * View that displays fields for promotion creation
  * @returns view
@@ -432,4 +432,4 @@ function TimeForm(props) {
   );
 }
 
-export default ManageMovies;
+export default withAuth(ManageMovies);
