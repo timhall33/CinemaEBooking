@@ -8,6 +8,11 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Typography } from '@mui/material';
+import { getAuth } from 'firebase/auth';
+import { app } from '../Controls/Firebase';
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from '../Controls/Firebase';
+import { useState } from 'react';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -18,6 +23,26 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     fontSize: 14,
   },
 }));
+
+export async function readBooking(userId) {
+  const q = query(collection(db, "booking"), where("userId", "==", userId));
+
+
+  var list = []
+  const querySnapshot = await getDocs(q);
+  
+  querySnapshot.forEach((doc) => {
+    // doc.data() is never undefined for query doc snapshots
+    list.push(doc.data())
+   console.log(doc)
+  });
+
+
+
+  return list;
+  
+}
+
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {
@@ -33,13 +58,19 @@ function createData(orderNum, movie, total) {
   return { orderNum, movie, total };
 }
 
-const rows = [
-  createData('e6hty99012', 'AOT', 10.00 ),
-  createData('b6hty99012', 'idk', 6.00),
 
-];
 
 export default function CustomizedTables() {
+  
+  const [order, setOrder] = useState([])
+
+  React.useEffect(() => {
+
+    readBooking(getAuth(app).currentUser.uid).then((res) => {
+      setOrder(res)
+    })
+  },[])
+
   return (
     
     <TableContainer component={Paper}>
@@ -55,13 +86,13 @@ export default function CustomizedTables() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <StyledTableRow key={row.orderNum}>
+          {order.map((row, index) => (
+            <StyledTableRow key={index}>
               <StyledTableCell component="th" scope="row">
-                {row.orderNum}
+                {index}
               </StyledTableCell>
               <StyledTableCell>{row.movie}</StyledTableCell>
-              <StyledTableCell>{row.total}</StyledTableCell>
+              <StyledTableCell>{row.price}</StyledTableCell>
             </StyledTableRow>
           ))}
         </TableBody>

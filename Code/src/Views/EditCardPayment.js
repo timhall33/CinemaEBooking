@@ -55,6 +55,7 @@ export async function readCreditCard(userId) {
 }
 
 
+
 export async function storeCreditCard(db, cardType, cardNumber, cardExp, addyOne,  city, state, zipCode, country, cvv, userId) {
 
   // adding document
