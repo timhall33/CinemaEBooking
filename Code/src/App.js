@@ -15,7 +15,7 @@ import RegisterView from './Views/RegisterView';
 import RegConfirmation from './Views/RegConfirmation';
 import {EditProfile} from './Views/EditProfile';
 import CheckoutView from './Views/CheckoutView';
-
+import OrderHistory from './Views/OrderHistory';
 import ManageMovies from './Views/ManageMoviesView';
 import ForgotPasswordConfirmation from './Views/ForgotPasswordConfirmation';
 import ForgotPasswordView from './Views/ForgotPasswordView';
@@ -25,7 +25,7 @@ import { useEffect, useState } from 'react';
 import { createTicket } from './Views/BuyTicketViews';
 import ManageUsers from './Views/ManageUsers';
 import {app, auth} from './Controls/Firebase'
-import { getAuth } from "firebase/auth";;
+import { getAuth } from "firebase/auth";
 
 
 function App() {
@@ -92,6 +92,7 @@ function App() {
         <Route path='/forgotConfirmation' element={<ForgotPasswordConfirmation />} />
         <Route path='/cardPayments' element={<  EditCardPayment  />} />
         <Route path='/adminPanel' element={<  AdminPanelView  />} />
+        <Route path='/orderHistory' element={<OrderHistory/>}/>
 
 
       </Routes>
