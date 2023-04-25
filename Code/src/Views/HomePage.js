@@ -34,6 +34,7 @@ import { getAuth } from 'firebase/auth';
 import { collection, query, where, getDocs, limit } from "firebase/firestore";
 import { useParams } from 'react-router-dom';
 import {withAuth} from "../Controls/Firebase";
+import OrderHistory from "./OrderHistory";
 
 function Nav() {
     const navigate = useNavigate()
@@ -113,6 +114,10 @@ function Nav() {
         <MenuItem onClick={() => {navigate("/editProfile"); handleClose()}}>
           <EditProfile></EditProfile>
          
+        </MenuItem>
+
+        <MenuItem onClick={() => {navigate("/orderHistory"); handleClose()}}>
+            <OrderHistory></OrderHistory>
         </MenuItem>
           
 
@@ -242,7 +247,7 @@ function MovieSelectedView() {
              justifyContent={"start"} alignItems={"start"}  className="movieSelectionDetails" >
             <Typography variant="h2">{title}</Typography>
             {Object.entries(rest).map(([key, value]) => (
-                    <Typography key={key} variant="h5">
+                    <Typography key={key} variant="subtitle1">
                         {key}: {value}
                     </Typography>
                 ))}
