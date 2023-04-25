@@ -24,7 +24,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { Fragment } from 'react';
 //import { Show } from '@chakra-ui/react';
 import Review from './Review';
-import PaymentForm from './PaymentForm';
+import PaymentForm, { PaymentBox } from './PaymentForm';
 import AddressForm from './AddressForm';
 import OrderConfirmationView from './OrderConfirmationView';
 import PlaceOrder from './PlaceOrder';
@@ -341,9 +341,17 @@ function SeatView(props) {
 function BuyTicketViews(props) {
 
     const steps = ['Select a showtime','Select tickets',"Select seats",'Review your order', 'Shipping address', 'Payment details', 'Confirm Booking']
-
+    const [selectedCreditCard, setSelectedCreditCard] = useState(null);
     const [step,setStep] = useState(0)
     const {movieTitle}  = useParams();
+    const handleCreditCardSelect = (creditCardInfo) => {
+      setSelectedCreditCard(creditCardInfo);
+      console.log("creditCardInfo: " + selectedCreditCard)
+    };
+    const [name, setName] = useState('');
+    const [cardNum, setCardNum] = useState('');
+    const [date, setDate] = useState('');
+    const [cvv, setCvv] = useState('');
 
     const [booking, setBooking] = useState({
       movie: movieTitle,
@@ -420,7 +428,22 @@ function BuyTicketViews(props) {
 }
 
 { step === 5 && (
-   <PaymentForm booking = {booking} setBooking={setBooking} ></PaymentForm>
+  <div>
+    <PaymentBox 
+        setName={setName} 
+        setCardNum={setCardNum} 
+        setDate={setDate} 
+        setCvv={setCvv} 
+      />
+    <PaymentForm 
+        booking={booking} 
+        setBooking={setBooking} 
+        name={name}
+        cardNum={cardNum}
+        date={date}
+        cvv={cvv}
+      />
+   </div>
 )
 }
 
