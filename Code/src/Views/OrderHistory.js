@@ -89,7 +89,7 @@ export default function CustomizedTables() {
           {order.map((row, index) => (
             <StyledTableRow key={index}>
               <StyledTableCell component="th" scope="row">
-                {index}
+                {row.bookingID}
               </StyledTableCell>
               <StyledTableCell>{row.movie}</StyledTableCell>
               <StyledTableCell>{row.price}</StyledTableCell>
