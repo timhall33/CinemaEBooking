@@ -8,12 +8,12 @@ import { addDoc ,deleteDoc} from 'firebase/firestore';
 import { collection, query, getDocs } from "firebase/firestore";
 
 
-export async function storeMovie(movieTitle, movieCategory, movieCast, movieDirector, movieProducer, movieSynopsis, movieTrailer, movieRatingCode) {
+export async function storeMovie(movieTitle, movieCategory, movieCast, movieDirector, movieProducer, movieSynopsis, movieTrailer, movieRatingCode, movieStarRating) {
 
 
     // adding document
     const ref = collection(db, "movies").withConverter(movieConverter)
-    await addDoc(ref, new Movie(movieTitle, movieCategory, movieCast, movieDirector, movieProducer, movieSynopsis, movieTrailer, movieRatingCode, [], ""))
+    await addDoc(ref, new Movie(movieTitle, movieCategory, movieCast, movieDirector, movieProducer, movieSynopsis, movieTrailer, movieRatingCode, [], "", movieStarRating))
     .then((e) => {{
         console.log(e)
         const newRef = doc(db, "movies", e.id);

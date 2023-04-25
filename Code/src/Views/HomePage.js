@@ -35,6 +35,7 @@ import { collection, query, where, getDocs, limit } from "firebase/firestore";
 import { useParams } from 'react-router-dom';
 import {withAuth} from "../Controls/Firebase";
 import OrderHistory from "./OrderHistory";
+import { app } from '../Controls/Firebase';
 
 function Nav() {
     const navigate = useNavigate()
@@ -354,10 +355,24 @@ function MoviesView(props) {
                 <Typography  variant="h6" component="div">{item.movieRatingCode}</Typography>
                 </Stack>
 <div className = "bottomCardCont">
-<Rating name="half-rating-read" defaultValue={5} precision={0.5} readOnly />
+<Rating name="half-rating-read" defaultValue={parseInt(item.movieStarRating)} precision={0.5} readOnly />
   
 
-    <Button variant="contained" onClick={(e) => {navigate(`/buytickets/${item.movieTitle}`)}} >
+    <Button variant="contained" onClick={(e) => {
+        
+        
+        if (getAuth(app).currentUser === null) {
+            navigate('/login')
+        } else {
+            navigate(`/buytickets/${item.movieTitle}`)
+        }
+
+
+       
+        
+        
+        
+        }} >
         Book
     </Button>
 
@@ -402,7 +417,7 @@ function MoviesView(props) {
                 <Typography  variant="h6" component="div">{item.movieRatingCode}</Typography>
                 </Stack>
 <div className = "bottomCardCont">
-<Rating name="half-rating-read" defaultValue={5} precision={0.5} readOnly />
+<Rating name="half-rating-read" defaultValue={parseInt(item.movieStarRating)} precision={0.5} readOnly />
   
 
 </div>
