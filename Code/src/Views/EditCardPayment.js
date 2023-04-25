@@ -31,7 +31,7 @@ import { getCountFromServer } from 'firebase/firestore';
 
 
 
-async function readCreditCard(userId) {
+export async function readCreditCard(userId) {
   const q = query(collection(db, "creditcard"), where("userId", "==", userId));
 
 
@@ -55,7 +55,7 @@ async function readCreditCard(userId) {
 }
 
 
-export async function storeCreditCard(db, cardType, cardNumber, cardExp, addyOne,  city, state, zipCode, country, userId) {
+export async function storeCreditCard(db, cardType, cardNumber, cardExp, addyOne,  city, state, zipCode, country, cvv, userId) {
 
   // adding document
 
@@ -64,7 +64,7 @@ export async function storeCreditCard(db, cardType, cardNumber, cardExp, addyOne
 
   const ref = collection(db, "creditcard").withConverter(cardConverter)
   
-  await addDoc(ref, new CreditCard(cardType, cardNumber, cardExp, addyOne, city, state, zipCode, country, userId))
+  await addDoc(ref, new CreditCard(cardType, cardNumber, cardExp, addyOne, city, state, zipCode, country, cvv, userId))
   .then((res) => {
     console.log(res)
   }).catch((err) => {
@@ -129,6 +129,19 @@ function AddCardView(props) {
             cardExp: e.target.value
           }))
   
+        }}
+        />
+        <TextField 
+         label="Enter CVV"
+         fullWidth 
+         multiline
+         variant="filled"
+         onChange = {(e) => {
+          props.setCardData((prev) => ({
+            ...prev,
+            cvv: e.target.value
+          }))
+
         }}
         />
         Billing Address
@@ -207,7 +220,7 @@ function AddCardView(props) {
   console.log(auth.currentUser.uid)
 
   
-    storeCreditCard(db, props.cardData.cardType,props.cardData.cardNum, props.cardData.cardExp, props.cardData.addy, props.cardData.city,props.cardData.state, props.cardData.zipCode, props.cardData.country, auth.currentUser.uid)
+    storeCreditCard(db, props.cardData.cardType,props.cardData.cardNum, props.cardData.cardExp, props.cardData.addy, props.cardData.city,props.cardData.state, props.cardData.zipCode, props.cardData.country, props.cardData.cvv, auth.currentUser.uid)
   
  
   

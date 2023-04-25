@@ -271,3 +271,16 @@ BuyTicketViews style
  #time-form {
     margin: 30px;
  }
+ 
+ .paymentBoxTable {
+  max-width: 550px;
+}
+
+.paymentBoxTableRow:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+}
+
+.paymentBoxTableSelectedRow {
+  background-color: rgba(0, 0, 0, 0.08);
+}

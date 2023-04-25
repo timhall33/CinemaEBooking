@@ -244,7 +244,7 @@ function RegisterView() {
 
 
               if (paymentOption) {
-                storeCreditCard(db, cardData.cardType,cardData.cardNum, cardData.cardExp, cardData.addy, cardData.city,cardData.state, cardData.zipCode, cardData.country, auth.currentUser.uid)
+                storeCreditCard(db, cardData.cardType,cardData.cardNum, cardData.cardExp, cardData.addy, cardData.city,cardData.state, cardData.zipCode, cardData.country, cardData.cvv, auth.currentUser.uid)
               }
 
               if (addressOption) {
