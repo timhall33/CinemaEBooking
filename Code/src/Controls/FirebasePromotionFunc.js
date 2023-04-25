@@ -7,7 +7,7 @@ import {Promotion, promoConverter} from '../Models/PromotionModel';
 import { addDoc ,deleteDoc , getDocs, query, where, updateDoc} from 'firebase/firestore';
 import { collection } from "firebase/firestore";
 import {userConverter} from '../Models/UserModel'
-import emailjs, { sendForm } from "@emailjs/browser"
+import  emailjs, { sendForm } from "@emailjs/browser"
 import React from "react";
 export async function storePromo(title, description, discount,formRef) {
 
@@ -40,32 +40,29 @@ export async function storePromo(title, description, discount,formRef) {
     const user = doc.data()
     emailList.push(user.email)
     console.log(user.email)
-    // var params = {
-    //     name: user.firstName,
-    //     email: user.email,
-    //     promotionAmount: promotionAmount,
-    //     promotionDescription: promotionDescription
-    // };
-    //emailjs.sendForm("service_1s3tmck","template_1oybops",params,"EJ1BDajCipvNpTd2_")
     });
 
-    emailList.forEach(async (email) => {
-        var params = {
-        email: email,
-        promotionAmount: promotionAmount,
-        promotionDescription: promotionDescription
-    };
+
+    // UNcomment this for the demo ...
+
+    // emailList.forEach((email) => {
+    //     const emailParams = {
+    //         email: email,
+    //         promotionAmount: promotionAmount,
+    //         promotionDescription: promotionDescription
+
+    //     }
+    //     emailjs.send('service_zonv1b2', 'template_1tdqq1l', emailParams,'Wu_JsPCsb84O3Td2K')
+    //     .then(response => {
+    //       console.log('Email sent successfully', response);
+    //     })
+    //     .catch(error => {
+    //       console.error('Failed to send email', error);
+    //     });
+    // });
+
+
     
-
-
-    emailjs.sendForm("service_zonv1b2","template_1tdqq1l",formRef,"Wu_JsPCsb84O3Td2K")
-    .then((res) => {
-        console.log(res)
-    }).catch((error) => {
-        console.log(error)
-    })
-        
-    })
     
   }
 
