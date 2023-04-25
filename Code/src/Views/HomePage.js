@@ -265,7 +265,7 @@ export function BookMovieStepperView(props) {
   <Paper elevation ={2} sx={{height: "100%",minHeight: 900, maxWidth: 900, width: "100%"}}>
 
         <MovieSelectedView></MovieSelectedView>
-        <BuyTicketViews></BuyTicketViews>
+        <BuyTicketViews booking = {props.booking} setBooking={props.setBooking}></BuyTicketViews>
         </Paper>
        
         </div>
