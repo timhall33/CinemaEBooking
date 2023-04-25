@@ -148,7 +148,7 @@ function ShowTimeView(props) {
     );
   }
 
-function createTicket(ageCat, price, ticketCount) {
+export function createTicket(ageCat, price, ticketCount) {
     return {ageCat, price, ticketCount}
 }
 
@@ -352,32 +352,13 @@ function BuyTicketViews(props) {
     const [cardNum, setCardNum] = useState('');
     const [date, setDate] = useState('');
     const [cvv, setCvv] = useState('');
+  
 
-    const [booking, setBooking] = useState({
-      movie: movieTitle,
-      showTime: {},
-            ticket:  [createTicket("Adult","9.00",0),createTicket("Child","6.00",0),createTicket("Senior","6.00",0)]
-            ,
-            price: 0,
-            count: 0,
-            seat: [],
-            address: {
-              firstName: "",
-              lastName: "",
-              addy1: "",
-              addy2: "",
-              city: "",
-              zip: "",
-              state: "",
-              country: "",
-            },
-            payment: {
-              name: "",
-              cardNumber: "",
-              date: "",
-              cvv: ""
-            },
-    })
+    useEffect(() => {
+      props.setBooking((prev) => {return {...prev, movie: movieTitle}})
+    },[])
+
+  
     const stepViews = [<ShowTimeView></ShowTimeView>,<SeatView></SeatView>]
 
     const nextStep = () => {
@@ -404,26 +385,26 @@ function BuyTicketViews(props) {
         </Stepper>
 
 { step === 0 && (
-    <ShowTimeView booking = {booking} setBooking={setBooking} ></ShowTimeView>
+    <ShowTimeView booking = {props.booking} setBooking={props.setBooking} ></ShowTimeView>
 )
 }
 { step === 1 && (
-   <TicketView booking = {booking} setBooking={setBooking}></TicketView>
+   <TicketView  booking = {props.booking} setBooking={props.setBooking} ></TicketView>
 )
 }
 
 { step === 2 && (
-   <SeatView booking = {booking} setBooking={setBooking}></SeatView>
+   <SeatView  booking = {props.booking} setBooking={props.setBooking} ></SeatView>
 )
 }
 
 { step === 3 && (
-   <Review booking = {booking} setBooking={setBooking}></Review>
+   <Review  booking = {props.booking} setBooking={props.setBooking} ></Review>
 )
 }
 
 { step === 4 && (
-   <AddressForm booking = {booking} setBooking={setBooking} ></AddressForm>
+   <AddressForm  booking = {props.booking} setBooking={props.setBooking}  ></AddressForm>
 )
 }
 
@@ -436,8 +417,8 @@ function BuyTicketViews(props) {
         setCvv={setCvv} 
       />
     <PaymentForm 
-        booking={booking} 
-        setBooking={setBooking} 
+        booking = {props.booking} 
+        setBooking={props.setBooking} 
         name={name}
         cardNum={cardNum}
         date={date}
@@ -448,7 +429,7 @@ function BuyTicketViews(props) {
 }
 
 { step === 6 && (
-   <PlaceOrder booking = {booking} setBooking={setBooking} ></PlaceOrder>
+   <PlaceOrder booking = {props.booking} setBooking={props.setBooking} ></PlaceOrder>
 )
 }
 
@@ -472,7 +453,7 @@ function BuyTicketViews(props) {
         {
          if (step === steps.length - 1 ) {
           console.log(getAuth(app).currentUser.uid)
-          storeBooking(movieTitle, booking.showTime, booking.ticket, booking.price, booking.seat, booking.address, booking.payment, getAuth(app).currentUser.uid)
+          storeBooking(props.booking.movieTitle, props.booking.showTime, props.booking.ticket, props.booking.price, props.booking.seat, props.booking.address, props.booking.payment, getAuth(app).currentUser.uid)
          } else {
           nextStep()
          }

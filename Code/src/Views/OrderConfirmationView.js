@@ -9,7 +9,8 @@ import Stack from '@mui/material/Stack';
 import CardMedia from '@mui/material/CardMedia';
 
 import Divider from '@mui/material/Divider';
-
+import { getAuth } from 'firebase/auth';
+import { app } from '../Controls/Firebase';
 
 /*
 Upon successful payment, the 
@@ -26,22 +27,16 @@ Order total price is the sum of tickets prices, sales tax, and online fees.
  * Displays poster of the selected movie and selected showtime
  * @returns view 
  */
-function MovieSelection() {
+function MovieSelection(props) {
     return (
         <Stack id = "movieSelection" direction="row">
-<div>
-<CardMedia id="moviePoster"
-        component="img"
 
-        alt="movie"
-      />
-</div>
         <Stack className="movieSelectionDetails" >
         <Typography  variant="h5">
-               Greatness
+               {props.booking.movie}
             </Typography>
             <Typography  variant="h7">
-              Sunday, April 11 at 2:45 PM
+            {props.booking.showTime.date} at {props.booking.showTime.time}
             </Typography>
         </Stack>
 
@@ -69,7 +64,9 @@ function OrderSummary(props) {
     )
 }
 
-function OrderConfirmationView() {
+function OrderConfirmationView(props) {
+
+    var total = (1.23 + 6.66 + props.booking.price).toFixed(2)
 
     return (
         <div id = "orderConfirmationCont">
@@ -85,9 +82,14 @@ function OrderConfirmationView() {
             <CheckCircleIcon sx = {{fontSize:35}} color="success"></CheckCircleIcon>
                     </Stack>
               
-            <Typography gutterBottom  variant="body2">
-                Order confirmation sent to patek@gmail.com
-            </Typography>
+              {
+                getAuth(app).currentUser && (
+                    <Typography gutterBottom  variant="body2">
+                    Order confirmation sent to {   getAuth(app).currentUser.email}
+                </Typography>
+                )
+              }
+       
                 </div>
            
 
@@ -95,19 +97,21 @@ function OrderConfirmationView() {
                Order ID: #85891OWEIMN
             </Typography>
 
+            <MovieSelection booking={props.booking}></MovieSelection>
+
 
             <div id = "orderSumCont">
             <Typography variant="h6">
                Order Summary
             </Typography>
-            <OrderSummary price = {"$0.00"} detailOrderType={"Ticket"}> </OrderSummary>
-            <OrderSummary price = {"$0.00"} detailOrderType={"Sales tax"}> </OrderSummary>
-            <OrderSummary price = {"$0.00"} detailOrderType={"Fee"}> </OrderSummary>
-            <OrderSummary price = {"$0.00"} detailOrderType={"Total"}> </OrderSummary>
+            <OrderSummary price = {"$" + props.booking.price} detailOrderType={"Ticket"}> </OrderSummary>
+            <OrderSummary price = {"$" + 1.23} detailOrderType={"Sales tax"}> </OrderSummary>
+            <OrderSummary price = {"$" + 6.66} detailOrderType={"Fee"}> </OrderSummary>
+            <OrderSummary price = {"$" + total} detailOrderType={"Total"}> </OrderSummary>
          
             </div>
  
-            <MovieSelection></MovieSelection>
+            
         
             </Card>
            

@@ -21,16 +21,43 @@ import ForgotPasswordConfirmation from './Views/ForgotPasswordConfirmation';
 import ForgotPasswordView from './Views/ForgotPasswordView';
 import {EditCardPayment} from './Views/EditCardPayment';
 import AdminPanelView from './Views/AdminPanelView';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { createTicket } from './Views/BuyTicketViews';
 import ManageUsers from './Views/ManageUsers';
 import {app, auth} from './Controls/Firebase'
 import { getAuth } from "firebase/auth";
 
-function App() {
 
+function App() {
 
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
+
+  const [booking, setBooking] = useState({
+    movie: "",
+    showTime: {},
+          ticket:  [createTicket("Adult","9.00",0),createTicket("Child","6.00",0),createTicket("Senior","6.00",0)]
+          ,
+          price: 0,
+          count: 0,
+          seat: [],
+          address: {
+            firstName: "",
+            lastName: "",
+            addy1: "",
+            addy2: "",
+            city: "",
+            zip: "",
+            state: "",
+            country: "",
+          },
+          payment: {
+            name: "",
+            cardNumber: "",
+            date: "",
+            cvv: ""
+          },
+  })
 
   const theme = useMemo(
     () =>
@@ -50,8 +77,8 @@ function App() {
 
        
         <Route path="/" element={  <HomePage />} />
-        <Route path="/buytickets/:movieTitle" element={<BookMovieStepperView />} />
-        <Route path="/orderConfirmation" element={<OrderConfirmationView />} />
+        <Route path="/buytickets/:movieTitle" element={<BookMovieStepperView booking = {booking}  setBooking={setBooking} />} />
+        <Route path="/orderConfirmation" element={<OrderConfirmationView booking = {booking}  setBooking={setBooking} />} />
 
         <Route path="/login" element={<LoginView />} />
         <Route path="/register" element={<RegisterView />} />
