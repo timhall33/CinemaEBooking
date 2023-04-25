@@ -14,6 +14,12 @@ import BuyTicketViews from './BuyTicketViews';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { useEffect } from 'react';
+import { TextField } from '@mui/material';
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+import {db} from "../Controls/Firebase"
+import { query } from 'firebase/firestore';
+import { collection, where, limit, getDocs} from 'firebase/firestore';
 
 const products = [
   {
@@ -39,6 +45,65 @@ const products = [
   { name: 'Shipping', desc: '', price: 'Free' },
 ];
 
+function PromotionField(props) {
+
+  const [promo, setPromo] = useState("")
+  const [promoError , setPromoError] = useState(false)
+  const [errorText, setErrorText] = useState ("")
+  const [buttonDisabled, setButtonDisabled] = useState(false)
+
+    const applyPromotion = () => {
+      const promoRef = collection(db, "promotions");
+      const q = query(promoRef, where("title", "==", promo), limit(1));
+      getDocs(q)
+        .then((querySnapshot) => {
+          if (querySnapshot.empty) {
+            setPromoError(true)
+            setErrorText("Invalid Promo Code")
+            console.log("no matching promos")
+          } else {
+            setPromoError(false)
+            setErrorText("")
+            setButtonDisabled(true)
+            const data = querySnapshot.docs[0].data();
+            var promotionAmount = data.discount
+            promotionAmount = (100 - parseFloat(promotionAmount)) / 100
+            var newPrice = props.booking.price * promotionAmount
+            
+            props.setBooking((prev) => {return {...prev, price: newPrice}})
+
+          }
+     
+        })
+        .catch((error) => {
+          console.log("Error getting document:", error);
+        });
+    }
+      return (
+        <Stack>
+        <TextField
+          label="Enter promotional code" 
+          fullWidth 
+          multiline
+          variant="filled"
+          onChange={(e) => {      
+            setPromo(e.target.value) 
+            props.updateTotal()
+            setButtonDisabled(false)        
+          }}
+          error= {promoError}
+          helperText = {errorText}
+          >
+        </TextField>
+        <Button type="submit" variant="contained" onClick={ applyPromotion } disabled={buttonDisabled}>
+        Apply
+      </Button>
+         </Stack>
+
+
+      )
+}
+
 const addresses = ['1 MUI Drive', 'Reactville', 'Anytown', '99999', 'USA'];
 const payments = [
   { name: 'Card type', detail: 'Visa' },
@@ -56,9 +121,16 @@ export default function Review(props) {
 },[props.booking.ticket])
 
 
+useEffect(() => {
+  reflectPrice()
+}, [props.booking.price])
 
 var updateTotal = () => {
   props.setBooking((prev) => {return {...prev, price: getTotal(props.booking.ticket)}})
+}
+
+var reflectPrice = () => {
+  props.setBooking((prev) =>  {return {...prev, price: props.booking.price}})
 }
 
 var getTotal = (tickets) => {
@@ -156,6 +228,7 @@ var getTotal = (tickets) => {
           </Typography>
 
         </List>
+        <PromotionField booking = {props.booking} setBooking={props.setBooking} updateTotal={updateTotal}> </PromotionField>
         </React.Fragment>
     )
 }
