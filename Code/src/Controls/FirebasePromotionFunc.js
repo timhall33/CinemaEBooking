@@ -45,21 +45,21 @@ export async function storePromo(title, description, discount,formRef) {
 
     // UNcomment this for the demo ...
 
-    // emailList.forEach((email) => {
-    //     const emailParams = {
-    //         email: email,
-    //         promotionAmount: promotionAmount,
-    //         promotionDescription: promotionDescription
+    emailList.forEach((email) => {
+        const emailParams = {
+            email: email,
+            promotionAmount: promotionAmount,
+            promotionDescription: promotionDescription
 
-    //     }
-    //     emailjs.send('service_zonv1b2', 'template_1tdqq1l', emailParams,'Wu_JsPCsb84O3Td2K')
-    //     .then(response => {
-    //       console.log('Email sent successfully', response);
-    //     })
-    //     .catch(error => {
-    //       console.error('Failed to send email', error);
-    //     });
-    // });
+        }
+        emailjs.send('service_zonv1b2', 'template_1tdqq1l', emailParams,'Wu_JsPCsb84O3Td2K')
+        .then(response => {
+          console.log('Email sent successfully', response);
+        })
+        .catch(error => {
+          console.error('Failed to send email', error);
+        });
+    });
 
 
     
