@@ -28,6 +28,7 @@ export async function storeBooking(movie, showTime, ticket,price, seat, address,
           const user = docSnap.data();
           const name = user.firstName
           const email = user.email
+          console.log(movie)
           sendBookingConfirmation(name, email, movie, showTime.date, showTime.time, price);
         }
 

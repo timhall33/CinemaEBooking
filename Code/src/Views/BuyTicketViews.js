@@ -453,7 +453,7 @@ function BuyTicketViews(props) {
         {
          if (step === steps.length - 1 ) {
           console.log(getAuth(app).currentUser.uid)
-          storeBooking(props.booking.movieTitle, props.booking.showTime, props.booking.ticket, props.booking.price, props.booking.seat, props.booking.address, props.booking.payment, getAuth(app).currentUser.uid)
+          storeBooking(props.booking.movie, props.booking.showTime, props.booking.ticket, props.booking.price, props.booking.seat, props.booking.address, props.booking.payment, getAuth(app).currentUser.uid)
          } else {
           nextStep()
          }
