@@ -2,8 +2,8 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { NavLink, useNavigate } from 'react-router-dom'
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import {app, auth} from './Firebase'
-import { setPersistence,  browserSessionPersistence } from "firebase/auth";
-import { collection, query, where, getDocs, deleteDoc  } from "firebase/firestore";
+import { setPersistence,  browserSessionPersistence, signOut } from "firebase/auth";
+import { collection, query, where, getDocs, deleteDoc,doc,getDoc  } from "firebase/firestore";
 import { db} from './Firebase'
 
 async function checkUserState(userId) {
@@ -37,11 +37,22 @@ export function login(email, password, navigate, props) {
   
 
     signInWithEmailAndPassword(auth, email, password)
-    .then((userCred) => {
+    .then(async (userCred) => {
         const user = userCred.user;
+        const docRef = doc(db, "users/" + user.uid);
 
+        const docSnap = await getDoc(docRef);
+        const userObj = docSnap.data()
+            if (userObj.userStatus === false) {
+                props.setIsBanned(true)
+                signOut(getAuth()).then((res)=>{
+                    console.log(res)
+                }). catch((err) => {
+                    console.log(err)
+                })
+            }
 
-            if (user  && auth.currentUser.emailVerified === true ) {
+            if (user  && auth.currentUser.emailVerified === true && userObj.userStatus === true ) {
                 navigate("/")
             } 
 

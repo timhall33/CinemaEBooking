@@ -39,6 +39,8 @@ function LoginView() {
 
   const [rememberMe, setRememberMe] = useState(false)
 
+  const [isBanned , setIsBanned] = useState(false)
+
 
 
     return(
@@ -65,28 +67,28 @@ function LoginView() {
               label="Email Address"
               name="email"
               autoComplete="email"
-              error = { (email.length === 0 && click.length !== 0) || response.toLocaleLowerCase().includes("email") || response.toLocaleLowerCase().includes("user-not-found") || (click.length !== 0 && !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)))}
+              error = { (email.length === 0 && click.length !== 0) || response.toLocaleLowerCase().includes("email") || response.toLocaleLowerCase().includes("user-not-found") || (click.length !== 0 && !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) || isBanned}
               helperText = {email.length === 0 && click.length !== 0 ? "Enter an email" : response.toLocaleLowerCase().includes("user-not-found") ? 
               "Account with this email doesn't exist" : (click.length !== 0 && !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) ? "Invalid email format" : response.toLocaleLowerCase().includes("email") ? response : ""  }
               onFocus={(e) => {
                 setResponse("")
               }}
 
-              onChange={(e) => {setEmail(e.target.value); console.log(!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)))}}  
+              onChange={(e) => {setEmail(e.target.value); console.log(!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))); setIsBanned(false)}}  
               autoFocus
             />
             <TextField
               margin="normal"
               required
               fullWidth
-              error = { (password.length === 0 && click.length !== 0 )|| response.toLocaleLowerCase().includes("password") || response.toLocaleLowerCase().includes("user-not-found")}
+              error = { (password.length === 0 && click.length !== 0 )|| response.toLocaleLowerCase().includes("password") || response.toLocaleLowerCase().includes("user-not-found") || isBanned}
               name="password"
               label="Password"
               type="password"
               id="password"
-              helperText = {password.length === 0 && click.length !== 0 ? "Enter a password" : response.toLocaleLowerCase().includes("password") ? response : response.toLocaleLowerCase().includes("user-not-found") ? "No account with the provided email exists with this password " : "" }
+              helperText = {password.length === 0 && click.length !== 0 ? "Enter a password" : response.toLocaleLowerCase().includes("password") ? response : response.toLocaleLowerCase().includes("user-not-found") ? "No account with the provided email exists with this password " : isBanned ?  "User is banned" : "" }
               autoComplete="current-password"
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {setPassword(e.target.value); setIsBanned(false)}}
               onFocus={(e) => {
                 setResponse("")
               }}
@@ -111,7 +113,7 @@ function LoginView() {
                 
                 setClick(e.target.value)
 
-                  login(email,password,navigate, {setUserAuth, setResponse, rememberMe});
+                  login(email,password,navigate, {setUserAuth, setResponse, rememberMe, setIsBanned});
                 
                
                 
