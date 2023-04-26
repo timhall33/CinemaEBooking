@@ -42,6 +42,7 @@ function AddMovieView() {
         movieSynopsis: "",
         movieTrailer: "",
         movieRatingCode: "",
+        movieStarRating: 0
       })
 
       const [clicked, setClicked] = useState(false)
@@ -65,6 +66,23 @@ function AddMovieView() {
     
     
              }}
+        />
+           <TextField 
+         label="Movie star rating"
+         fullWidth 
+         multiline
+         variant="filled"
+         error = {movieData.movieCategory.length == 0 && clicked}
+         onChange = {(e) => {
+
+            setMovieData((prev) => ({
+               ...prev,
+               movieStarRating: e.target.value
+             }))
+     
+     
+     
+              }}
         />
          <TextField 
          label="Movie category"
@@ -190,7 +208,8 @@ function AddMovieView() {
 
 setClicked(true)
 if (movieData.movieTitle.length != 0 && movieData.movieCategory.length != 0 && movieData.movieCast.length != 0 && movieData.movieDirector.length != 0 && movieData.movieProducer.length != 0 && movieData.movieSynopsis.length != 0 && movieData.movieTrailer.length != 0 && movieData.movieRatingCode.length != 0) {
-storeMovie(movieData.movieTitle, movieData.movieCategory, movieData.movieCast, movieData.movieDirector, movieData.movieProducer, movieData.movieSynopsis, movieData.movieTrailer, movieData.movieRatingCode)
+
+storeMovie(movieData.movieTitle, movieData.movieCategory, movieData.movieCast, movieData.movieDirector, movieData.movieProducer, movieData.movieSynopsis, movieData.movieTrailer, movieData.movieRatingCode, movieData.movieStarRating)
 } 
 
 }} variant="extended" size="medium" color="primary"  aria-label="add">
